@@ -1,0 +1,10 @@
+:root {
+  --color-secondary: #d7325233;
+  --color-alternative: #e8f8f7;
+  --color-primary: #d73252;
+  --color-primary-dark: #ba2b47;
+}
+
+@import "base.css";
+@import "utilities.css";
+@import "components.css";

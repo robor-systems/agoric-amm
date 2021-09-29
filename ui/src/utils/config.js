@@ -2,9 +2,9 @@
 import { E } from '@agoric/eventual-send';
 
 // Taken from window.DAPP_CONSTANTS_JSON in index.html, defaulting to .env.local.
+
 import defaults from '../generated/defaults';
 
-// eslint-disable-next-line import/no-mutable-exports
 let dappConfig;
 export { dappConfig };
 
