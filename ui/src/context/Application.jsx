@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
+import 'json5';
+import 'utils/installSESLockdown';
+
 import { makeCapTP, E } from '@agoric/captp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
 
@@ -23,6 +26,7 @@ import {
   setAutoswap,
   setApproved,
 } from '../store/store';
+
 import {
   updateBrandPetnames,
   storeAllBrandsFromTerms,
@@ -48,7 +52,7 @@ function watchVault(id, dispatch) {
     updateVault({
       id,
       vault: { status },
-    }),
+    })
   );
 
   async function vaultUpdater() {
@@ -56,7 +60,7 @@ function watchVault(id, dispatch) {
     for await (const value of iterateNotifier(uiNotifier)) {
       console.log('======== VAULT', id, value);
       dispatch(
-        updateVault({ id, vault: { ...value, status: 'Loan Initiated' } }),
+        updateVault({ id, vault: { ...value, status: 'Loan Initiated' } })
       );
     }
   }
@@ -90,7 +94,7 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID) {
     }
   }
   offersUpdater().catch((err) =>
-    console.error('Offers watcher exception', err),
+    console.error('Offers watcher exception', err)
   );
 }
 
@@ -116,6 +120,7 @@ const setupTreasury = async (dispatch, brandToInfo, zoe, board, instanceID) => {
   dispatch(setCollaterals(collaterals));
   return { terms, collaterals };
 };
+
 const setupAMM = async (dispatch, brandToInfo, zoe, board, instanceID) => {
   const instance = await E(board).getValue(instanceID);
   const [ammAPI, terms] = await Promise.all([
@@ -167,7 +172,7 @@ export default function Provider({ children }) {
         } = makeCapTP(
           CONTRACT_NAME,
           (obj) => socket.send(JSON.stringify(obj)),
-          otherSide,
+          otherSide
         );
         walletAbort = ctpAbort;
         walletDispatch = ctpDispatch;
@@ -186,7 +191,7 @@ export default function Provider({ children }) {
         const board = E(walletP).getBoard();
 
         await Promise.all([
-          setupTreasury(dispatch, brandToInfo, zoe, board, INSTANCE_BOARD_ID),
+          // setupTreasury(dispatch, brandToInfo, zoe, board, INSTANCE_BOARD_ID),
           setupAMM(dispatch, brandToInfo, zoe, board, AMM_INSTANCE_BOARD_ID),
         ]);
 
@@ -198,7 +203,7 @@ export default function Provider({ children }) {
           }
         }
         watchPurses().catch((err) =>
-          console.error('FIGME: got watchPurses err', err),
+          console.error('FIGME: got watchPurses err', err)
         );
 
         async function watchBrands() {
@@ -220,11 +225,11 @@ export default function Provider({ children }) {
           E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID),
           E(walletP).suggestInstallation(
             `${AMM_NAME}Installation`,
-            AMM_INSTALLATION_BOARD_ID,
+            AMM_INSTALLATION_BOARD_ID
           ),
           E(walletP).suggestInstance(
             `${AMM_NAME}Instance`,
-            AMM_INSTANCE_BOARD_ID,
+            AMM_INSTANCE_BOARD_ID
           ),
           E(walletP).suggestIssuer('RUN', RUN_ISSUER_BOARD_ID),
         ]);

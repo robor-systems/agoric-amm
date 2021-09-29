@@ -1,4 +1,4 @@
-const { createContext } = require("react");
+const { createContext } = require('react');
 
 const AssetContext = createContext([{}, () => {}]);
 

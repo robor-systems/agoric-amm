@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import AssetContext from 'context/AssetContext';
-import { useContext } from 'react';
+
 import { FiChevronLeft } from 'react-icons/fi';
 import ListItem from '../ListItem/ListItem';
 import PurseListItem from '../ListItem/PurseListItem';

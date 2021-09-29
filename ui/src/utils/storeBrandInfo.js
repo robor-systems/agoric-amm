@@ -1,9 +1,9 @@
 // @ts-check
 
-import { E } from "@agoric/eventual-send";
-import { assert } from "ses/src/error/assert";
+import { E } from '@agoric/eventual-send';
+import { assert } from 'ses/src/error/assert';
 
-import { mergeBrandToInfo } from "../store/store";
+import { mergeBrandToInfo } from '../store/store';
 
 // Note: brandToInfo may be outdated by the time we want to save the
 // info for a particular brand. Therefore, we must only insert
@@ -102,7 +102,7 @@ export const updateBrandPetnames = ({
   brandToInfo,
   issuersFromNotifier,
 }) => {
-  console.log("BRANDS", issuersFromNotifier);
+  console.log('BRANDS', issuersFromNotifier);
   const resultPs = issuersFromNotifier.map(([petname, { brand, issuer }]) => {
     return storeBrand({ dispatch, brandToInfo, issuer, brand, petname });
   });

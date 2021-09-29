@@ -40,6 +40,7 @@ const walletBridgeId = 'walletBridgeIFrame';
 let walletLoaded = false;
 const connectSubscriptions = new Set();
 const messageSubscriptions = new Set();
+
 function createSocket({ onConnect, onDisconnect, onMessage }, endpoint) {
   const { CONTRACT_NAME } = dappConfig;
   if (endpoint === '/private/wallet-bridge') {
@@ -51,7 +52,7 @@ function createSocket({ onConnect, onDisconnect, onMessage }, endpoint) {
       ifr.setAttribute('height', '0');
       ifr.setAttribute('style', 'display: none');
       document.body.appendChild(ifr);
-      window.addEventListener('message', ev => {
+      window.addEventListener('message', (ev) => {
         // console.log('dapp ui got', ev);
         logMsg(ev.data, 'recv');
         if (ev.data && ev.data.type === 'walletBridgeLoaded') {
@@ -72,7 +73,7 @@ function createSocket({ onConnect, onDisconnect, onMessage }, endpoint) {
     ifr.src = `${
       process.env.PUBLIC_URL
     }/agoric-wallet.html?suggestedDappPetname=${encodeURIComponent(
-      CONTRACT_NAME,
+      CONTRACT_NAME
     )}`;
     ifr.addEventListener('load', () => {
       while (ifrQ && ifrQ.length) {
@@ -120,7 +121,7 @@ function createSocket({ onConnect, onDisconnect, onMessage }, endpoint) {
         if (kind !== 'message') {
           throw Error(`Cannot bridge.addEventListener kind ${kind}`);
         }
-        const onmsg = data => cb({ data });
+        const onmsg = (data) => cb({ data });
         messageListeners.add(onmsg);
         messageSubscriptions.add(onmsg);
       },
@@ -168,7 +169,7 @@ export function getActiveSocket(endpoint = '/private/wallet-bridge') {
 
 export function activateWebSocket(
   socketListeners = {},
-  endpoint = '/private/wallet-bridge',
+  endpoint = '/private/wallet-bridge'
 ) {
   if (getActiveSocket(endpoint)) return;
   createSocket(socketListeners, endpoint);
@@ -189,7 +190,7 @@ export async function doFetch(req, endpoint = '/private/wallet-bridge') {
   }
 
   let resolve;
-  const p = new Promise(res => {
+  const p = new Promise((res) => {
     resolve = res;
   });
   socket.send(JSON.stringify(req));

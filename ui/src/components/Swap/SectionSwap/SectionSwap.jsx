@@ -1,15 +1,23 @@
-import React from 'react';
-import { useState } from 'react';
-import DialogSwap from '../DialogSwap/DialogSwap';
+import React, { useState, useContext, useEffect } from 'react';
+
 import placeholderAgoric from 'assets/placeholder-agoric.png';
-import { useContext } from 'react';
+
 import AssetContext from 'context/AssetContext';
+import DialogSwap from '../DialogSwap/DialogSwap';
+
+import { useApplicationContext } from 'context/Application';
 
 const SectionSwap = ({ type }) => {
+  const { state, walletP } = useApplicationContext();
+
   const [open, setOpen] = useState(false);
 
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
+
+  useEffect(() => {
+    console.log("Here's the state: ", state);
+  }, [state]);
 
   return (
     <>

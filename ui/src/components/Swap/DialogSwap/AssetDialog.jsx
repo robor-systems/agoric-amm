@@ -1,16 +1,15 @@
-import React from 'react';
-import ListItem from '../ListItem/ListItem';
-import AssetListItem from '../ListItem/AssetListItem';
+import React, { useContext } from 'react';
 import assets from 'services/assets.service';
 import AssetContext from 'context/AssetContext';
-import { useContext } from 'react';
+import ListItem from '../ListItem/ListItem';
+import AssetListItem from '../ListItem/AssetListItem';
 
 const AssetDialog = () => {
   const [asset, setAsset] = useContext(AssetContext);
 
   return (
-    <div className='flex flex-col gap-4 p-5 overflow-auto '>
-      {assets.map((item) => (
+    <div className="flex flex-col gap-4 p-5 overflow-auto ">
+      {assets.map(item => (
         <div
           key={item.id}
           onClick={() => {

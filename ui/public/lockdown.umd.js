@@ -2995,12 +2995,37 @@
    */
   const hiddenMessageLogArgs = new WeakMap();
 
+  // So each error tag will be unique.
+  let errorTagNum = 0;
+
+  /**
+   * @type {WeakMap<Error, string>}
+   */
+  const errorTags = new WeakMap();
+
+  /**
+   * @param {Error} err
+   * @param {string=} optErrorName
+   * @returns {string}
+   */
+  const tagError = (err, optErrorName = err.name) => {
+    let errorTag = errorTags.get(err);
+    if (errorTag !== undefined) {
+      return errorTag;
+    }
+    errorTagNum += 1;
+    errorTag = `${optErrorName}#${errorTagNum}`;
+    errorTags.set(err, errorTag);
+    return errorTag;
+  };
+
   /**
    * @type {AssertMakeError}
    */
   const makeError = (
     optDetails = redactedDetails`Assert failed`,
     ErrorConstructor = Error,
+    { errorName = undefined } = {},
   ) => {
     if (typeof optDetails === 'string') {
       // If it is a string, use it as the literal part of the template so
@@ -3014,6 +3039,9 @@
     const messageString = getMessageString(hiddenDetails);
     const error = new ErrorConstructor(messageString);
     hiddenMessageLogArgs.set(error, getLogArgs(hiddenDetails));
+    if (errorName !== undefined) {
+      tagError(error, errorName);
+    }
     // The next line is a particularly fruitful place to put a breakpoint.
     return error;
   };
@@ -3098,6 +3126,11 @@
   /** @type {LoggedErrorHandler} */
   const loggedErrorHandler = {
     getStackString: globalThis.getStackString || defaultGetStackString,
+    tagError: error => tagError(error),
+    resetErrorTagNum: () => {
+      errorTagNum = 0;
+    },
+    getMessageLogArgs: error => hiddenMessageLogArgs.get(error),
     takeMessageLogArgs: error => {
       const result = hiddenMessageLogArgs.get(error);
       hiddenMessageLogArgs.delete(error);
@@ -4296,7 +4329,14 @@
   // /////////////////////////////////////////////////////////////////////////////
 
   /** @type {MakeLoggingConsoleKit} */
-  const makeLoggingConsoleKit = () => {
+  const makeLoggingConsoleKit = (
+    loggedErrorHandler,
+    { shouldResetForDebugging = false } = {},
+  ) => {
+    if (shouldResetForDebugging) {
+      loggedErrorHandler.resetErrorTagNum();
+    }
+
     // Not frozen!
     let logArray = [];
 
@@ -4352,33 +4392,10 @@
   const makeCausalConsole = (baseConsole, loggedErrorHandler) => {
     const {
       getStackString,
+      tagError,
       takeMessageLogArgs,
       takeNoteLogArgsArray,
     } = loggedErrorHandler;
-
-    // by "tagged", we mean first sent to the baseConsole as an argument in a
-    // console level method call, in which it is shown with an identifying tag
-    // number. We number the errors according to the order in
-    // which they were first logged to the baseConsole, starting at 1.
-    let numErrorsTagged = 0;
-    /** @type WeakMap<Error, number> */
-    const errorTagOrder = new WeakMap();
-
-    /**
-     * @param {Error} err
-     * @returns {string}
-     */
-    const tagError = err => {
-      let errNum;
-      if (errorTagOrder.has(err)) {
-        errNum = errorTagOrder.get(err);
-      } else {
-        numErrorsTagged += 1;
-        errorTagOrder.set(err, numErrorsTagged);
-        errNum = numErrorsTagged;
-      }
-      return `${err.name}#${errNum}`;
-    };
 
     /**
      * @param {ReadonlyArray<any>} logArgs

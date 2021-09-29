@@ -10,7 +10,7 @@ const uiConfig = JSON.stringify(
     CONTRACT_NAME: 'Treasury',
   },
   undefined,
-  2
+  2,
 );
 
 const defaults = `src/generated/defaults.js`;
