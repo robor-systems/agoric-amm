@@ -1,13 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import App from './App';
+
+import 'json5';
+import './utils/installSESLockdown';
+
 import ApplicationContextProvider from 'context/Application';
 
-ReactDOM.render(
+render(
   <ApplicationContextProvider>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    <App />
   </ApplicationContextProvider>,
-  document.getElementById('root'),
+  document.getElementById('root')
 );

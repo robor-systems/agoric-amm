@@ -45,7 +45,11 @@
     "eject": "react-scripts eject"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -60,14 +64,17 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4",
     "prettier": "^1.19.1",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "4.0.3",
     "rimraf": "^3.0.2",
     "autoprefixer": "^9.8.6",
     "postcss": "^7.0.36",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.14"
   },
   "eslintConfig": {
-    "ignorePatterns": ["**/*.umd.js", "**/generated/*"],
+    "ignorePatterns": [
+      "**/*.umd.js",
+      "**/generated/*"
+    ],
     "parser": "babel-eslint",
     "parserOptions": {
       "ecmaFeatures": {
@@ -76,7 +83,9 @@
       "ecmaVersion": 2018,
       "sourceType": "module"
     },
-    "plugins": ["react"],
+    "plugins": [
+      "react"
+    ],
     "rules": {
       "react/prop-types": "off"
     },
@@ -86,14 +95,19 @@
     "settings": {
       "import/resolver": {
         "node": {
-          "extensions": [".js", ".jsx"]
+          "extensions": [
+            ".js",
+            ".jsx"
+          ]
         }
       },
       "react": {
         "version": "detect"
       }
     },
-    "extends": ["plugin:react/recommended"]
+    "extends": [
+      "plugin:react/recommended"
+    ]
   },
   "prettier": {
     "trailingComma": "all",
