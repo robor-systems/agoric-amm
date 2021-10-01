@@ -42,6 +42,7 @@
     "singleQuote": true
   },
   "dependencies": {
+    "@headlessui/react": "^1.4.1",
     "@typescript-eslint/typescript-estree": "^4.32.0",
     "@typescript-eslint/visitor-keys": "^4.32.0"
   }
