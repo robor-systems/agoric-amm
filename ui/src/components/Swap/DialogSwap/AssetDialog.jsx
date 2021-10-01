@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
-import assets from 'services/assets.service';
-import AssetContext from 'context/AssetContext';
 import ListItem from '../ListItem/ListItem';
 import AssetListItem from '../ListItem/AssetListItem';
+import assets from 'services/assets.service';
+import AssetContext from 'context/AssetContext';
+import React, { useContext } from 'react';
 
-const AssetDialog = () => {
+const AssetDialog = ({ type }) => {
   const [asset, setAsset] = useContext(AssetContext);
 
   return (
@@ -15,11 +15,11 @@ const AssetDialog = () => {
           onClick={() => {
             setAsset({
               ...asset,
-              from: item,
+              [type]: item,
             });
           }}
         >
-          <ListItem key={item.id}>
+          <ListItem>
             <AssetListItem {...item} />
           </ListItem>
         </div>

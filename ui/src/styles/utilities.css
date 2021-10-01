@@ -4,4 +4,8 @@
   .shadow-red-light {
     box-shadow: 0px 0px 99px var(--color-secondary);
   }
+
+  .position-swap-icon {
+    top: 43.5%;
+  }
 }

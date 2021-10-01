@@ -4,7 +4,4 @@
   button {
     @apply capitalize rounded-sm;
   }
-  input {
-    @apply bg-white text-xl rounded-sm p-3 focus:outline-none focus:ring-2 focus:ring-secondary;
-  }
 }

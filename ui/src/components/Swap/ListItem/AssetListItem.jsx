@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
-import AssetContext from 'context/AssetContext';
+import React from 'react';
 
-const AssetListItem = ({ name, code, balance, image }) => {
+const AssetListItem = ({ name, code, balance, image, balanceUSD }) => {
   return (
     <div className="flex gap-3 items-center justify-between w-full">
       <div className="flex gap-3 items-center">
@@ -14,7 +13,10 @@ const AssetListItem = ({ name, code, balance, image }) => {
           <h4 className="text-sm text-gray-500">{name}</h4>
         </div>
       </div>
-      <h4 className="text-sm text-gray-500">Balance: {balance}</h4>
+      <div className="text-right">
+        <h4 className="text-sm text-gray-500">Balance: {balance}</h4>
+        <h4 className="text-sm text-gray-500">~ ${balanceUSD}</h4>
+      </div>
     </div>
   );
 };
