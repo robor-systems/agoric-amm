@@ -107,6 +107,7 @@
       }
     },
     "extends": [
+      "@agoric",
       "plugin:react/recommended"
     ]
   },
