@@ -9,10 +9,10 @@ import SectionLiquidity from '../SectionLiquidity/SectionLiquidity';
 const AddLiquidity = () => {
   const [centralAsset, setCentralAsset] = useState('');
   const [liquidityAsset, setLiquidityAsset] = useState('');
-  const [swapTo, setSwapTo] = useState('');
-  const [swapFrom, setSwapFrom] = useState('');
+  const [swapTo] = useState('');
+  const [swapFrom] = useState('');
   const [error, setError] = useState(null);
-  const [asset, setAsset] = useContext(AssetContext);
+  const [asset] = useContext(AssetContext);
   const assetExists = Object.values(asset).filter(item => item).length >= 2;
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
-import AssetContext from 'context/AssetContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 
 const Liquidity = () => {

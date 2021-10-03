@@ -1,5 +1,6 @@
 /* global process */
 import { E } from '@agoric/eventual-send';
+/* eslint-disable import/no-mutable-exports */
 
 // Taken from window.DAPP_CONSTANTS_JSON in index.html, defaulting to .env.local.
 

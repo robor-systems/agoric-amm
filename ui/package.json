@@ -99,6 +99,9 @@
           "extensions": [
             ".js",
             ".jsx"
+          ],
+          "paths": [
+            "src"
           ]
         }
       },

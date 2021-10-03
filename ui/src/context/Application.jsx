@@ -3,6 +3,8 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import 'json5';
 import 'utils/installSESLockdown';
 
+/* eslint-disable import/no-mutable-exports */
+
 import { makeCapTP, E } from '@agoric/captp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
 
@@ -21,8 +23,6 @@ import {
   setConnected,
   resetState,
   updateVault,
-  setCollaterals,
-  setTreasury,
   setAutoswap,
   setApproved,
 } from '../store/store';
@@ -96,28 +96,28 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID) {
   offersUpdater().catch(err => console.error('Offers watcher exception', err));
 }
 
-const setupTreasury = async (dispatch, brandToInfo, zoe, board, instanceID) => {
-  const instance = await E(board).getValue(instanceID);
-  const treasuryAPIP = E(zoe).getPublicFacet(instance);
-  const [treasuryAPI, terms, collaterals] = await Promise.all([
-    treasuryAPIP,
-    E(zoe).getTerms(instance),
-    E(treasuryAPIP).getCollaterals(),
-  ]);
-  const {
-    issuers: { RUN: runIssuer },
-    brands: { RUN: runBrand },
-  } = terms;
-  dispatch(setTreasury({ instance, treasuryAPI, runIssuer, runBrand }));
-  await storeAllBrandsFromTerms({
-    dispatch,
-    terms,
-    brandToInfo,
-  });
-  console.log('SET COLLATERALS', collaterals);
-  dispatch(setCollaterals(collaterals));
-  return { terms, collaterals };
-};
+// const setupTreasury = async (dispatch, brandToInfo, zoe, board, instanceID) => {
+//   const instance = await E(board).getValue(instanceID);
+//   const treasuryAPIP = E(zoe).getPublicFacet(instance);
+//   const [treasuryAPI, terms, collaterals] = await Promise.all([
+//     treasuryAPIP,
+//     E(zoe).getTerms(instance),
+//     E(treasuryAPIP).getCollaterals(),
+//   ]);
+//   const {
+//     issuers: { RUN: runIssuer },
+//     brands: { RUN: runBrand },
+//   } = terms;
+//   dispatch(setTreasury({ instance, treasuryAPI, runIssuer, runBrand }));
+//   await storeAllBrandsFromTerms({
+//     dispatch,
+//     terms,
+//     brandToInfo,
+//   });
+//   console.log('SET COLLATERALS', collaterals);
+//   dispatch(setCollaterals(collaterals));
+//   return { terms, collaterals };
+// };
 
 const setupAMM = async (dispatch, brandToInfo, zoe, board, instanceID) => {
   const instance = await E(board).getValue(instanceID);

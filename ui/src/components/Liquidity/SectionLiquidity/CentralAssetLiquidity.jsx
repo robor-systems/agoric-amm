@@ -17,24 +17,72 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
 
   useEffect(() => {
     const purseLength = centralAsset.purses?.length;
-    const assetMode = !purseLength
-      ? assetState.EMPTY
-      : purseLength === 1
-      ? assetState.SINGLE
-      : assetState.MULTIPLE;
+    let assetMode;
+
+    switch (purseLength) {
+      case 0:
+        assetMode = assetState.EMPTY;
+        break;
+      case 1:
+        assetMode = assetState.SINGLE;
+        break;
+      default:
+        assetMode = assetState.MULTIPLE;
+        break;
+    }
+
     setAsset({
       ...asset,
       central: {
         ...centralAsset,
-        purse: assetMode == assetState.SINGLE && centralAsset.purses[0],
-        mode: !purseLength
-          ? assetState.EMPTY
-          : purseLength === 1
-          ? assetState.SINGLE
-          : assetState.MULTIPLE,
+        purse: assetMode === assetState.SINGLE && centralAsset.purses[0],
+        mode: assetMode,
       },
     });
   }, [centralAsset]);
+
+  const AssetSelector = () => {
+    switch (selected?.mode) {
+      case assetState.SINGLE:
+        return (
+          <div className="flex flex-col w-28  p-1 rounded-sm">
+            <div className="flex  items-center justify-between">
+              <h2 className="text-xl uppercase font-medium">{selected.code}</h2>
+            </div>
+            <h3 className="text-xs text-gray-500 font-semibold">
+              Purse: <span>{selected.purse.name}</span>{' '}
+            </h3>
+          </div>
+        );
+      case assetState.EMPTY:
+        return (
+          <div className="flex flex-col w-28    p-1 rounded-sm">
+            <div className="flex  items-center justify-between">
+              <h2 className="text-xl uppercase font-medium">{selected.code}</h2>
+            </div>
+            <h3 className="text-xs text-gray-500 font-semibold">No Purses</h3>
+          </div>
+        );
+      default:
+        return (
+          <div
+            className="flex flex-col w-28  p-1 rounded-sm hover:bg-black cursor-pointer hover:bg-opacity-5"
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            <div className="flex  items-center justify-between">
+              <h2 className="text-xl uppercase font-medium">
+                {selected?.code}
+              </h2>
+            </div>
+            <h3 className="text-xs text-primary font-semibold flex items-center gap-1">
+              Select Purse <FiChevronDown className="text-xl" />
+            </h3>
+          </div>
+        );
+    }
+  };
 
   return (
     <>
@@ -47,43 +95,8 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
           <div className="w-12 h-12 rounded-full bg-gray-500">
             <img src={selected?.image || placeholderAgoric} />
           </div>
-          {selected?.mode === assetState.SINGLE ? (
-            <div className="flex flex-col w-28  p-1 rounded-sm">
-              <div className="flex  items-center justify-between">
-                <h2 className="text-xl uppercase font-medium">
-                  {selected.code}
-                </h2>
-              </div>
-              <h3 className="text-xs text-gray-500 font-semibold">
-                Purse: <span>{selected.purse.name}</span>{' '}
-              </h3>
-            </div>
-          ) : selected?.mode === assetState.EMPTY ? (
-            <div className="flex flex-col w-28    p-1 rounded-sm">
-              <div className="flex  items-center justify-between">
-                <h2 className="text-xl uppercase font-medium">
-                  {selected.code}
-                </h2>
-              </div>
-              <h3 className="text-xs text-gray-500 font-semibold">No Purses</h3>
-            </div>
-          ) : (
-            <div
-              className="flex flex-col w-28  p-1 rounded-sm hover:bg-black cursor-pointer hover:bg-opacity-5"
-              onClick={() => {
-                setOpen(true);
-              }}
-            >
-              <div className="flex  items-center justify-between">
-                <h2 className="text-xl uppercase font-medium">
-                  {selected?.code}
-                </h2>
-              </div>
-              <h3 className="text-xs text-primary font-semibold flex items-center gap-1">
-                Select Purse <FiChevronDown className="text-xl" />
-              </h3>
-            </div>
-          )}
+          <AssetSelector selected={selected} setOpen={setOpen} />
+
           <div className="relative flex-grow">
             <input
               type="number"
