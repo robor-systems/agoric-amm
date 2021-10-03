@@ -1,8 +1,8 @@
-import ListItem from '../ListItem/ListItem';
-import AssetListItem from '../ListItem/AssetListItem';
 import assets from 'services/assets.service';
 import AssetContext from 'context/AssetContext';
 import React, { useContext } from 'react';
+import AssetListItem from '../ListItem/AssetListItem';
+import ListItem from '../ListItem/ListItem';
 
 const AssetDialog = ({ type }) => {
   const [asset, setAsset] = useContext(AssetContext);

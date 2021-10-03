@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import DialogSwap from '../DialogSwap/DialogSwap';
+import React, { useState, useContext } from 'react';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
-import { useContext } from 'react';
+
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
-import React from 'react';
+import DialogSwap from '../DialogSwap/DialogSwap';
 
 const SectionSwap = ({ type, value, handleChange }) => {
   const [open, setOpen] = useState(false);
@@ -58,8 +57,8 @@ const SectionSwap = ({ type, value, handleChange }) => {
             />
             {asset[type]?.purse && (
               <div className="absolute right-3 top-1.5 text-gray-400 flex flex-col text-right text-sm bg-white">
-                <div>Balance: {asset[type]['purse']['balance']}</div>
-                <div>~ ${asset[type]['purse']['balanceUSD']}</div>
+                <div>Balance: {asset[type].purse.balance}</div>
+                <div>~ ${asset[type].purse.balanceUSD}</div>
               </div>
             )}
           </div>

@@ -1,10 +1,10 @@
 import { FiPlus } from 'react-icons/fi';
 import React, { useContext, useEffect, useState } from 'react';
-import SectionLiquidity from '../SectionLiquidity/SectionLiquidity';
 import clsx from 'clsx';
 import AssetContext from 'context/AssetContext';
-import CentralAssetLiquidity from '../SectionLiquidity/CentralAssetLiquidity';
 import { assetState } from 'utils/constant';
+import CentralAssetLiquidity from '../SectionLiquidity/CentralAssetLiquidity';
+import SectionLiquidity from '../SectionLiquidity/SectionLiquidity';
 
 const AddLiquidity = () => {
   const [centralAsset, setCentralAsset] = useState('');

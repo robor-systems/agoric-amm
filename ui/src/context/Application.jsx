@@ -52,7 +52,7 @@ function watchVault(id, dispatch) {
     updateVault({
       id,
       vault: { status },
-    })
+    }),
   );
 
   async function vaultUpdater() {
@@ -60,12 +60,12 @@ function watchVault(id, dispatch) {
     for await (const value of iterateNotifier(uiNotifier)) {
       console.log('======== VAULT', id, value);
       dispatch(
-        updateVault({ id, vault: { ...value, status: 'Loan Initiated' } })
+        updateVault({ id, vault: { ...value, status: 'Loan Initiated' } }),
       );
     }
   }
 
-  vaultUpdater().catch((err) => {
+  vaultUpdater().catch(err => {
     console.error('Vault watcher exception', id, err);
     dispatch(updateVault({ id, vault: { status: 'Error in offer', err } }));
   });
@@ -93,9 +93,7 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID) {
       console.log('======== OFFERS', offers);
     }
   }
-  offersUpdater().catch((err) =>
-    console.error('Offers watcher exception', err)
-  );
+  offersUpdater().catch(err => console.error('Offers watcher exception', err));
 }
 
 const setupTreasury = async (dispatch, brandToInfo, zoe, board, instanceID) => {
@@ -171,8 +169,8 @@ export default function Provider({ children }) {
           getBootstrap,
         } = makeCapTP(
           CONTRACT_NAME,
-          (obj) => socket.send(JSON.stringify(obj)),
-          otherSide
+          obj => socket.send(JSON.stringify(obj)),
+          otherSide,
         );
         walletAbort = ctpAbort;
         walletDispatch = ctpDispatch;
@@ -202,8 +200,8 @@ export default function Provider({ children }) {
             dispatch(setPurses(purses));
           }
         }
-        watchPurses().catch((err) =>
-          console.error('FIGME: got watchPurses err', err)
+        watchPurses().catch(err =>
+          console.error('FIGME: got watchPurses err', err),
         );
 
         async function watchBrands() {
@@ -217,7 +215,7 @@ export default function Provider({ children }) {
             });
           }
         }
-        watchBrands().catch((err) => {
+        watchBrands().catch(err => {
           console.error('got watchBrands err', err);
         });
         await Promise.all([
@@ -225,11 +223,11 @@ export default function Provider({ children }) {
           E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID),
           E(walletP).suggestInstallation(
             `${AMM_NAME}Installation`,
-            AMM_INSTALLATION_BOARD_ID
+            AMM_INSTALLATION_BOARD_ID,
           ),
           E(walletP).suggestInstance(
             `${AMM_NAME}Instance`,
-            AMM_INSTANCE_BOARD_ID
+            AMM_INSTANCE_BOARD_ID,
           ),
           E(walletP).suggestIssuer('RUN', RUN_ISSUER_BOARD_ID),
         ]);
