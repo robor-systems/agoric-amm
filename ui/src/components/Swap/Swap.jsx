@@ -20,7 +20,9 @@ const Swap = () => {
 
   useEffect(() => {
     if (swapFrom && swapTo) setError(null);
-    if (asset.from?.balance < swapFrom)
+
+    console.log(swapFrom, asset.from?.purse.balance);
+    if (asset.from?.purse.balance < swapFrom)
       setError(`Insufficient ${asset.from.code} balance`);
   }, [swapFrom, swapTo]);
 
@@ -76,8 +78,10 @@ const Swap = () => {
 
       <button
         className={clsx(
-          'bg-gray-100 hover:bg-gray-200 text-xl font-medium p-3  uppercase',
-          { 'bg-primary hover:bg-primaryDark text-white': assetExists },
+          'bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
+          assetExists
+            ? 'bg-primary hover:bg-primaryDark text-white'
+            : 'text-gray-500',
         )}
         onClick={() => {
           if (Object.values(asset).filter(item => item).length < 2)

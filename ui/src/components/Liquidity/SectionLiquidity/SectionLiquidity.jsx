@@ -1,23 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DialogSwap from '../DialogSwap/DialogSwap';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 import { useContext } from 'react';
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 import React from 'react';
+import { centralAsset } from 'services/liquidity.service';
 
-const SectionSwap = ({ type, value, handleChange }) => {
+const SectionLiquidity = ({ type, value, handleChange, disabled }) => {
   const [open, setOpen] = useState(false);
 
-  const [asset] = useContext(AssetContext);
+  const [asset, setAsset] = useContext(AssetContext);
   const selected = asset[type];
+
+  useEffect(() => {
+    if (type === 'central' && !centralAsset?.purses.length)
+      setAsset({ ...asset, central: centralAsset });
+  }, []);
 
   return (
     <>
       <DialogSwap handleClose={() => setOpen(false)} open={open} type={type} />
       <div className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none">
         <h3 className="text-xs uppercase text-gray-500 tracking-wide font-medium select-none">
-          Swap {type.toUpperCase()}
+          Input
         </h3>
         <div className="flex gap-3 items-center">
           <div className="w-12 h-12 rounded-full bg-gray-500">
@@ -42,6 +48,7 @@ const SectionSwap = ({ type, value, handleChange }) => {
             </div>
           ) : (
             <button
+              disabled={disabled}
               className="btn-primary text-sm py-1 px-2 w-28"
               onClick={() => setOpen(true)}
             >
@@ -54,6 +61,7 @@ const SectionSwap = ({ type, value, handleChange }) => {
               placeholder="0.0"
               value={value}
               onChange={handleChange}
+              disabled={disabled}
               className="input-primary w-full"
             />
             {asset[type]?.purse && (
@@ -69,4 +77,4 @@ const SectionSwap = ({ type, value, handleChange }) => {
   );
 };
 
-export default SectionSwap;
+export default SectionLiquidity;

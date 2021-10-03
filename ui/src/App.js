@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'styles/globals.css';
 import agoricLogo from 'assets/agoric-logo.svg';
 import Swap from 'components/Swap/Swap';
@@ -10,31 +10,35 @@ import Liquidity from 'components/Liquidity/Liquidity';
 const App = () => {
   const tabClasses = ({ selected }) =>
     clsx('tab font-medium', selected ? 'bg-alternative' : 'bg-white');
+  const swapHook = useState({ from: null, to: null });
+  const liquidityHook = useState({ central: null, liquidity: null });
 
   return (
-    <AssetWrapper>
-      <div className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative">
-        <img
-          src={agoricLogo}
-          alt="Agoric Logo"
-          className="absolute top-0 left-0  py-6  px-6 "
-        />
-        <Tab.Group>
-          <Tab.List className="bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-36">
-            <Tab className={tabClasses}>Swap</Tab>
-            <Tab className={tabClasses}>Liquidity</Tab>
-          </Tab.List>
-          <Tab.Panels>
-            <Tab.Panel>
+    <div className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative">
+      <img
+        src={agoricLogo}
+        alt="Agoric Logo"
+        className="absolute top-0 left-0  py-6  px-6 "
+      />
+      <Tab.Group defaultIndex={0}>
+        <Tab.List className="bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-28 ">
+          <Tab className={tabClasses}>Swap</Tab>
+          <Tab className={tabClasses}>Liquidity</Tab>
+        </Tab.List>
+        <Tab.Panels>
+          <Tab.Panel>
+            <AssetWrapper assetHook={swapHook}>
               <Swap />
-            </Tab.Panel>
-            <Tab.Panel>
+            </AssetWrapper>
+          </Tab.Panel>
+          <Tab.Panel>
+            <AssetWrapper assetHook={liquidityHook}>
               <Liquidity />
-            </Tab.Panel>
-          </Tab.Panels>
-        </Tab.Group>
-      </div>
-    </AssetWrapper>
+            </AssetWrapper>
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
+    </div>
   );
 };
 

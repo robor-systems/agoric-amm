@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import AssetContext from './AssetContext';
 
-const AssetWrapper = ({ children }) => {
-  const assetHook = useState({ from: null, to: null });
+const AssetWrapper = ({ children, assetHook }) => {
   return (
     <AssetContext.Provider value={assetHook}>{children}</AssetContext.Provider>
   );

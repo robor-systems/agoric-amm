@@ -2,10 +2,11 @@
   --color-secondary: #d7325233;
   --color-alternative: #e8f8f7;
   --color-alternative-dark: #d5e6e4;
+  --color-alternative-bright: #3bc7be;
   --color-primary: #d73252;
   --color-primary-dark: #ba2b47;
 }
 
-@import "base.css";
-@import "utilities.css";
-@import "components.css";
+@import 'base.css';
+@import 'utilities.css';
+@import 'components.css';

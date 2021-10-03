@@ -7,6 +7,7 @@ module.exports = {
         primary: 'var(--color-primary)',
         alternative: 'var(--color-alternative)',
         alternativeDark: 'var(--color-alternative-dark)',
+        alternativeBright: 'var(--color-alternative-bright)',
         secondary: 'var(--color-secondary)',
         primaryDark: 'var(--color-primary-dark)',
       },
