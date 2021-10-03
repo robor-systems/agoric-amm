@@ -6,7 +6,7 @@ import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 import React from 'react';
 import { centralAsset } from 'services/liquidity.service';
-import { assetState } from '../constant';
+import { assetState } from 'utils/constant';
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 
 const CentralAssetLiquidity = ({ type, value, handleChange }) => {
