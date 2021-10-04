@@ -1,3 +1,4 @@
+import PoolContext from 'context/PoolContext';
 import { FiPlus } from 'react-icons/fi';
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
@@ -11,7 +12,8 @@ const AddLiquidity = () => {
   const [centralValue, setCentralValue] = useState(0);
   const [liquidityValue, setLiquidityValue] = useState(0);
   const [error, setError] = useState(null);
-  const [asset] = useContext(AssetContext);
+  const [asset, setAsset] = useContext(AssetContext);
+  const [pool, setPool] = useContext(PoolContext);
   const assetExists =
     Object.values(asset).filter(item => item?.purse).length >= 2;
 
@@ -31,8 +33,6 @@ const AddLiquidity = () => {
       setError(assetState.EMPTY);
     } else setError(null);
   }, [asset]);
-
-  console.log(error);
 
   return (
     <div className="flex flex-col gap-4">
@@ -76,6 +76,11 @@ const AddLiquidity = () => {
           if (!assetExists) setError('Please select assets first');
           else if (!(liquidityValue && centralValue)) {
             setError('Please enter the amounts first');
+          } else {
+            setPool(pool.concat({ ...asset, liquidityValue, centralValue }));
+            setLiquidityValue('');
+            setCentralValue('');
+            setAsset({ ...asset, liquidity: null });
           }
         }}
       >
