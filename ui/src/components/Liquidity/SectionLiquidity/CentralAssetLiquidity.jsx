@@ -41,6 +41,8 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
     });
   }, [centralAsset]);
 
+  console.log(selected);
+
   const AssetSelector = () => {
     switch (selected?.mode) {
       case assetState.SINGLE:
@@ -64,7 +66,22 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
           </div>
         );
       default:
-        return (
+        return selected?.purse ? (
+          <div
+            className="flex flex-col w-28 hover:bg-black cursor-pointer hover:bg-opacity-5 p-1 rounded-sm"
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            <div className="flex  items-center justify-between">
+              <h2 className="text-xl uppercase font-medium">{selected.code}</h2>
+              <FiChevronDown className="text-xl" />
+            </div>
+            <h3 className="text-xs text-gray-500 font-semibold">
+              Purse: <span>{selected.purse.name}</span>
+            </h3>
+          </div>
+        ) : (
           <div
             className="flex flex-col w-28  p-1 rounded-sm hover:bg-black cursor-pointer hover:bg-opacity-5"
             onClick={() => {

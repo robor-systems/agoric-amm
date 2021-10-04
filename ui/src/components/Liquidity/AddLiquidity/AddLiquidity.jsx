@@ -5,38 +5,46 @@ import AssetContext from 'context/AssetContext';
 import { assetState } from 'utils/constant';
 import CentralAssetLiquidity from '../SectionLiquidity/CentralAssetLiquidity';
 import SectionLiquidity from '../SectionLiquidity/SectionLiquidity';
+import RateLiquidity from '../RateLiquidity/RateLiquidity';
 
 const AddLiquidity = () => {
-  const [centralAsset, setCentralAsset] = useState('');
-  const [liquidityAsset, setLiquidityAsset] = useState('');
-  const [swapTo] = useState('');
-  const [swapFrom] = useState('');
+  const [centralValue, setCentralValue] = useState(0);
+  const [liquidityValue, setLiquidityValue] = useState(0);
   const [error, setError] = useState(null);
   const [asset] = useContext(AssetContext);
-  const assetExists = Object.values(asset).filter(item => item).length >= 2;
+  const assetExists =
+    Object.values(asset).filter(item => item?.purse).length >= 2;
 
   useEffect(() => {
-    if (swapFrom && swapTo) setError(null);
-    if (asset.from?.balance < swapFrom)
-      setError(`Insufficient ${asset.from.code} balance`);
-  }, [swapFrom, swapTo]);
+    if (centralValue && liquidityValue) setError(null);
+    if (asset.central?.purse.balance < centralValue)
+      setError(`Insufficient ${asset.central.code} balance`);
+    else if (asset.liquidity?.purse.balance < liquidityValue)
+      setError(`Insufficient ${asset.liquidity.code} balance`);
+    else setError(null);
+  }, [centralValue, liquidityValue]);
 
   useEffect(() => {
-    Object.values(asset).filter(item => item).length >= 2 && setError(null);
-    asset.central?.mode === assetState.EMPTY
-      ? setError(assetState.EMPTY)
-      : setError(null);
+    Object.values(asset).filter(item => item?.purse).length >= 2 &&
+      setError(null);
+    if (asset.central?.mode === assetState.EMPTY) {
+      setError(assetState.EMPTY);
+    } else setError(null);
   }, [asset]);
+
+  console.log(error);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 relative">
         <CentralAssetLiquidity
           type="central"
-          value={centralAsset}
+          value={centralValue}
           handleChange={({ target }) => {
-            setCentralAsset(target.value);
-            // setSwapTo(target.value / 2);
+            setCentralValue(parseFloat(Number(target.value).toFixed(9)));
+            setLiquidityValue(
+              parseFloat(Number(target.value * 1.12).toFixed(9)),
+            );
           }}
         />
 
@@ -45,13 +53,17 @@ const AddLiquidity = () => {
         <SectionLiquidity
           disabled={error === assetState.EMPTY}
           type="liquidity"
-          value={liquidityAsset}
+          value={liquidityValue}
           handleChange={({ target }) => {
-            setLiquidityAsset(target.value);
-            // setSwapFrom(target.value * 2);
+            setLiquidityValue(parseFloat(Number(target.value).toFixed(9)));
+            setCentralValue(parseFloat(Number(target.value / 1.12).toFixed(9)));
           }}
         />
       </div>
+      {assetExists && (
+        <RateLiquidity {...asset} rate={1.12} liquidityValue={liquidityValue} />
+      )}
+
       <button
         className={clsx(
           'bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
@@ -61,10 +73,9 @@ const AddLiquidity = () => {
         )}
         disabled={error === assetState.EMPTY}
         onClick={() => {
-          if (Object.values(asset).filter(item => item).length < 2)
-            setError('Please select assets first');
-          else if (!(swapFrom && swapTo)) {
-            setError('Please enter the amount first');
+          if (!assetExists) setError('Please select assets first');
+          else if (!(liquidityValue && centralValue)) {
+            setError('Please enter the amounts first');
           }
         }}
       >

@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import AssetContext from 'context/AssetContext';
 import React, { useContext } from 'react';
 import { FiChevronLeft } from 'react-icons/fi';
@@ -12,14 +13,22 @@ const PurseDialog = ({ handleClose, type }) => {
 
   return (
     <>
-      <button
-        className="uppercase  font-medium flex gap-1 hover:bg-gray-100 p-1 m-3 w-max"
-        onClick={() => setAsset({ ...asset, [type]: null })}
+      {type !== 'central' && (
+        <button
+          className="uppercase  font-medium flex gap-1 hover:bg-gray-100 p-1 m-3 w-max"
+          onClick={() => setAsset({ ...asset, [type]: null })}
+        >
+          <FiChevronLeft className="text-xl text-primary" />
+          <div className="text-sm"> Go back to asset List</div>
+        </button>
+      )}
+
+      <div
+        className={clsx(
+          'flex gap-3 items-center justify-between w-full border-b px-5 ',
+          type !== 'central' ? 'pb-3' : 'py-3',
+        )}
       >
-        <FiChevronLeft className="text-xl text-primary" />
-        <div className="text-sm"> Go back to asset List</div>
-      </button>
-      <div className="flex gap-3 items-center justify-between w-full border-b px-5 pb-3">
         <div className="flex gap-3 items-center">
           <div className="w-10 h-10 rounded-full">
             <img src={image} alt={name} />
