@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
-
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 import DialogSwap from '../DialogSwap/DialogSwap';
