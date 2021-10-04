@@ -71,49 +71,6 @@
     "rimraf": "^3.0.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.14"
   },
-  "eslintConfig": {
-    "ignorePatterns": [
-      "**/*.umd.js",
-      "**/generated/*"
-    ],
-    "parser": "babel-eslint",
-    "parserOptions": {
-      "ecmaFeatures": {
-        "jsx": true
-      },
-      "ecmaVersion": 2018,
-      "sourceType": "module"
-    },
-    "plugins": [
-      "react"
-    ],
-    "rules": {
-      "react/prop-types": "off"
-    },
-    "env": {
-      "browser": true
-    },
-    "settings": {
-      "import/resolver": {
-        "node": {
-          "extensions": [
-            ".js",
-            ".jsx"
-          ],
-          "paths": [
-            "src"
-          ]
-        }
-      },
-      "react": {
-        "version": "detect"
-      }
-    },
-    "extends": [
-      "@agoric",
-      "plugin:react/recommended"
-    ]
-  },
   "prettier": {
     "trailingComma": "all",
     "singleQuote": true
