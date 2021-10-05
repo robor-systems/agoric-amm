@@ -35,7 +35,7 @@ const AddLiquidity = () => {
   }, [asset]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 max-w-md">
       <div className="flex flex-col gap-4 relative">
         <CentralAssetLiquidity
           type="central"

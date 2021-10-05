@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
+import RemoveLiquidity from './RemoveLiquidity/RemoveLiquidity';
 
 const Liquidity = () => {
   const tabClasses = ({ selected }) =>
@@ -27,7 +28,7 @@ const Liquidity = () => {
         >
           View Liquidity Positions <FiChevronRight className="text-lg" />
         </button>
-        <div className=" flex flex-col p-4 shadow-red-light  rounded-sm gap-4 w-full max-w-lg relative  select-none">
+        <div className=" flex flex-col p-4 shadow-red-light  rounded-sm gap-4 w-full max-w-lg relative  select-none ">
           <div className="flex flex-col justify-between  gap-2 ">
             <h1 className="text-2xl font-semibold">Liquidity</h1>
             <h2 className="text-gray-500 ">
@@ -35,7 +36,7 @@ const Liquidity = () => {
             </h2>
           </div>
           <Tab.Group>
-            <Tab.List className="bg-white  text-md  rounded-sm  flex">
+            <Tab.List className="bg-white  text-md  rounded-sm  flex ">
               <Tab className={tabClasses}>Add</Tab>
               <Tab className={tabClasses}>Remove</Tab>
             </Tab.List>
@@ -44,7 +45,7 @@ const Liquidity = () => {
                 <AddLiquidity />
               </Tab.Panel>
               <Tab.Panel>
-                <AddLiquidity />
+                <RemoveLiquidity />
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
