@@ -96,6 +96,8 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID) {
   offersUpdater().catch(err => console.error('Offers watcher exception', err));
 }
 
+// CMT (danish): We do not require treasury in this app
+
 // const setupTreasury = async (dispatch, brandToInfo, zoe, board, instanceID) => {
 //   const instance = await E(board).getValue(instanceID);
 //   const treasuryAPIP = E(zoe).getPublicFacet(instance);

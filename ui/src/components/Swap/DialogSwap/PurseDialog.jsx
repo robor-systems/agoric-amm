@@ -47,10 +47,10 @@ const PurseDialog = ({ handleClose, type }) => {
       </div>
       <div className="px-5 py-3">
         <h2 className="text-lg font-medium ">Select Purse</h2>
-        <p className="text-gray-500">
+        {/* <p className="text-gray-500">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem fugit,
           reprehenderit
-        </p>
+        </p> */}
       </div>
 
       <div className="flex flex-col px-5 pb-5 gap-4 overflow-auto">
