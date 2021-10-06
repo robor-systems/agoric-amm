@@ -8,12 +8,19 @@ import { FiChevronDown } from 'react-icons/fi';
 import { centralAsset } from 'services/liquidity.service';
 import { assetState } from 'utils/constant';
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
+import { getAssets } from 'utils/helpers';
+import { useApplicationContext } from 'context/Application';
 
 const CentralAssetLiquidity = ({ type, value, handleChange }) => {
   const [open, setOpen] = useState(false);
 
   const [asset, setAsset] = useContext(AssetContext);
+  const [assets, setAssets] = useState([]);
+  const { state } = useApplicationContext();
   const selected = asset[type];
+  useEffect(() => {
+    setAssets([...getAssets(state.purses)]);
+  }, [state.purses]);
 
   useEffect(() => {
     const purseLength = centralAsset.purses?.length;
@@ -103,7 +110,12 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
 
   return (
     <>
-      <DialogSwap handleClose={() => setOpen(false)} open={open} type={type} />
+      <DialogSwap
+        handleClose={() => setOpen(false)}
+        open={open}
+        type={type}
+        asset={assets.find(item => item.code === 'RUN')}
+      />
       <div className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none">
         <h3 className="text-xs uppercase text-gray-500 tracking-wide font-medium select-none">
           Input
