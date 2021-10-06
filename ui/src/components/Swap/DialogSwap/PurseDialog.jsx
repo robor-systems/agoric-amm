@@ -10,6 +10,7 @@ const PurseDialog = ({
   type,
   setSelectedAsset,
   selectedAsset,
+  purseOnly,
 }) => {
   const [asset, setAsset] = useContext(AssetContext);
   const {
@@ -17,7 +18,7 @@ const PurseDialog = ({
   } = selectedAsset;
   return (
     <>
-      {type !== 'central' && (
+      {!purseOnly && (
         <button
           className="uppercase  font-medium flex gap-1 hover:bg-gray-100 p-1 m-3 w-max"
           onClick={() => {
@@ -33,7 +34,7 @@ const PurseDialog = ({
       <div
         className={clsx(
           'flex gap-3 items-center justify-between w-full border-b px-5 ',
-          type !== 'central' ? 'pb-3' : 'py-3',
+          !purseOnly ? 'pb-3' : 'py-3',
         )}
       >
         <div className="flex gap-3 items-center">
@@ -66,7 +67,7 @@ const PurseDialog = ({
             key={purse.id}
             onClick={() => {
               setAsset({
-                ...selectedAsset,
+                ...asset,
                 [type]: { ...selectedAsset[type], purse },
               });
               handleClose();

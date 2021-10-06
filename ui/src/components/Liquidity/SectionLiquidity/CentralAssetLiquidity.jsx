@@ -57,7 +57,7 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
               <h2 className="text-xl uppercase font-medium">{selected.code}</h2>
             </div>
             <h3 className="text-xs text-gray-500 font-semibold">
-              Purse: <span>{selected.purse.name}</span>{' '}
+              Purse: <span>{selected.purse.name}</span>
             </h3>
           </div>
         );
@@ -114,6 +114,7 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
         handleClose={() => setOpen(false)}
         open={open}
         type={type}
+        purseOnly
         asset={assets.find(item => item.code === 'RUN')}
       />
       <div className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none">

@@ -1,10 +1,9 @@
 import clsx from 'clsx';
-import SectionSwap from 'components/Swap/SectionSwap/SectionSwap';
 import React from 'react';
-import { FiArrowDown, FiRepeat } from 'react-icons/fi';
+import { FiArrowDown } from 'react-icons/fi';
 import AmountToRemove from './AmountToRemove';
 import PoolSelector from './PoolSelector/PoolSelector';
-import PursesRemoveLiquidity from './PursesRemove/PursesRemove';
+import PursesRemovePool from './PursesRemovePool/PursesRemovePool';
 
 const RemoveLiquidity = props => {
   return (
@@ -12,7 +11,7 @@ const RemoveLiquidity = props => {
       <PoolSelector {...props} />
       <AmountToRemove />
       <FiArrowDown className=" p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-remove" />
-      <PursesRemoveLiquidity />
+      <PursesRemovePool />
       <button
         className={clsx(
           'bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',

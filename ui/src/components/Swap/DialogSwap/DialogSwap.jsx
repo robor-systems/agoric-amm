@@ -3,14 +3,13 @@ import { FiX } from 'react-icons/fi';
 import AssetDialog from './AssetDialog';
 import PurseDialog from './PurseDialog';
 
-const DialogSwap = ({ open, handleClose, type, asset }) => {
+const DialogSwap = ({ open, handleClose, type, asset, purseOnly }) => {
   const [selectedAsset, setSelectedAsset] = useState({});
 
   useEffect(() => {
+    console.log(type);
     if (asset) setSelectedAsset({ ...selectedAsset, [type]: asset });
   }, [asset]);
-
-  console.log('ASSETTTT', asset);
 
   if (!open) return null;
 
@@ -29,6 +28,7 @@ const DialogSwap = ({ open, handleClose, type, asset }) => {
           <PurseDialog
             handleClose={handleClose}
             type={type}
+            purseOnly={purseOnly}
             setSelectedAsset={setSelectedAsset}
             selectedAsset={selectedAsset}
           />

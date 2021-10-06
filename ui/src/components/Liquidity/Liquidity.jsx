@@ -1,5 +1,6 @@
 import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
+import AssetWrapper from 'context/AssetWrapper';
 import React, { useState } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
@@ -15,6 +16,8 @@ const Liquidity = () => {
         : 'bg-white text-gray-400',
     );
   const [open, setOpen] = useState(false);
+  const addLiquidityHook = useState({ central: null, liquidity: null });
+  const removeLiquidityHook = useState({ central: null, liquidity: null });
 
   return (
     <>
@@ -42,10 +45,14 @@ const Liquidity = () => {
             </Tab.List>
             <Tab.Panels>
               <Tab.Panel>
-                <AddLiquidity />
+                <AssetWrapper assetHook={addLiquidityHook}>
+                  <AddLiquidity />
+                </AssetWrapper>
               </Tab.Panel>
               <Tab.Panel>
-                <RemoveLiquidity setOpen={setOpen} />
+                <AssetWrapper assetHook={removeLiquidityHook}>
+                  <RemoveLiquidity setOpen={setOpen} />
+                </AssetWrapper>
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>

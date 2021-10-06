@@ -12,7 +12,6 @@ const App = () => {
   const tabClasses = ({ selected }) =>
     clsx('tab font-medium', selected ? 'bg-alternative' : 'bg-white');
   const swapHook = useState({ from: null, to: null });
-  const liquidityHook = useState({ central: null, liquidity: null });
 
   return (
     <PoolWrapper>
@@ -34,9 +33,7 @@ const App = () => {
               </AssetWrapper>
             </Tab.Panel>
             <Tab.Panel>
-              <AssetWrapper assetHook={liquidityHook}>
-                <Liquidity />
-              </AssetWrapper>
+              <Liquidity />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
