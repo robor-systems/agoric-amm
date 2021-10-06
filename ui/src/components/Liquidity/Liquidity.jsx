@@ -28,7 +28,7 @@ const Liquidity = () => {
         >
           View Liquidity Positions <FiChevronRight className="text-lg" />
         </button>
-        <div className=" flex flex-col p-4 shadow-red-light  rounded-sm gap-4 w-full max-w-lg relative  select-none ">
+        <div className=" flex flex-col p-4 shadow-red-light  rounded-sm gap-4 max-w-lg relative  select-none w-screen ">
           <div className="flex flex-col justify-between  gap-2 ">
             <h1 className="text-2xl font-semibold">Liquidity</h1>
             <h2 className="text-gray-500 ">
@@ -45,7 +45,7 @@ const Liquidity = () => {
                 <AddLiquidity />
               </Tab.Panel>
               <Tab.Panel>
-                <RemoveLiquidity />
+                <RemoveLiquidity setOpen={setOpen} />
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>

@@ -23,7 +23,7 @@ const LiquidityPool = ({ open, setOpen }) => {
           <FiChevronLeft className="text-xl text-primary" />
           Close Liquidity Positions
         </button>
-        <BodyLiquidityPool />
+        <BodyLiquidityPool handleClose={() => setOpen(false)} />
       </div>
     </div>
   );

@@ -125,7 +125,7 @@ const Swap = () => {
   const handleSwap = () => {};
 
   return (
-    <div className=" flex flex-col p-4 shadow-red-light rounded-sm gap-4 w-full max-w-lg relative  select-none">
+    <div className=" flex flex-col p-4 shadow-red-light rounded-sm gap-4 w-screen max-w-lg relative  select-none">
       <div className="flex justify-between items-center gap-8 ">
         <h1 className="text-2xl font-semibold">Swap</h1>
         <h3

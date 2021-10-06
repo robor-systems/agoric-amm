@@ -35,7 +35,7 @@ const AddLiquidity = () => {
   }, [asset]);
 
   return (
-    <div className="flex flex-col gap-4 max-w-md">
+    <div className="flex flex-col gap-4 ">
       <div className="flex flex-col gap-4 relative">
         <CentralAssetLiquidity
           type="central"
@@ -77,7 +77,14 @@ const AddLiquidity = () => {
           else if (!(liquidityValue && centralValue)) {
             setError('Please enter the amounts first');
           } else {
-            setPool(pool.concat({ ...asset, liquidityValue, centralValue }));
+            setPool({
+              ...pool,
+              data: pool.data.concat({
+                ...asset,
+                liquidityValue,
+                centralValue,
+              }),
+            });
             setLiquidityValue('');
             setCentralValue('');
             setAsset({ ...asset, liquidity: null });

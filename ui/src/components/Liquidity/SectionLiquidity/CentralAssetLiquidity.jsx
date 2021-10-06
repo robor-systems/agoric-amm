@@ -54,6 +54,7 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
             </h3>
           </div>
         );
+
       case assetState.EMPTY:
         return (
           <div className="flex flex-col w-28    p-1 rounded-sm">
@@ -63,6 +64,7 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
             <h3 className="text-xs text-gray-500 font-semibold">No Purses</h3>
           </div>
         );
+
       default:
         return selected?.purse ? (
           <div
