@@ -7,8 +7,9 @@ import usdcLogo from 'assets/crypto-icons/usdc-logo.png';
 
 /**
  * gets filtered array of purses
- * @param {array} filteredPurses
- * @returns {array}
+ *
+ * @param {Array} purses
+ * @returns {Array}
  */
 export const getAssets = purses => {
   const filteredPurses = purses?.filter(
