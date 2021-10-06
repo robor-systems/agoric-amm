@@ -5,7 +5,15 @@ import bldLogo from 'assets/crypto-icons/bld-logo.png';
 import kirkLogo from 'assets/crypto-icons/kirk-logo.png';
 import usdcLogo from 'assets/crypto-icons/usdc-logo.png';
 
-export const getAssets = filteredPurses => {
+/**
+ * gets filtered array of purses
+ * @param {array} filteredPurses
+ * @returns {array}
+ */
+export const getAssets = purses => {
+  const filteredPurses = purses?.filter(
+    purse => purse.displayInfo.assetKind !== 'set',
+  );
   // used for storing intermediate response
   const interArr = [];
   filteredPurses?.forEach(purse => {

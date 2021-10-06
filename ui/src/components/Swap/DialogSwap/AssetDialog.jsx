@@ -14,22 +14,12 @@ const AssetDialog = ({ type }) => {
   const [asset, setAsset] = useContext(AssetContext);
   // all assets
   const [assets, setAssets] = useState([]);
-
+  // get state
   const { state } = useApplicationContext();
-  // get purses
-  const { purses } = state;
 
   useEffect(() => {
-    const filteredPurses = purses?.filter(
-      purse => purse.displayInfo.assetKind !== 'set',
-    );
-
-    setAssets([...getAssets(filteredPurses)]);
-  }, [purses]);
-
-  useEffect(() => {
-    console.log(asset);
-  }, [asset]);
+    setAssets([...getAssets(state.purses)]);
+  }, [state.purses]);
 
   // TODO(ahmed): return a skeleton loader here please
   if (!assets)
