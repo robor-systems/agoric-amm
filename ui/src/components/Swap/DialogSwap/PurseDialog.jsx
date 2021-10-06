@@ -5,18 +5,25 @@ import { FiChevronLeft } from 'react-icons/fi';
 import ListItem from '../ListItem/ListItem';
 import PurseListItem from '../ListItem/PurseListItem';
 
-const PurseDialog = ({ handleClose, type }) => {
+const PurseDialog = ({
+  handleClose,
+  type,
+  setSelectedAsset,
+  selectedAsset,
+}) => {
   const [asset, setAsset] = useContext(AssetContext);
   const {
     [type]: { image, name, code, balance, balanceUSD, purses },
-  } = asset;
-
+  } = selectedAsset;
   return (
     <>
       {type !== 'central' && (
         <button
           className="uppercase  font-medium flex gap-1 hover:bg-gray-100 p-1 m-3 w-max"
-          onClick={() => setAsset({ ...asset, [type]: null })}
+          onClick={() => {
+            setAsset({ ...asset, [type]: null });
+            setSelectedAsset({ ...selectedAsset, [type]: null });
+          }}
         >
           <FiChevronLeft className="text-xl text-primary" />
           <div className="text-sm"> Go back to asset List</div>
@@ -59,8 +66,8 @@ const PurseDialog = ({ handleClose, type }) => {
             key={purse.id}
             onClick={() => {
               setAsset({
-                ...asset,
-                [type]: { ...asset[type], purse },
+                ...selectedAsset,
+                [type]: { ...selectedAsset[type], purse },
               });
               handleClose();
             }}

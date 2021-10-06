@@ -1,11 +1,10 @@
-import AssetContext from 'context/AssetContext';
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import AssetDialog from './AssetDialog';
 import PurseDialog from './PurseDialog';
 
 const DialogSwap = ({ open, handleClose, type }) => {
-  const [asset] = useContext(AssetContext);
+  const [selectedAsset, setSelectedAsset] = useState({});
 
   if (!open) return null;
 
@@ -20,10 +19,15 @@ const DialogSwap = ({ open, handleClose, type }) => {
             onClick={handleClose}
           />
         </div>
-        {asset?.[type] ? (
-          <PurseDialog handleClose={handleClose} type={type} />
+        {selectedAsset?.[type] ? (
+          <PurseDialog
+            handleClose={handleClose}
+            type={type}
+            setSelectedAsset={setSelectedAsset}
+            selectedAsset={selectedAsset}
+          />
         ) : (
-          <AssetDialog type={type} />
+          <AssetDialog type={type} setSelectedAsset={setSelectedAsset} />
         )}
       </div>
     </div>

@@ -66,6 +66,7 @@ export const getAssets = purses => {
       id: uuidv4(),
       code: purse.brandPetname,
       name: purse.brandPetname,
+      brand: purse.brand,
       // cmt(danish): no images defined now
       image,
       balance,
@@ -83,3 +84,13 @@ export const getAssets = purses => {
 
   return interArr;
 };
+
+export const getInfoForBrand = (brandToInfo, brand) => {
+  const array = brandToInfo.find(([b]) => b === brand);
+  if (array) {
+    return array[1];
+  }
+  return undefined;
+};
+
+export const displayPetname = pn => (Array.isArray(pn) ? pn.join('.') : pn);

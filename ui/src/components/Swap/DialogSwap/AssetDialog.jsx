@@ -1,4 +1,3 @@
-// import assets from 'services/assets.service';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
 import React, { useContext, useEffect, useState } from 'react';
@@ -9,9 +8,9 @@ import { getAssets } from 'utils/helpers';
 import AssetListItem from '../ListItem/AssetListItem';
 import ListItem from '../ListItem/ListItem';
 
-const AssetDialog = ({ type }) => {
+const AssetDialog = ({ type, setSelectedAsset }) => {
   // selected asset
-  const [asset, setAsset] = useContext(AssetContext);
+  const [asset] = useContext(AssetContext);
   // all assets
   const [assets, setAssets] = useState([]);
   // get state
@@ -33,7 +32,7 @@ const AssetDialog = ({ type }) => {
         <div
           key={item.key}
           onClick={() => {
-            setAsset({
+            setSelectedAsset({
               ...asset,
               [type]: item,
             });
