@@ -100,7 +100,7 @@ const Swap = () => {
         ));
 
       const marketRate =
-        inputRate.ratio && outputRate.ratio
+        inputRate?.ratio && outputRate?.ratio
           ? composeRatio(inputRate.ratio, outputRate.ratio)
           : null;
 
@@ -113,20 +113,16 @@ const Swap = () => {
 
   useEffect(() => {
     Object.values(asset).filter(item => item).length >= 2 && setError(null);
-    console.log(asset);
   }, [asset]);
 
   useEffect(() => {
     if (swapFrom && swapTo) setError(null);
 
-    console.log(swapFrom, asset.from?.purse.balance);
     if (asset?.from?.purse?.balance < swapFrom)
       setError(`Insufficient ${asset.from.code} balance`);
   }, [swapFrom, swapTo]);
 
-  const handleSwap = () => {
-    console.log(swapFrom, swapTo);
-  };
+  const handleSwap = () => {};
 
   return (
     <div className=" flex flex-col p-4 shadow-red-light rounded-sm gap-4 w-full max-w-lg relative  select-none">

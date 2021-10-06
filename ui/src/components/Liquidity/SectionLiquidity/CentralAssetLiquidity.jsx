@@ -41,8 +41,6 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
     });
   }, [centralAsset]);
 
-  console.log(selected);
-
   const AssetSelector = () => {
     switch (selected?.mode) {
       case assetState.SINGLE:

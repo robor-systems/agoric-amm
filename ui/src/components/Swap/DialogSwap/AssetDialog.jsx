@@ -1,12 +1,12 @@
+import _ from 'lodash';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
 import React, { useContext, useEffect, useState } from 'react';
-import _ from 'lodash';
-
+import { v4 } from 'uuid';
 import { getAssets } from 'utils/helpers';
-
 import AssetListItem from '../ListItem/AssetListItem';
 import ListItem from '../ListItem/ListItem';
+import SkeletonListItem from '../ListItem/SkeletonListItem';
 
 const AssetDialog = ({ type, setSelectedAsset }) => {
   // selected asset
@@ -20,11 +20,18 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
     setAssets([...getAssets(state.purses)]);
   }, [state.purses]);
 
-  // TODO(ahmed): return a skeleton loader here please
-  if (!assets)
-    return {
-      // return a loader
-    };
+  if (!assets.length)
+    return (
+      <div className="flex flex-col gap-4 p-5 overflow-auto ">
+        {Array(4)
+          .fill({})
+          .map(item => (
+            <ListItem key={v4()}>
+              <SkeletonListItem />
+            </ListItem>
+          ))}
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-4 p-5 overflow-auto ">

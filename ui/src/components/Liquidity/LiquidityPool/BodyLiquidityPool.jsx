@@ -8,7 +8,6 @@ import ItemLiquidityPool from './ItemLiquidityPool';
 const BodyLiquidityPool = () => {
   const [pool] = useContext(PoolContext);
 
-  console.log(pool);
   return (
     <div>
       <HeaderLiquidityPool />
