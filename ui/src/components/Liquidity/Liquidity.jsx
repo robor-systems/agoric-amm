@@ -1,6 +1,7 @@
 import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
 import AssetWrapper from 'context/AssetWrapper';
+import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';

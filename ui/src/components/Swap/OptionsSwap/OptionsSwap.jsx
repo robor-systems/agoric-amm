@@ -1,9 +1,13 @@
 import { FiHelpCircle } from 'react-icons/fi';
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const OptionsSwap = () => {
   return (
-    <div className="w-full py-1  flex justify-between items-center">
+    <motion.div
+      layout
+      className="w-full py-1  flex justify-between items-center"
+    >
       <div className="flex gap-2 items-center">
         <h2>Slippage Tolerance</h2>
         <FiHelpCircle className="p-1 text-2xl hover:bg-gray-100 rounded-full cursor-pointer" />
@@ -22,7 +26,7 @@ const OptionsSwap = () => {
         </div>
         <button className="btn-primary py-2 px-4">Auto</button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

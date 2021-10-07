@@ -1,31 +1,46 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { FiChevronLeft } from 'react-icons/fi';
+import { v4 } from 'uuid';
 import BodyLiquidityPool from './BodyLiquidityPool';
 
 const LiquidityPool = ({ open, setOpen }) => {
-  if (!open) return null;
-
   return (
-    <div className="fixed top-0 left-0 w-screen  h-screen bg-black bg-opacity-10 flex items-center justify-end z-50">
-      <div
-        className="absolute w-full h-full "
-        onClick={() => {
-          setOpen(false);
-        }}
-      />
-      <div className="bg-white w-96 h-screen shadow-red-light-sm z-50 overflow-auto">
-        <button
-          className="uppercase flex items-center text-sm font-medium gap-1 text-black hover:bg-gray-100 p-1 m-3 "
-          onClick={() => {
-            setOpen(!open);
-          }}
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key={v4()}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed top-0 left-0 w-screen  h-screen bg-black bg-opacity-10 flex items-center justify-end z-50"
         >
-          <FiChevronLeft className="text-xl text-primary" />
-          Close Liquidity Positions
-        </button>
-        <BodyLiquidityPool handleClose={() => setOpen(false)} />
-      </div>
-    </div>
+          <div
+            className="absolute w-full h-full "
+            onClick={() => {
+              setOpen(false);
+            }}
+          />
+          <motion.div
+            className="bg-white w-96 h-screen shadow-red-light-sm z-50 overflow-auto"
+            animate={{ x: [100, 0] }}
+            exit={{ x: [0, 100] }}
+          >
+            <button
+              className="uppercase flex items-center text-sm font-medium gap-1 text-black hover:bg-gray-100 p-1 m-3 "
+              onClick={() => {
+                setOpen(!open);
+              }}
+            >
+              <FiChevronLeft className="text-xl text-primary" />
+              Close Liquidity Positions
+            </button>
+            <BodyLiquidityPool handleClose={() => setOpen(false)} />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

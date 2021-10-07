@@ -7,6 +7,7 @@ import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
 import Liquidity from 'components/Liquidity/Liquidity';
 import PoolWrapper from 'context/PoolWrapper';
+import { motion } from 'framer-motion';
 
 const App = () => {
   const tabClasses = ({ selected }) =>
@@ -22,7 +23,7 @@ const App = () => {
           className="absolute top-0 left-0  py-6  px-6 "
         />
         <Tab.Group defaultIndex={0}>
-          <Tab.List className="bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-20">
+          <Tab.List className="bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-20 transition-all duration-300 ease-in-out">
             <Tab className={tabClasses}>Swap</Tab>
             <Tab className={tabClasses}>Liquidity</Tab>
           </Tab.List>

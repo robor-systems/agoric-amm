@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+
 import clsx from 'clsx';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
@@ -125,7 +127,10 @@ const Swap = () => {
   const handleSwap = () => {};
 
   return (
-    <div className=" flex flex-col p-4 shadow-red-light rounded-sm gap-4 w-screen max-w-lg relative  select-none">
+    <motion.div
+      layout
+      className="flex flex-col p-4 shadow-red-light rounded-sm gap-4 w-screen max-w-lg relative  select-none"
+    >
       <div className="flex justify-between items-center gap-8 ">
         <h1 className="text-2xl font-semibold">Swap</h1>
         <h3
@@ -137,6 +142,7 @@ const Swap = () => {
           More options {optionsEnabled ? <FiChevronUp /> : <FiChevronDown />}
         </h3>
       </div>
+
       {optionsEnabled && <OptionsSwap />}
 
       <div className="flex flex-col gap-4 relative">
@@ -192,8 +198,12 @@ const Swap = () => {
         swap
       </button>
 
-      {error && <h3 className="text-red-600">{error}</h3>}
-    </div>
+      {error && (
+        <motion.h3 layout className="text-red-600">
+          {error}
+        </motion.h3>
+      )}
+    </motion.div>
   );
 };
 
