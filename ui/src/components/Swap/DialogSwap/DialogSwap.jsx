@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import AssetDialog from './AssetDialog';
-import PurseDialog from './PurseDialog';
+import PurseDialog from './PurseDialog/PurseDialog';
 
 const DialogSwap = ({ open, handleClose, type, asset, purseOnly }) => {
   const [selectedAsset, setSelectedAsset] = useState({});
@@ -24,7 +24,7 @@ const DialogSwap = ({ open, handleClose, type, asset, purseOnly }) => {
             onClick={handleClose}
           />
         </div>
-        {selectedAsset?.[type] ? (
+        {selectedAsset?.[type] || purseOnly ? (
           <PurseDialog
             handleClose={handleClose}
             type={type}

@@ -21,7 +21,7 @@ const PurseRemovePool = ({ pool, type }) => {
   if (!pool)
     return (
       <div
-        className="flex  flex-grow gap-3 bg-white h-18    p-3 rounded-sm items-center"
+        className="flex  flex-grow w-1/2 gap-3 bg-white h-18    p-3 rounded-sm items-center"
         // onClick={() => {
         //   setOpen(true);
         // }}
@@ -84,7 +84,7 @@ const PurseRemovePool = ({ pool, type }) => {
         </div>
       ) : (
         <div
-          className="flex  flex-grow gap-3 h-18 bg-white  cursor-pointer hover:bg-gray-50 p-3 rounded-sm items-center"
+          className="flex  flex-grow w-1/2 gap-3 h-18 bg-white  cursor-pointer hover:bg-gray-50 p-3 rounded-sm items-center"
           onClick={() => {
             setOpen(true);
           }}
