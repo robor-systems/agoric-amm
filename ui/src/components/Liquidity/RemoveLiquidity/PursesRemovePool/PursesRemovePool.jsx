@@ -2,10 +2,8 @@ import PoolContext from 'context/PoolContext';
 import React, { useContext } from 'react';
 import PurseRemovePool from './PurseRemovePool';
 
-const PursesRemovePool = () => {
+const PursesRemovePool = props => {
   const [pool] = useContext(PoolContext);
-
-  console.log(pool);
 
   return (
     <div className="flex flex-col text-lg gap-2 bg-alternative rounded-sm p-4">
@@ -18,6 +16,7 @@ const PursesRemovePool = () => {
               value: pool.selectRemove?.centralValue,
             }
           }
+          {...props}
           type="central"
         />
         <PurseRemovePool
@@ -27,6 +26,7 @@ const PursesRemovePool = () => {
               value: pool.selectRemove?.liquidityValue,
             }
           }
+          {...props}
           type="liquidity"
         />
       </div>

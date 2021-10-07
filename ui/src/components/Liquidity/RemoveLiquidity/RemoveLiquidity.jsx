@@ -8,16 +8,26 @@ import PoolSelector from './PoolSelector/PoolSelector';
 import PursesRemovePool from './PursesRemovePool/PursesRemovePool';
 
 const RemoveLiquidity = props => {
-  const [pool] = useContext(PoolContext);
+  const [pool, setPool] = useContext(PoolContext);
   const [error, setError] = useState(false);
   const [asset, setAsset] = useContext(AssetContext);
   const [amount, setAmount] = useState('');
+  const [validated, setValidated] = useState(false);
 
   const handleRemovePool = () => {
     if (!pool?.selectRemove) setError('Please select pool first');
     else if (!amount) setError('Please enter the amount first');
     else if (!(asset?.central && asset.liquidity))
       setError('Please select the purses first');
+    else {
+      setAsset({ central: null, liquidity: null });
+      setAmount('');
+      setPool({
+        ...pool,
+        selectRemove: null,
+        data: pool.data.filter(item => item.id !== pool?.selectRemove.id),
+      });
+    }
   };
 
   useEffect(() => {
@@ -28,6 +38,12 @@ const RemoveLiquidity = props => {
   useEffect(() => {
     (pool?.selectRemove || amount || (asset?.central && asset?.liquidity)) &&
       setError(null);
+
+    pool?.selectRemove &&
+      amount &&
+      asset?.central &&
+      asset?.liquidity &&
+      setValidated(true);
   }, [pool, amount, asset]);
 
   return (
@@ -36,12 +52,14 @@ const RemoveLiquidity = props => {
       <div className="flex flex-col  gap-4 relative">
         <AmountToRemove value={amount} setValue={setAmount} />
         <FiArrowDown className=" p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-remove" />
-        <PursesRemovePool />
+        <PursesRemovePool amount={amount} />
       </div>
       <button
         className={clsx(
           'bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
-          0 ? 'bg-primary hover:bg-primaryDark text-white' : 'text-gray-500',
+          validated
+            ? 'bg-primary hover:bg-primaryDark text-white'
+            : 'text-gray-500',
         )}
         onClick={handleRemovePool}
       >

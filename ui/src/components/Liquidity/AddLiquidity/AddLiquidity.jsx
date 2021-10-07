@@ -1,4 +1,6 @@
 import PoolContext from 'context/PoolContext';
+import { v4 } from 'uuid';
+
 import { FiPlus } from 'react-icons/fi';
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
@@ -81,6 +83,7 @@ const AddLiquidity = () => {
               ...pool,
               data: pool.data.concat({
                 ...asset,
+                id: v4(),
                 liquidityValue,
                 centralValue,
               }),

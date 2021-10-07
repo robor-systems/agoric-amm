@@ -8,7 +8,11 @@ const AmountToRemove = ({ value, setValue }) => {
         <input
           type="number"
           value={value}
-          onChange={({ target }) => setValue(target.value)}
+          onChange={({ target }) =>
+            target.value <= 100 && target.value >= 0 && setValue(target.value)
+          }
+          min={0}
+          max={100}
           className="input-primary w-full"
           placeholder="0.00"
           id="amountToRemove"

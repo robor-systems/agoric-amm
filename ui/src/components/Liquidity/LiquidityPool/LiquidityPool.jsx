@@ -13,7 +13,7 @@ const LiquidityPool = ({ open, setOpen }) => {
           setOpen(false);
         }}
       />
-      <div className="bg-white w-96 h-screen shadow-red-light-sm z-50">
+      <div className="bg-white w-96 h-screen shadow-red-light-sm z-50 overflow-auto">
         <button
           className="uppercase flex items-center text-sm font-medium gap-1 text-black hover:bg-gray-100 p-1 m-3 "
           onClick={() => {

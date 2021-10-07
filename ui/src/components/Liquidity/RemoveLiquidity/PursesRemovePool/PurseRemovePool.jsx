@@ -6,9 +6,9 @@ import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 
-const PurseRemovePool = ({ pool, type }) => {
+const PurseRemovePool = ({ pool, type, amount }) => {
   const [assets, setAssets] = useState([]);
-  const [asset, setAsset] = useContext(AssetContext);
+  const [asset] = useContext(AssetContext);
   const { state } = useApplicationContext();
   const [open, setOpen] = useState(false);
 
@@ -60,6 +60,12 @@ const PurseRemovePool = ({ pool, type }) => {
           <div className="flex flex-col flex-grow">
             <div className="flex  items-center justify-between">
               <h2 className="text-xl uppercase font-medium">{pool.code}</h2>
+
+              {amount && (
+                <h2 className="text-green-600">
+                  +{Number(amount * (pool.value / 100)).toPrecision(4)}
+                </h2>
+              )}
             </div>
             <h3 className="text-xs text-gray-500 font-semibold flex items-center gap-1">
               Purse:{' '}
