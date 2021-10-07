@@ -48,7 +48,7 @@ const AddLiquidity = () => {
           }}
         />
 
-        <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon " />
+        <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon" />
 
         <SectionLiquidity
           disabled={error === assetState.EMPTY}

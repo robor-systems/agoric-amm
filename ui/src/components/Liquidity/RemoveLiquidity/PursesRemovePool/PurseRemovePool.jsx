@@ -16,16 +16,9 @@ const PurseRemovePool = ({ pool, type }) => {
     setAssets([...getAssets(state.purses)]);
   }, [state.purses]);
 
-  console.log(pool);
-
   if (!pool)
     return (
-      <div
-        className="flex  flex-grow w-1/2 gap-3 bg-white h-18    p-3 rounded-sm items-center"
-        // onClick={() => {
-        //   setOpen(true);
-        // }}
-      >
+      <div className="flex  flex-grow w-1/2 gap-3 bg-white h-18    p-3 rounded-sm items-center">
         <div className="w-10 h-10 rounded-full bg-gray-500">
           <img src={placeholderAgoric} />
         </div>
@@ -43,8 +36,6 @@ const PurseRemovePool = ({ pool, type }) => {
         </div>
       </div>
     );
-
-  console.log('PURSE', asset[type]?.purse);
 
   return (
     <>

@@ -1,7 +1,6 @@
 import React from 'react';
 
 const RateLiquidity = ({ central, rate, liquidity, liquidityValue }) => {
-  console.log(central, rate, liquidity);
   const total = 100;
   return (
     <div className="flex gap-4 text-gray-400 justify-between">
