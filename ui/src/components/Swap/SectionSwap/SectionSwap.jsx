@@ -4,7 +4,7 @@ import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 import DialogSwap from '../DialogSwap/DialogSwap';
 
-const SectionSwap = ({ type, value, handleChange }) => {
+const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
   const [open, setOpen] = useState(false);
 
   const [asset] = useContext(AssetContext);
@@ -53,6 +53,7 @@ const SectionSwap = ({ type, value, handleChange }) => {
               value={value}
               onChange={handleChange}
               className="input-primary w-full"
+              disabled={rateAvailable}
             />
             {asset[type]?.purse && (
               <div className="absolute right-3 top-1.5 text-gray-400 flex flex-col text-right text-sm bg-white">

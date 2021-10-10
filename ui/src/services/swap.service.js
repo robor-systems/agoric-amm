@@ -1,5 +1,6 @@
 import { E } from '@agoric/captp';
 import { makeRatio } from '@agoric/zoe/src/contractSupport';
+import { dappConfig } from '../utils/config.js';
 
 export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
   if (brand === centralBrand) {
@@ -20,4 +21,46 @@ export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
   poolRate = poolRate.brand === brand ? { brand, ratio } : poolRate;
   // poolRate = poolRate(q => (q.brand === brand ? { brand, ratio } : q));
   return poolRate;
+};
+
+export const makeSwapOffer = async (
+  walletP,
+  ammAPI,
+  inputPurse,
+  inputAmount,
+  outputPurse,
+  outputAmount,
+  isSwapIn,
+) => {
+  const id = `${Date.now()}`;
+
+  const { AMM_INSTALLATION_BOARD_ID, AMM_INSTANCE_BOARD_ID } = dappConfig;
+
+  const invitation = isSwapIn
+    ? E(ammAPI).makeSwapInInvitation()
+    : E(ammAPI).makeSwapOutInvitation();
+
+  const offerConfig = {
+    id,
+    invitation,
+    installationHandleBoardId: AMM_INSTALLATION_BOARD_ID,
+    instanceHandleBoardId: AMM_INSTANCE_BOARD_ID,
+    proposalTemplate: {
+      give: {
+        In: {
+          // The pursePetname identifies which purse we want to use
+          pursePetname: inputPurse.pursePetname,
+          value: inputAmount,
+        },
+      },
+      want: {
+        Out: {
+          pursePetname: outputPurse.pursePetname,
+          value: outputAmount,
+        },
+      },
+    },
+  };
+
+  await E(walletP).addOffer(offerConfig);
 };

@@ -24,8 +24,8 @@ const Swap = () => {
   const [asset, setAsset] = useContext(AssetContext);
   const [optionsEnabled, setOptionsEnabled] = useState(false);
   const [error, setError] = useState(null);
-  const [swapFrom, setSwapFrom] = useState('');
-  const [swapTo, setSwapTo] = useState('');
+  const [swapFrom, setSwapFrom] = useState(0n);
+  const [swapTo, setSwapTo] = useState(0n);
   const [assetExchange, setAssetExchange] = useState(null);
   const assetExists = Object.values(asset).filter(item => item).length >= 2;
 
@@ -124,6 +124,8 @@ const Swap = () => {
       setError(`Insufficient ${asset.from.code} balance`);
   }, [swapFrom, swapTo]);
 
+  // If the user entered the "In" amount, then keep that fixed and
+  // change the output by the slippage.
   const handleSwap = () => {};
 
   return (
@@ -152,8 +154,9 @@ const Swap = () => {
           handleChange={({ target }) => {
             setSwapFrom(target.value);
 
-            setSwapTo(target.value / 2);
+            setSwapTo(target.value / assetExchange?.rate);
           }}
+          rateAvailable={!assetExchange?.rate}
         />
 
         <FiRepeat
@@ -163,6 +166,8 @@ const Swap = () => {
               from: asset.to,
               to: asset.from,
             });
+            setSwapFrom(swapTo);
+            setSwapTo(swapFrom);
           }}
         />
 
@@ -171,8 +176,9 @@ const Swap = () => {
           value={swapTo}
           handleChange={({ target }) => {
             setSwapTo(target.value);
-            setSwapFrom(target.value * 2);
+            setSwapFrom(target.value * assetExchange?.rate);
           }}
+          rateAvailable={!assetExchange?.rate}
         />
       </div>
 
