@@ -12,7 +12,7 @@ import { AmountMath } from '@agoric/ertp';
 import { stringifyAmountValue } from '@agoric/ui-components';
 import { Nat } from '@agoric/nat';
 import { getInfoForBrand, displayPetname } from 'utils/helpers';
-import { requestRatio } from 'services/swap.service';
+import { requestRatio, makeSwapOffer } from 'services/swap.service';
 
 import React, { useContext, useEffect, useState } from 'react';
 import { FiChevronDown, FiChevronUp, FiRepeat } from 'react-icons/fi';
@@ -26,11 +26,12 @@ const Swap = () => {
   const [error, setError] = useState(null);
   const [swapFrom, setSwapFrom] = useState(0n);
   const [swapTo, setSwapTo] = useState(0n);
+  const [slippage, setSlippage] = useState(0.5);
   const [assetExchange, setAssetExchange] = useState(null);
   const assetExists = Object.values(asset).filter(item => item).length >= 2;
 
   // get state
-  const { state } = useApplicationContext();
+  const { state, walletP } = useApplicationContext();
 
   const {
     brandToInfo,
@@ -57,10 +58,11 @@ const Swap = () => {
     );
 
     setAssetExchange({
-      to: {
+      give: { code: displayPetname(giveInfo.petname), giveInfo },
+      want: {
         code: displayPetname(wantInfo.petname),
+        wantInfo,
       },
-      from: { code: displayPetname(giveInfo.petname) },
       rate: exchangeRate,
     });
   };
@@ -126,7 +128,30 @@ const Swap = () => {
 
   // If the user entered the "In" amount, then keep that fixed and
   // change the output by the slippage.
-  const handleSwap = () => {};
+  const handleSwap = () => {
+    // get slippage from next line:
+    // slippage // from state
+    const swapFromBig = BigInt(
+      swapFrom * 10 ** assetExchange?.give.giveInfo.decimalPlaces,
+    );
+    const swapToBig = BigInt(
+      swapTo * 10 ** assetExchange?.want.wantInfo.decimalPlaces,
+    );
+    console.log('final amounts: ', swapFromBig, swapToBig);
+    console.log('PURSES', asset.from.purse, asset.to.purse);
+    makeSwapOffer(
+      walletP,
+      ammAPI,
+      asset.from.purse,
+      swapFromBig,
+      asset.to.purse,
+      swapToBig,
+      true, // swapIn will always be true
+    );
+
+    // setSwapFrom(0n);
+    // setSwapTo(0n);
+  };
 
   return (
     <motion.div
@@ -145,7 +170,14 @@ const Swap = () => {
         </h3>
       </div>
 
-      {optionsEnabled && <OptionsSwap />}
+      {optionsEnabled && (
+        <OptionsSwap
+          handleChange={({ target }) => {
+            setSlippage(target.value);
+            console.log('SLIPPAGE', target.value);
+          }}
+        />
+      )}
 
       <div className="flex flex-col gap-4 relative">
         <SectionSwap
@@ -197,7 +229,7 @@ const Swap = () => {
           else if (!(swapFrom && swapTo)) {
             setError('Please enter the amount first');
           } else {
-            handleSwap;
+            handleSwap();
           }
         }}
       >

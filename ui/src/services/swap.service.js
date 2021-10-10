@@ -4,7 +4,6 @@ import { dappConfig } from '../utils/config.js';
 
 export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
   if (brand === centralBrand) {
-    console.log('got central asset');
     // See marketPrice comment above
     return {
       brand: centralBrand,
@@ -32,6 +31,7 @@ export const makeSwapOffer = async (
   outputAmount,
   isSwapIn,
 ) => {
+  console.log('PURSES:', inputPurse, outputPurse);
   const id = `${Date.now()}`;
 
   const { AMM_INSTALLATION_BOARD_ID, AMM_INSTANCE_BOARD_ID } = dappConfig;

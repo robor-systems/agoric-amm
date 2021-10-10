@@ -28,3 +28,5 @@ export const centralAsset = {
     // },
   ],
 };
+
+export const getLiquidity = () => {};

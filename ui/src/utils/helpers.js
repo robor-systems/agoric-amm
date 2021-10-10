@@ -37,6 +37,7 @@ export const getAssets = purses => {
         balance,
         // cmt(danish): balance USD not available right now
         balanceUSD: undefined,
+        ...purse,
       });
       // skip if already includes but add in purse
       console.log('skipping: ', purse);
@@ -77,6 +78,7 @@ export const getAssets = purses => {
           balance,
           // cmt(danish): balance USD not available right now
           balanceUSD: undefined,
+          ...purse,
         },
       ],
     });
