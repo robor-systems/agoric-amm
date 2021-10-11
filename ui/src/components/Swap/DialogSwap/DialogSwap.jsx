@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import AssetDialog from './AssetDialog';
 import PurseDialog from './PurseDialog/PurseDialog';
 
-const DialogSwap = ({ open, handleClose, type, asset, purseOnly, caller }) => {
+const DialogSwap = ({ open, handleClose, type, asset, purseOnly }) => {
   const [selectedAsset, setSelectedAsset] = useState({});
 
   console.log('asset in dialog', asset);

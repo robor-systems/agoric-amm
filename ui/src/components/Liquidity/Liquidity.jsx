@@ -36,10 +36,6 @@ const Liquidity = () => {
     state && state.purses && getSupply();
   }, [state.purses]);
 
-  useEffect(() => {
-    console.log(state.liquiditySupply);
-  }, [state.liquiditySupply]);
-
   return (
     <>
       <LiquidityPool open={open} setOpen={setOpen} />
