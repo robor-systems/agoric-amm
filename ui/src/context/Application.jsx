@@ -20,6 +20,7 @@ import {
   reducer,
   defaultState,
   setPurses,
+  setAssets,
   setConnected,
   resetState,
   updateVault,
@@ -200,6 +201,8 @@ export default function Provider({ children }) {
           const pn = E(walletP).getPursesNotifier();
           for await (const purses of iterateNotifier(pn)) {
             dispatch(setPurses(purses));
+            // console.info('THESE ARE PURSES: ', purses);
+            dispatch(setAssets(purses));
           }
         }
         watchPurses().catch(err =>

@@ -5,25 +5,35 @@ import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 
-import { centralAsset } from 'services/liquidity.service';
 import { assetState } from 'utils/constant';
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
-import { getAssets } from 'utils/helpers';
 import { useApplicationContext } from 'context/Application';
 
 const CentralAssetLiquidity = ({ type, value, handleChange }) => {
   const [open, setOpen] = useState(false);
+  const [centralAsset, setCentralAsset] = useState({});
 
   const [asset, setAsset] = useContext(AssetContext);
-  const [assets, setAssets] = useState([]);
   const { state } = useApplicationContext();
   const selected = asset[type];
-  useEffect(() => {
-    setAssets([...getAssets(state.purses)]);
-  }, [state.purses]);
+
+  const {
+    assets,
+    autoswap: { centralBrand },
+  } = state;
 
   useEffect(() => {
-    const purseLength = centralAsset.purses?.length;
+    const assetArr = assets?.filter(item => {
+      return item.brand === centralBrand;
+    });
+    if (assetArr.length > 0) {
+      // assumption that first elem will contain the obj
+      setCentralAsset(assetArr[0]);
+    }
+  }, [assets, centralBrand]);
+
+  useEffect(() => {
+    const purseLength = centralAsset?.purses?.length;
     let assetMode;
 
     switch (purseLength) {
@@ -115,7 +125,7 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
         open={open}
         type={type}
         purseOnly
-        asset={assets.find(item => item.code === 'RUN')}
+        asset={centralAsset}
       />
       <div className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none">
         <h3 className="text-xs uppercase text-gray-500 tracking-wide font-medium select-none">

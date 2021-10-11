@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { v4 } from 'uuid';
-import { getAssets } from 'utils/helpers';
 import AssetListItem from '../ListItem/AssetListItem';
 import ListItem from '../ListItem/ListItem';
 import SkeletonListItem from '../ListItem/SkeletonListItem';
@@ -11,14 +10,22 @@ import SkeletonListItem from '../ListItem/SkeletonListItem';
 const AssetDialog = ({ type, setSelectedAsset }) => {
   // selected asset
   const [asset] = useContext(AssetContext);
-  // all assets
-  const [assets, setAssets] = useState([]);
   // get state
   const { state } = useApplicationContext();
 
-  useEffect(() => {
-    setAssets([...getAssets(state.purses)]);
-  }, [state.purses]);
+  // get assets from
+  let { assets } = state;
+
+  const {
+    autoswap: { centralBrand },
+  } = state;
+
+  // if type liquidity then we don't want to show centralBrand
+  if (type === 'liquidity') {
+    assets = assets.filter(item => {
+      return item.brand !== centralBrand;
+    });
+  }
 
   if (!assets.length)
     return (

@@ -1,20 +1,17 @@
 import { useApplicationContext } from 'context/Application';
 import React, { useContext, useEffect, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
-import { getAssets } from 'utils/helpers';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 
 const PurseRemovePool = ({ pool, type, amount }) => {
-  const [assets, setAssets] = useState([]);
   const [asset] = useContext(AssetContext);
-  const { state } = useApplicationContext();
-  const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    setAssets([...getAssets(state.purses)]);
-  }, [state.purses]);
+  const { state } = useApplicationContext();
+  const { assets } = state;
+
+  const [open, setOpen] = useState(false);
 
   if (!pool)
     return (

@@ -8,8 +8,6 @@ import PurseDialog from './PurseDialog/PurseDialog';
 const DialogSwap = ({ open, handleClose, type, asset, purseOnly }) => {
   const [selectedAsset, setSelectedAsset] = useState({});
 
-  console.log('asset in dialog', asset);
-
   useEffect(() => {
     if (asset) setSelectedAsset({ ...selectedAsset, [type]: asset });
   }, [asset]);
