@@ -1,8 +1,10 @@
 import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
 import AssetWrapper from 'context/AssetWrapper';
+import { getLiquiditySupply } from 'services/liquidity.service';
+import { useApplicationContext } from 'context/Application';
 import { motion } from 'framer-motion';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
@@ -19,6 +21,24 @@ const Liquidity = () => {
   const [open, setOpen] = useState(false);
   const addLiquidityHook = useState({ central: null, liquidity: null });
   const removeLiquidityHook = useState({ central: null, liquidity: null });
+  const [liquiditySupply, setLiquiditySupply] = useState(null);
+  // get state
+  const { state } = useApplicationContext();
+  const {
+    autoswap: { ammAPI },
+  } = state;
+
+  useEffect(() => {
+    // TODO(ahmed): use liquiditySupply for showing 'view liquidity positions'
+    const getSupply = async () => {
+      setLiquiditySupply(await getLiquiditySupply(ammAPI, state.purses));
+    };
+    state && state.purses && getSupply();
+  }, [state.purses]);
+
+  useEffect(() => {
+    console.log(state.liquiditySupply);
+  }, [state.liquiditySupply]);
 
   return (
     <>

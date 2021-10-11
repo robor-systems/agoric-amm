@@ -20,7 +20,12 @@ const SectionLiquidity = ({ type, value, handleChange, disabled }) => {
 
   return (
     <>
-      <DialogSwap handleClose={() => setOpen(false)} open={open} type={type} />
+      <DialogSwap
+        handleClose={() => setOpen(false)}
+        open={open}
+        type={type}
+        caller="liquidity"
+      />
       <div className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none">
         <h3 className="text-xs uppercase text-gray-500 tracking-wide font-medium select-none">
           Input

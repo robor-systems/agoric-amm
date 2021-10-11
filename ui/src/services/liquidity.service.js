@@ -1,4 +1,6 @@
+import { E } from '@agoric/captp';
 import runLogo from 'assets/crypto-icons/ripple-logo.png';
+import { result } from 'lodash';
 
 export const centralAsset = {
   code: 'RUN',
@@ -29,4 +31,27 @@ export const centralAsset = {
   ],
 };
 
-export const getLiquidity = () => {};
+export const getLiquiditySupply = async (ammAPI, purses) => {
+  let interArr = [];
+  const promises = [];
+  /* eslint-disable no-await-in-loop */
+  purses.forEach(purse => {
+    promises.push(E(ammAPI).getLiquiditySupply(purse.brand));
+  });
+
+  await Promise.allSettled(promises)
+    .then(results => {
+      results = results.map((item, index) => {
+        return { ...item, brand: purses[index].brand };
+      });
+      interArr = results
+        .filter(item => item.status === 'fulfilled')
+        .map(item => {
+          return { value: item.value, brand: item.brand };
+        });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  return interArr;
+};
