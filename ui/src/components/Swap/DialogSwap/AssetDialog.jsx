@@ -44,7 +44,7 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
     <div className="flex flex-col gap-4 p-5 overflow-auto ">
       {assets.map(item => (
         <div
-          key={item.key}
+          key={v4()}
           onClick={() => {
             setSelectedAsset({
               ...asset,

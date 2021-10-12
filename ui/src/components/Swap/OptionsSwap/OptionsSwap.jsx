@@ -2,7 +2,7 @@ import { FiHelpCircle } from 'react-icons/fi';
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const OptionsSwap = ({ handleChange }) => {
+const OptionsSwap = ({ slippage, setSlippage }) => {
   // TODO (ahmed): add validation to give error on slippage < 0 & > 10
   return (
     <motion.div
@@ -18,15 +18,34 @@ const OptionsSwap = ({ handleChange }) => {
         <div className="relative">
           <input
             type="number"
-            className=" p-2 focus:outline-none bg-gray-100 rounded-sm"
+            className=" p-2 pr-5 focus:outline-none bg-gray-100 rounded-sm"
             placeholder="0.5"
-            onChange={handleChange}
+            onChange={({ target }) => {
+              if (target.value > 5) {
+                setSlippage(5);
+              } else if (target.value < 0.1) {
+                setSlippage(0.1);
+              } else {
+                setSlippage(target.value);
+              }
+            }}
+            value={slippage}
+            min="0.1"
+            max="5"
+            step="0.1"
           />
           <div className="text-lg absolute top-1.5 right-2  text-gray-400">
             %
           </div>
         </div>
-        <button className="btn-primary py-2 px-4">Auto</button>
+        <button
+          className="btn-primary py-2 px-4"
+          onClick={() => {
+            setSlippage(0.5);
+          }}
+        >
+          Auto
+        </button>
       </div>
     </motion.div>
   );

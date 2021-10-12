@@ -1,6 +1,5 @@
 import { E } from '@agoric/captp';
 import runLogo from 'assets/crypto-icons/ripple-logo.png';
-import { result } from 'lodash';
 
 export const centralAsset = {
   code: 'RUN',

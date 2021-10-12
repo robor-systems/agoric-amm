@@ -10,6 +10,11 @@ import CentralAssetLiquidity from '../SectionLiquidity/CentralAssetLiquidity';
 import SectionLiquidity from '../SectionLiquidity/SectionLiquidity';
 import RateLiquidity from '../RateLiquidity/RateLiquidity';
 
+// TODO(danish): store liquidity central and liquidity values in a context and if both exist then determine if pool already exists in contract
+// if pool exists then set a fixed exchange rate. Otherwise, allow user to insert whatever ratio of tokens
+// 2. Show all liquidity in liquidity positions, read wallet's liquidity positions from the wallet
+// 3. consider case where liquidity exists and user already has said liquidity and wants to add more.
+
 const AddLiquidity = () => {
   const [centralValue, setCentralValue] = useState(0);
   const [liquidityValue, setLiquidityValue] = useState(0);

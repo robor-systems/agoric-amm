@@ -54,6 +54,8 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
               onChange={handleChange}
               className="input-primary w-full"
               disabled={rateAvailable}
+              min="0"
+              max="10000000"
             />
             {asset[type]?.purse && (
               <div className="absolute right-3 top-1.5 text-gray-400 flex flex-col text-right text-sm bg-white">

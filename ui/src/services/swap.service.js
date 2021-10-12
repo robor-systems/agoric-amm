@@ -62,5 +62,7 @@ export const makeSwapOffer = async (
     },
   };
 
+  console.info('OFFER CONFIG: ', offerConfig);
+
   await E(walletP).addOffer(offerConfig);
 };

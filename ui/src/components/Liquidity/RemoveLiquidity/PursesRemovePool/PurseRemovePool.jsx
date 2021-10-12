@@ -1,5 +1,5 @@
 import { useApplicationContext } from 'context/Application';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';

@@ -1,8 +1,12 @@
 import React from 'react';
+import { v4 as uuid } from 'uuid';
 
 const AssetListItem = ({ name, code, balance, image, balanceUSD }) => {
   return (
-    <div className="flex gap-3 items-center justify-between w-full">
+    <div
+      key={uuid()}
+      className="flex gap-3 items-center justify-between w-full"
+    >
       <div className="flex gap-3 items-center">
         <div className="w-10 h-10 rounded-full">
           <img src={image} alt={name} />
