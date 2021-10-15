@@ -9,11 +9,11 @@ const LiquidityPool = ({ open, setOpen }) => {
     <AnimatePresence>
       {open && (
         <motion.div
-          key={v4()}
+          key={'liquidity-pool'}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
           className="fixed top-0 left-0 w-screen  h-screen bg-black bg-opacity-10 flex items-center justify-end z-50"
         >
           <div

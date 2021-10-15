@@ -1,4 +1,6 @@
 import React, { useState, useContext } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
@@ -10,10 +12,16 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
 
+  console.log('open', open);
+
   return (
     <>
       <DialogSwap handleClose={() => setOpen(false)} open={open} type={type} />
-      <div className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none">
+
+      <motion.div
+        className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none"
+        layout
+      >
         <h3 className="text-xs uppercase text-gray-500 tracking-wide font-medium select-none">
           Swap {type.toUpperCase()}
         </h3>
@@ -65,7 +73,7 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

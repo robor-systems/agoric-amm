@@ -1,9 +1,9 @@
+import { motion } from 'framer-motion';
 import React from 'react';
 
 const ExtraInformation = ({ want, rate, give, swapTo }) => {
-  console.log(swapTo);
   return (
-    <div className="flex flex-col">
+    <motion.div className="flex flex-col" layout>
       <div className="flex gap-4 text-gray-400 justify-between">
         Exchange Rate
         <div>
@@ -16,7 +16,7 @@ const ExtraInformation = ({ want, rate, give, swapTo }) => {
           {swapTo.limitDec} {want.code}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

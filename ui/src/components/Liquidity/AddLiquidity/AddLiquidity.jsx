@@ -1,5 +1,6 @@
 import PoolContext from 'context/PoolContext';
 import { v4 } from 'uuid';
+import { motion } from 'framer-motion';
 
 import { FiPlus } from 'react-icons/fi';
 import React, { useContext, useEffect, useState } from 'react';
@@ -42,7 +43,13 @@ const AddLiquidity = () => {
   }, [asset]);
 
   return (
-    <div className="flex flex-col gap-4 ">
+    <motion.div
+      className="flex flex-col gap-4"
+      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="flex flex-col gap-4 relative">
         <CentralAssetLiquidity
           type="central"
@@ -116,7 +123,7 @@ const AddLiquidity = () => {
           )}
         </h3>
       )}
-    </div>
+    </motion.div>
   );
 };
 

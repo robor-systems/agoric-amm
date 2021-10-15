@@ -10,22 +10,45 @@ import PoolWrapper from 'context/PoolWrapper';
 import { motion } from 'framer-motion';
 
 const App = () => {
-  const tabClasses = ({ selected }) =>
-    clsx('tab font-medium', selected ? 'bg-alternative' : 'bg-white');
+  const [index, setIndex] = useState(0);
+
   const swapHook = useState({ from: null, to: null });
 
   return (
     <PoolWrapper>
-      <div className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative">
+      <motion.div
+        className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative"
+        layout
+      >
         <img
           src={agoricLogo}
           alt="Agoric Logo"
           className="absolute top-0 left-0  py-6  px-6 "
         />
-        <Tab.Group defaultIndex={0}>
+        <Tab.Group defaultIndex={0} onChange={i => setIndex(i)}>
           <Tab.List className="bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-20 transition-all duration-300 ease-in-out">
-            <Tab className={tabClasses}>Swap</Tab>
-            <Tab className={tabClasses}>Liquidity</Tab>
+            <Tab className={''}>
+              <motion.div
+                whileTap={{ scale: 0.9 }}
+                className={clsx(
+                  'tab font-medium',
+                  index === 0 ? 'bg-alternative ' : 'bg-white',
+                )}
+              >
+                Swap
+              </motion.div>
+            </Tab>
+            <Tab>
+              <motion.div
+                whileTap={{ scale: 0.9 }}
+                className={clsx(
+                  'tab font-medium',
+                  index === 1 ? 'bg-alternative ' : 'bg-white',
+                )}
+              >
+                Liquidity
+              </motion.div>
+            </Tab>
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
@@ -38,7 +61,7 @@ const App = () => {
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
-      </div>
+      </motion.div>
     </PoolWrapper>
   );
 };

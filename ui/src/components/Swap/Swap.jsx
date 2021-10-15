@@ -300,9 +300,12 @@ const Swap = () => {
   return (
     <motion.div
       layout
-      className="flex flex-col p-4 shadow-red-light rounded-sm gap-4 w-screen max-w-lg relative  select-none"
+      initial={{ opacity: 0, boxShadow: 'none' }}
+      animate={{ opacity: 1, boxShadow: '0px 0px 99px var(--color-secondary)' }}
+      transition={{ duration: 0.8 }}
+      className="flex flex-col p-4 rounded-sm gap-4 w-screen max-w-lg relative  select-none overflow-hidden"
     >
-      <div className="flex justify-between items-center gap-8 ">
+      <motion.div className="flex justify-between items-center gap-8 " layout>
         <h1 className="text-2xl font-semibold">Swap</h1>
         <h3
           className="flex  items-center text-sm gap-2 p-1 text-gray-500 cursor-pointer hover:bg-gray-100 rounded-sm"
@@ -312,31 +315,33 @@ const Swap = () => {
         >
           More options {optionsEnabled ? <FiChevronUp /> : <FiChevronDown />}
         </h3>
-      </div>
+      </motion.div>
 
       {optionsEnabled && (
         <OptionsSwap slippage={slippage} setSlippage={setSlippage} />
       )}
 
-      <div className="flex flex-col gap-4 relative">
-        <SectionSwap
-          type="from"
-          value={swapFrom.decimal}
-          handleChange={handleInputChange}
-          rateAvailable={!assetExchange?.rate}
-        />
+      <motion.div className="flex flex-col gap-4 relative" layout>
+        <div className="flex flex-col gap-4 relative">
+          <SectionSwap
+            type="from"
+            value={swapFrom.decimal}
+            handleChange={handleInputChange}
+            rateAvailable={!assetExchange?.rate}
+          />
 
-        <FiRepeat
-          className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark"
-          onClick={() => {
-            setAsset({
-              from: asset.to,
-              to: asset.from,
-            });
-            setSwapFrom(swapTo);
-            setSwapTo(swapFrom);
-          }}
-        />
+          <FiRepeat
+            className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
+            onClick={() => {
+              setAsset({
+                from: asset.to,
+                to: asset.from,
+              });
+              setSwapFrom(swapTo);
+              setSwapTo(swapFrom);
+            }}
+          />
+        </div>
 
         <SectionSwap
           type="to"
@@ -344,7 +349,7 @@ const Swap = () => {
           handleChange={handleOutputChange}
           rateAvailable={!assetExchange?.rate}
         />
-      </div>
+      </motion.div>
 
       {assetExists && assetExchange && (
         <ExtraInformation
@@ -354,7 +359,8 @@ const Swap = () => {
         />
       )}
 
-      <button
+      <motion.button
+        layout
         className={clsx(
           'flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
           (assetExists || swapped) && !error
@@ -375,7 +381,7 @@ const Swap = () => {
         }}
       >
         {swapped ? <FiCheck size={28} /> : 'swap'}
-      </button>
+      </motion.button>
 
       {error && (
         <motion.h3 layout className="text-red-600">

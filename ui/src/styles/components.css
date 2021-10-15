@@ -8,6 +8,6 @@
     @apply bg-white text-xl rounded-sm p-3 focus:outline-none focus:ring-2 focus:ring-secondary;
   }
   .tab {
-    @apply w-28  p-1;
+    @apply w-28  p-1 rounded-sm;
   }
 }

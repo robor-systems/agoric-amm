@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { FiX } from 'react-icons/fi';
-import { v4 } from 'uuid';
 import AssetDialog from './AssetDialog';
 import PurseDialog from './PurseDialog/PurseDialog';
 
@@ -16,7 +15,9 @@ const DialogSwap = ({ open, handleClose, type, asset, purseOnly }) => {
     <AnimatePresence>
       {open && (
         <motion.div
-          key={v4()}
+          key={
+            selectedAsset?.[type] || purseOnly ? 'purseDialog' : 'assetDialog'
+          }
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

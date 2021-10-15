@@ -39,7 +39,13 @@ const Liquidity = () => {
   return (
     <>
       <LiquidityPool open={open} setOpen={setOpen} />
-      <div className="flex flex-col gap-2">
+      <motion.div
+        className="flex flex-col gap-2"
+        layout
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <button
           className="uppercase flex items-center text-sm gap-1 text-gray-500 hover:text-black"
           onClick={() => {
@@ -48,7 +54,16 @@ const Liquidity = () => {
         >
           View Liquidity Positions <FiChevronRight className="text-lg" />
         </button>
-        <div className=" flex flex-col p-4 shadow-red-light  rounded-sm gap-4 max-w-lg relative  select-none w-screen ">
+        <motion.div
+          className="flex flex-col p-4  rounded-sm gap-4 max-w-lg relative  select-none w-screen"
+          initial={{ opacity: 0, boxShadow: 'none' }}
+          animate={{
+            opacity: 1,
+            boxShadow: '0px 0px 99px var(--color-secondary)',
+          }}
+          transition={{ duration: 0.8 }}
+          layout
+        >
           <div className="flex flex-col justify-between  gap-2 ">
             <h1 className="text-2xl font-semibold">Liquidity</h1>
             <h2 className="text-gray-500 ">
@@ -73,8 +88,8 @@ const Liquidity = () => {
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </>
   );
 };

@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import AssetContext from 'context/AssetContext';
 import PoolContext from 'context/PoolContext';
+import { motion } from 'framer-motion';
 import React, { useContext, useEffect, useState } from 'react';
 import { FiArrowDown } from 'react-icons/fi';
 import AmountToRemove from './AmountToRemove';
@@ -47,7 +48,13 @@ const RemoveLiquidity = props => {
   }, [pool, amount, asset]);
 
   return (
-    <div className="flex flex-col   gap-4">
+    <motion.div
+      className="flex flex-col gap-4"
+      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <PoolSelector {...props} />
       <div className="flex flex-col  gap-4 relative">
         <AmountToRemove value={amount} setValue={setAmount} />
@@ -66,7 +73,7 @@ const RemoveLiquidity = props => {
         Confirm Withdrawal
       </button>
       {error && <h3 className="text-red-600">{error}</h3>}
-    </div>
+    </motion.div>
   );
 };
 
