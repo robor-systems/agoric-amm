@@ -158,7 +158,7 @@ const Swap = () => {
     } else if (Number(swapFrom.decimal) === 0 || Number(swapTo.decimal) === 0) {
       setError('Add value greater than zero');
       return;
-    } else if (!swapTo.limitNat || !swapFrom.limitNat) {
+    } else if (!swapTo.limitNat) {
       setError('Something went wrong while setting slippage');
       return;
     } else if (error) {
