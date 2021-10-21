@@ -113,32 +113,33 @@ const Swap = () => {
    * `poolRate` is `outputBrand/RUN`.
    */
 
+  const getRates = async () => {
+    let inputRate = null;
+    asset.from &&
+      (inputRate = await requestRatio(
+        asset.from.brand,
+        makeRatioFromAmounts,
+        centralBrand,
+        ammAPI,
+      ));
+    let outputRate = null;
+    asset.to &&
+      (outputRate = await requestRatio(
+        asset.to.brand,
+        makeInverseFromAmounts,
+        centralBrand,
+        ammAPI,
+      ));
+
+    const marketRate =
+      inputRate?.ratio && outputRate?.ratio
+        ? composeRatio(inputRate.ratio, outputRate.ratio)
+        : null;
+
+    marketRate && getExchangeRate(4, marketRate, inputRate, outputRate);
+  };
+
   useEffect(() => {
-    const getRates = async () => {
-      let inputRate = null;
-      asset.from &&
-        (inputRate = await requestRatio(
-          asset.from.brand,
-          makeRatioFromAmounts,
-          centralBrand,
-          ammAPI,
-        ));
-      let outputRate = null;
-      asset.to &&
-        (outputRate = await requestRatio(
-          asset.to.brand,
-          makeInverseFromAmounts,
-          centralBrand,
-          ammAPI,
-        ));
-
-      const marketRate =
-        inputRate?.ratio && outputRate?.ratio
-          ? composeRatio(inputRate.ratio, outputRate.ratio)
-          : null;
-
-      marketRate && getExchangeRate(4, marketRate, inputRate, outputRate);
-    };
     if ((asset.from || asset.to) && ammAPI) {
       getRates();
     }
@@ -194,7 +195,8 @@ const Swap = () => {
     setSwapFrom({ decimal: 0, nat: 0n });
     setSwapTo({ decimal: 0, nat: 0n });
 
-    setTimeout(() => {
+    setTimeout(async () => {
+      await getRates();
       setSwapped(false);
     }, 2000);
   };
