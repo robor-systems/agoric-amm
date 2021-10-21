@@ -26,6 +26,11 @@ import SectionSwap from './SectionSwap/SectionSwap';
 
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
+const UNIT_BASIS = 10000;
+const UNIT_BASIS_NAT = 10000n;
+
+const SWAP_IN = 'IN';
+const SWAP_OUT = 'OUT';
 
 const Swap = () => {
   const [asset, setAsset] = useContext(AssetContext);
@@ -34,19 +39,20 @@ const Swap = () => {
   const [swapFrom, setSwapFrom] = useState({
     decimal: undefined,
     nat: 0n,
-    limitDec: undefined,
+    limitDec: 0,
     limitNat: 0n,
   });
   const [swapTo, setSwapTo] = useState({
     decimal: undefined,
     nat: 0n,
-    limitDec: undefined,
+    limitDec: 0,
     limitNat: 0n,
   });
-  const [slippage, setSlippage] = useState(0.5);
+  const [slippage, setSlippage] = useState(3);
   const [assetExchange, setAssetExchange] = useState(null);
   const [swapped, setSwapped] = useState(false);
   const assetExists = Object.values(asset).filter(item => item).length >= 2;
+  const [swapType, setSwapType] = useState(SWAP_IN);
 
   // get state
   const { state, walletP } = useApplicationContext();
@@ -158,26 +164,29 @@ const Swap = () => {
     } else if (Number(swapFrom.decimal) === 0 || Number(swapTo.decimal) === 0) {
       setError('Add value greater than zero');
       return;
-    } else if (!swapTo.limitNat) {
+    } else if (!swapTo.limitNat && !swapFrom.limitNat) {
       setError('Something went wrong while setting slippage');
       return;
     } else if (error) {
       return;
     }
+
     console.log(
+      swapType === SWAP_IN ? 'CASE SWAP_IN' : 'CASE SWAP_OUT',
       'FINAL VALUES: ',
       swapFrom.nat,
       swapTo.nat,
       'slippage adjusted: ',
-      swapTo.limitNat,
+      swapType === SWAP_IN ? swapTo.limitNat : swapFrom.limitNat,
     );
+
     makeSwapOffer(
       walletP,
       ammAPI,
       asset.from.purse,
-      swapFrom.nat,
+      swapType === SWAP_IN ? swapFrom.nat : swapFrom.limitNat,
       asset.to.purse,
-      swapTo.limitNat,
+      swapType === SWAP_OUT ? swapTo.nat : swapTo.limitNat,
       true, // swapIn will always be true
     );
 
@@ -198,7 +207,7 @@ const Swap = () => {
       const reset = {
         decimal: undefined,
         nat: 0n,
-        limitDec: undefined,
+        limitDec: 0,
         limitNat: 0n,
       };
       setSwapFrom(reset);
@@ -212,7 +221,8 @@ const Swap = () => {
       asset.from?.purse?.displayInfo?.decimalPlaces,
     );
 
-    setSwapFrom({ decimal: newInput, nat: swapFromNat });
+    setSwapFrom({ decimal: newInput, nat: swapFromNat, limitNat: 0n });
+    setSwapType(SWAP_IN);
     // agoric stuff
     const amountMakeFrom = AmountMath.make(asset.from.brand, swapFromNat);
 
@@ -228,25 +238,30 @@ const Swap = () => {
 
     // calculating slippage
     const slippagePerc = divide(slippage, 100);
-    const decrement = multiply(newInput, slippagePerc);
-    const lowerLimit = Number(ToValString) - decrement;
+    const slippageUnit = multiply(slippagePerc * UNIT_BASIS);
+    const maxSlippageUnit = slippageUnit + UNIT_BASIS;
+    const maxSlippageUnitNat = parseAsNat(maxSlippageUnit.toString(), 0);
 
-    let lowerLimitNat = 0n;
+    const lowerLimitNat =
+      (swapToNat.value * UNIT_BASIS_NAT) / maxSlippageUnitNat;
 
-    if (lowerLimit < 0) {
+    const lowerLimitDec = stringifyNat(
+      lowerLimitNat,
+      asset.to?.purse?.displayInfo?.decimalPlaces,
+      PLACES_TO_SHOW,
+    );
+
+    if (lowerLimitNat < 0n) {
       setError('Value too small, no room for slippage.');
       return;
     } else {
-      lowerLimitNat = parseAsNat(
-        lowerLimit.toString(),
-        asset.to?.purse?.displayInfo?.decimalPlaces,
-      );
+      console.log('Lower limit nat', lowerLimitNat);
     }
     setError(null);
     setSwapTo({
       decimal: ToValString,
       nat: swapToNat.value,
-      limitDec: lowerLimit,
+      limitDec: lowerLimitDec,
       limitNat: lowerLimitNat,
     });
   };
@@ -256,18 +271,14 @@ const Swap = () => {
     if (newInput < 0) {
       newInput = 0;
     } else if (!newInput) {
-      setSwapFrom({
+      const reset = {
         decimal: undefined,
         nat: 0n,
-        limitDec: undefined,
+        limitDec: 0,
         limitNat: 0n,
-      });
-      setSwapTo({
-        decimal: undefined,
-        nat: 0n,
-        limitDec: undefined,
-        limitNat: 0n,
-      });
+      };
+      setSwapFrom(reset);
+      setSwapTo(reset);
       return;
     }
     // parse as Nat value
@@ -276,7 +287,8 @@ const Swap = () => {
       asset.to?.purse?.displayInfo?.decimalPlaces,
     );
 
-    setSwapTo({ decimal: newInput, nat: swapToNat, limitDec: 0 });
+    setSwapTo({ decimal: newInput, nat: swapToNat, limitNat: 0n });
+    setSwapType(SWAP_OUT);
     // agoric stuff
     const amountMakeTo = AmountMath.make(asset.to?.brand, swapToNat);
 
@@ -293,8 +305,28 @@ const Swap = () => {
       PLACES_TO_SHOW,
     );
 
+    // calculating slippage
+    const slippagePerc = divide(slippage, 100);
+    const slippageUnit = multiply(slippagePerc * UNIT_BASIS);
+    const maxSlippageUnit = slippageUnit + UNIT_BASIS;
+    const maxSlippageUnitNat = parseAsNat(maxSlippageUnit.toString(), 0);
+
+    const upperLimitNat =
+      (swapFromNat.value * maxSlippageUnitNat) / UNIT_BASIS_NAT;
+
+    const upperLimitDec = stringifyNat(
+      upperLimitNat,
+      asset.from?.purse?.displayInfo?.decimalPlaces,
+      PLACES_TO_SHOW,
+    );
+
     setError(null);
-    setSwapFrom({ decimal: FromValString, nat: swapFromNat.value });
+    setSwapFrom({
+      decimal: FromValString,
+      nat: swapFromNat.value,
+      limitDec: upperLimitDec,
+      limitNat: upperLimitNat,
+    });
   };
 
   return (
@@ -339,6 +371,10 @@ const Swap = () => {
               });
               setSwapFrom(swapTo);
               setSwapTo(swapFrom);
+              setAssetExchange({
+                ...assetExchange,
+                marketRate: invertRatio(assetExchange.marketRate),
+              });
             }}
           />
         </div>
@@ -356,6 +392,7 @@ const Swap = () => {
           {...assetExchange}
           swapFrom={swapFrom}
           swapTo={swapTo}
+          swapType={swapType}
         />
       )}
 
