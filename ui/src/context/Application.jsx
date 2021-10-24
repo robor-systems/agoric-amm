@@ -5,7 +5,7 @@ import 'utils/installSESLockdown';
 
 /* eslint-disable import/no-mutable-exports */
 
-import { makeCapTP, E } from '@agoric/captp';
+import { makeCapTP, E, Far } from '@agoric/captp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
 
 import {
@@ -149,7 +149,7 @@ export default function Provider({ children }) {
 
   useEffect(() => {
     // Receive callbacks from the wallet connection.
-    const otherSide = harden({
+    const otherSide = Far('needDappApproval', {
       needDappApproval(_dappOrigin, _suggestedDappPetname) {
         dispatch(setApproved(false));
       },
