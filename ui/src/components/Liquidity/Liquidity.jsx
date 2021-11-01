@@ -1,10 +1,17 @@
 import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
 import AssetWrapper from 'context/AssetWrapper';
-import { getLiquiditySupply } from 'services/liquidity.service';
+import {
+  getPoolAllocation,
+  getUserLiquidity,
+} from 'services/liquidity.service';
 import { useApplicationContext } from 'context/Application';
+import PoolContext from 'context/PoolContext';
+
+import { getInfoForBrand } from 'utils/helpers';
+
 import { motion } from 'framer-motion';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
@@ -21,19 +28,51 @@ const Liquidity = () => {
   const [open, setOpen] = useState(false);
   const addLiquidityHook = useState({ central: null, liquidity: null });
   const removeLiquidityHook = useState({ central: null, liquidity: null });
-  const [liquiditySupply, setLiquiditySupply] = useState(null);
+  const [centralInfo, setCentralInfo] = useState(null);
+  const [pool, setPool] = useContext(PoolContext);
   // get state
   const { state } = useApplicationContext();
   const {
-    autoswap: { ammAPI },
+    brandToInfo,
+    autoswap: { ammAPI, centralBrand },
   } = state;
 
   useEffect(() => {
-    // TODO(ahmed): use liquiditySupply for showing 'view liquidity positions'
-    const getSupply = async () => {
-      setLiquiditySupply(await getLiquiditySupply(ammAPI, state.purses));
+    // const getUserSupply = async () => {
+    //   const supply = await getUserLiquidity(ammAPI, state.purses);
+    //   console.log('Here"s the supply: ', supply);
+    // };
+
+    const getPool = async () => {
+      const interArr = [];
+      // filter out central brand and Zoe Invitation brand purse
+      // filter out only unique brands because we calculate pool allocation across brands
+      state.purses
+        ?.filter(
+          purse =>
+            purse.displayInfo.assetKind !== 'set' &&
+            purse.brand !== centralBrand,
+        )
+        .map(purse => {
+          // if such asset already inserted
+          const similarAssetIndex = interArr.findIndex(elem => {
+            return elem.brandPetname === purse.brandPetname;
+          });
+          if (similarAssetIndex === -1) {
+            interArr.push(purse);
+          }
+          return interArr;
+        });
+      console.log('FILTERED PURSES: ', interArr);
+      const poolAllocations = await getPoolAllocation(ammAPI, interArr);
+      console.log('POOL ALLOCATIONS: ', poolAllocations);
+      setPool({ ...pool, allocations: poolAllocations });
     };
-    state && state.purses && getSupply();
+
+    // state && state.purses && getUserSupply();
+    state && state.purses && getPool();
+
+    setCentralInfo(getInfoForBrand(brandToInfo, centralBrand));
   }, [state.purses]);
 
   return (
@@ -67,7 +106,7 @@ const Liquidity = () => {
           <div className="flex flex-col justify-between  gap-2 ">
             <h1 className="text-2xl font-semibold">Liquidity</h1>
             <h2 className="text-gray-500 ">
-              All Liquidity pairs currently use RUN
+              All liquidity pairs currently use {centralInfo?.petname}
             </h2>
           </div>
           <Tab.Group>

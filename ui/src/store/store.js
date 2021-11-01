@@ -6,6 +6,7 @@ import agoricLogo from 'assets/crypto-icons/agoric-logo.png';
 import bldLogo from 'assets/crypto-icons/bld-logo.png';
 import kirkLogo from 'assets/crypto-icons/kirk-logo.png';
 import usdcLogo from 'assets/crypto-icons/usdc-logo.png';
+import { stringifyPurseValue } from '@agoric/ui-components';
 
 export const {
   reducer,
@@ -96,10 +97,8 @@ export const {
       // used for storing intermediate response
       const interArr = [];
       filteredPurses?.forEach(purse => {
-        // balances noted in bigInt, converting them using the provided decimalplaces
-        const balance =
-          Number(purse.currentAmount?.value) /
-          10 ** purse.displayInfo?.decimalPlaces;
+        // balances noted in bigInt, stringifying them
+        const balance = stringifyPurseValue(purse);
 
         // if such asset already inserted
         const similarAssetIndex = interArr.findIndex(elem => {

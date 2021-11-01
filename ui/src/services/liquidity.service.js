@@ -1,36 +1,27 @@
 import { E } from '@agoric/captp';
-import runLogo from 'assets/crypto-icons/ripple-logo.png';
+import { makeRatio } from '@agoric/zoe/src/contractSupport';
 
-export const centralAsset = {
-  code: 'RUN',
-  name: 'Run',
-  image: runLogo,
-  id: 'e7262493-243b-4193-b3d7-9cdi2rierie23sdf0d13c2a60',
-  balance: 22.5,
-  balanceUSD: 50.75,
-  purses: [
-    {
-      name: 'Cosmos 1',
-      balanceUSD: 12,
-      balance: 5,
-      id: 'e7262493-243bjvs3932ke32438923b3d7-9cd0d13c2a60',
-    },
-    {
-      name: 'Cosmos 2',
-      balance: 10,
-      balanceUSD: 33,
-      id: 'e7262493-243bjvs3932-32498-b3d7-9cd0d13c2a60-323i233',
-    },
-    // {
-    //   name: 'Cosmos 3',
-    //   balance: 7.5,
-    //   balanceUSD: 22,
-    //   id: 'e7262493-23bj2-32498-b3d7-9cd0d13c2a60',
-    // },
-  ],
+export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
+  if (brand === centralBrand) {
+    // See marketPrice comment above
+    return {
+      brand: centralBrand,
+      ratio: makeRatio(100000000n, centralBrand, 100000000n, centralBrand),
+    };
+  }
+  let poolRate = { brand, ratio: null };
+  const alloc = await E(ammAPI).getPoolAllocation(brand);
+
+  // only update if the brand hasn't changed
+  const ratio = makeRate(alloc.Central, alloc.Secondary);
+  console.log(`Pool allocation`, alloc, ratio);
+
+  poolRate = poolRate.brand === brand ? { brand, ratio } : poolRate;
+  // poolRate = poolRate(q => (q.brand === brand ? { brand, ratio } : q));
+  return poolRate;
 };
 
-export const getLiquiditySupply = async (ammAPI, purses) => {
+export const getUserLiquidity = async (ammAPI, purses) => {
   let interArr = [];
   const promises = [];
   /* eslint-disable no-await-in-loop */
@@ -52,5 +43,37 @@ export const getLiquiditySupply = async (ammAPI, purses) => {
     .catch(error => {
       console.error(error);
     });
+  return interArr;
+};
+
+export const getPoolAllocation = async (ammAPI, purses) => {
+  let interArr = [];
+  const promises = [];
+
+  /* eslint-disable no-await-in-loop */
+  try {
+    purses.forEach(purse => {
+      promises.push(E(ammAPI).getPoolAllocation(purse.brand));
+    });
+  } catch (error) {
+    console.error(error);
+  }
+
+  await Promise.allSettled(promises)
+    .then(results => {
+      results = results.map((item, index) => {
+        console.log(item);
+        return { ...item, brand: purses[index].brand };
+      });
+      interArr = results
+        .filter(item => item.status === 'fulfilled')
+        .map(item => {
+          return item.value;
+        });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+
   return interArr;
 };

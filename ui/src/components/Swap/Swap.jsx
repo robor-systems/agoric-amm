@@ -15,11 +15,11 @@ import { parseAsNat } from '@agoric/ui-components/dist/display/natValue/parseAsN
 import { Nat } from '@agoric/nat';
 import { getInfoForBrand, displayPetname } from 'utils/helpers';
 import { requestRatio, makeSwapOffer } from 'services/swap.service';
+import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import { divide, multiply } from 'lodash';
 
 import React, { useContext, useEffect, useState } from 'react';
 import { FiChevronDown, FiChevronUp, FiRepeat, FiCheck } from 'react-icons/fi';
-import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import ExtraInformation from './ExtraInformation/ExtraInformation';
 import OptionsSwap from './OptionsSwap/OptionsSwap';
 import SectionSwap from './SectionSwap/SectionSwap';

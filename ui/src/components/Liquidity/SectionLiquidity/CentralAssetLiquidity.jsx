@@ -15,7 +15,7 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
 
   const [asset, setAsset] = useContext(AssetContext);
   const { state } = useApplicationContext();
-  const selected = asset[type];
+  const [selected, setSelected] = useState(asset[type]);
 
   const {
     assets,
@@ -57,6 +57,10 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
       },
     });
   }, [centralAsset]);
+
+  useEffect(() => {
+    setSelected(asset[type]);
+  }, [asset]);
 
   const AssetSelector = () => {
     switch (selected?.mode) {
@@ -142,7 +146,7 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
               type="number"
               placeholder="0.0"
               value={value}
-              disabled={selected?.mode === assetState.EMPTY}
+              disabled={selected?.mode === assetState.EMPTY || !selected?.purse}
               onChange={handleChange}
               className="input-primary w-full"
             />

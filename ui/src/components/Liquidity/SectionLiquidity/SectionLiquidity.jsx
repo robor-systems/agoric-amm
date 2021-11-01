@@ -4,19 +4,13 @@ import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 
-import { centralAsset } from 'services/liquidity.service';
 import DialogSwap from '../../Swap/DialogSwap/DialogSwap';
 
 const SectionLiquidity = ({ type, value, handleChange, disabled }) => {
   const [open, setOpen] = useState(false);
 
-  const [asset, setAsset] = useContext(AssetContext);
+  const [asset] = useContext(AssetContext);
   const selected = asset[type];
-
-  useEffect(() => {
-    if (type === 'central' && !centralAsset?.purses.length)
-      setAsset({ ...asset, central: centralAsset });
-  }, []);
 
   return (
     <>
