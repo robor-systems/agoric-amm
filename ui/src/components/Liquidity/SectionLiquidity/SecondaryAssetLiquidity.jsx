@@ -6,7 +6,7 @@ import { FiChevronDown } from 'react-icons/fi';
 
 import DialogSwap from '../../Swap/DialogSwap/DialogSwap';
 
-const SectionLiquidity = ({ type, value, handleChange, disabled }) => {
+const SecondaryAssetLiquidity = ({ type, value, handleChange, disabled }) => {
   const [open, setOpen] = useState(false);
 
   const [asset] = useContext(AssetContext);
@@ -71,4 +71,4 @@ const SectionLiquidity = ({ type, value, handleChange, disabled }) => {
   );
 };
 
-export default SectionLiquidity;
+export default SecondaryAssetLiquidity;

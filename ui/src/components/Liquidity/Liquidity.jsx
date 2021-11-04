@@ -2,8 +2,8 @@ import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
 import AssetWrapper from 'context/AssetWrapper';
 import {
-  getPoolAllocation,
-  getUserLiquidity,
+  getPoolAllocationService,
+  getUserLiquidityService,
 } from 'services/liquidity.service';
 import { useApplicationContext } from 'context/Application';
 import PoolContext from 'context/PoolContext';
@@ -44,27 +44,7 @@ const Liquidity = () => {
     // };
 
     const getPool = async () => {
-      const interArr = [];
-      // filter out central brand and Zoe Invitation brand purse
-      // filter out only unique brands because we calculate pool allocation across brands
-      state.purses
-        ?.filter(
-          purse =>
-            purse.displayInfo.assetKind !== 'set' &&
-            purse.brand !== centralBrand,
-        )
-        .map(purse => {
-          // if such asset already inserted
-          const similarAssetIndex = interArr.findIndex(elem => {
-            return elem.brandPetname === purse.brandPetname;
-          });
-          if (similarAssetIndex === -1) {
-            interArr.push(purse);
-          }
-          return interArr;
-        });
-      console.log('FILTERED PURSES: ', interArr);
-      const poolAllocations = await getPoolAllocation(ammAPI, interArr);
+      const poolAllocations = await getPoolAllocationService(ammAPI);
       console.log('POOL ALLOCATIONS: ', poolAllocations);
       setPool({ ...pool, allocations: poolAllocations });
     };

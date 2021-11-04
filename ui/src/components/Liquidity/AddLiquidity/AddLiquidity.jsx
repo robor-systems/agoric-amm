@@ -6,6 +6,8 @@ import { FiPlus } from 'react-icons/fi';
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 
+import { addLiquidityService, requestRatio } from 'services/liquidity.service';
+
 import {
   makeRatioFromAmounts,
   floorMultiplyBy,
@@ -14,25 +16,19 @@ import {
 } from '@agoric/zoe/src/contractSupport';
 import AssetContext from 'context/AssetContext';
 import { useApplicationContext } from 'context/Application';
+
 import { assetState } from 'utils/constant';
 import { parseAsNat } from '@agoric/ui-components/dist/display/natValue/parseAsNat';
 import { Nat } from '@agoric/nat';
 import { AmountMath } from '@agoric/ertp';
 import { stringifyAmountValue } from '@agoric/ui-components';
 
-import { requestRatio } from 'services/liquidity.service';
-
 import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import { getInfoForBrand, displayPetname } from 'utils/helpers';
 
 import CentralAssetLiquidity from '../SectionLiquidity/CentralAssetLiquidity';
-import SectionLiquidity from '../SectionLiquidity/SectionLiquidity';
+import SecondaryAssetLiquidity from '../SectionLiquidity/SecondaryAssetLiquidity';
 import RateLiquidity from '../RateLiquidity/RateLiquidity';
-
-// TODO(danish): store liquidity central and liquidity values in a context and if both exist then determine if pool already exists in contract
-// if pool exists then set a fixed exchange rate. Otherwise, allow user to insert whatever ratio of tokens
-// 2. Show all liquidity in liquidity positions, read wallet's liquidity positions from the wallet
-// 3. consider case where liquidity exists and user already has said liquidity and wants to add more.
 
 // used for indicating user's input type
 const SWAP_IN = 'IN';
@@ -40,17 +36,17 @@ const SWAP_OUT = 'OUT';
 
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
-const UNIT_BASIS = 10000;
-const UNIT_BASIS_NAT = 10000n;
 
 const AddLiquidity = () => {
   const [centralValue, setCentralValue] = useState({
     decimal: undefined,
     nat: 0n,
+    amountMake: undefined,
   });
-  const [liquidityValue, setLiquidityValue] = useState({
+  const [secondaryValue, setSecondaryValue] = useState({
     decimal: undefined,
     nat: 0n,
+    amountMake: undefined,
   });
   const [assetExchange, setAssetExchange] = useState(null);
   const [error, setError] = useState(null);
@@ -128,9 +124,9 @@ const AddLiquidity = () => {
         ammAPI,
       ));
     let outputRate = null;
-    asset.liquidity &&
+    asset.secondary &&
       (outputRate = await requestRatio(
-        asset.liquidity.brand,
+        asset.secondary.brand,
         makeInverseFromAmounts,
         centralBrand,
         ammAPI,
@@ -145,20 +141,19 @@ const AddLiquidity = () => {
   };
 
   useEffect(() => {
-    if ((asset.central || asset.liquidity) && ammAPI) {
-      console.log(asset);
+    if (asset.central && asset.secondary && ammAPI) {
       getRates();
     }
   }, [asset, ammAPI, centralBrand]);
 
   useEffect(() => {
-    if (centralValue && liquidityValue) setError(null);
+    if (centralValue && secondaryValue) setError(null);
     if (asset.central?.purse.balance < centralValue.decimal)
       setError(`Insufficient ${asset.central.code} balance`);
-    else if (asset.liquidity?.purse.balance < liquidityValue.decimal)
-      setError(`Insufficient ${asset.liquidity.code} balance`);
+    else if (asset.secondary?.purse.balance < secondaryValue.decimal)
+      setError(`Insufficient ${asset.secondary.code} balance`);
     else setError(null);
-  }, [centralValue, liquidityValue]);
+  }, [centralValue, secondaryValue]);
 
   useEffect(() => {
     Object.values(asset).filter(item => item?.purse).length >= 2 &&
@@ -178,7 +173,7 @@ const AddLiquidity = () => {
         nat: 0n,
       };
       setCentralValue(reset);
-      setLiquidityValue(reset);
+      setSecondaryValue(reset);
       return;
     }
     // parse as Nat value
@@ -187,29 +182,37 @@ const AddLiquidity = () => {
       asset.central?.purse.displayInfo?.decimalPlaces,
     );
 
-    setCentralValue({ decimal: newInput, nat: centralValueNat });
-    setInputType(SWAP_IN);
-
     // agoric stuff
     const amountMakeCentral = AmountMath.make(
       asset.central.brand,
       centralValueNat,
     );
 
+    setCentralValue({
+      decimal: newInput,
+      nat: centralValueNat,
+      amountMake: amountMakeCentral, // used for adding liquidity
+    });
+    setInputType(SWAP_IN);
     // calculate swapTo price
     // multiply userInput 'from' amount to 'to' amount using provided rate.
-    const LiquidityNat = floorMultiplyBy(
+    const amountMakeSecondary = floorMultiplyBy(
       amountMakeCentral,
       assetExchange.marketRate,
     );
+
     // convert bigInt to int, seems extra but doing it for consistent decimal places
-    const LiquidityValString = stringifyNat(
-      LiquidityNat.value,
-      asset.liquidity?.purse?.displayInfo?.decimalPlaces,
+    const secondaryValString = stringifyNat(
+      amountMakeSecondary.value,
+      asset.secondary?.purse?.displayInfo?.decimalPlaces,
       PLACES_TO_SHOW,
     );
 
-    setLiquidityValue({ decimal: LiquidityValString, nat: LiquidityNat });
+    setSecondaryValue({
+      decimal: secondaryValString,
+      nat: amountMakeSecondary.value,
+      amountMake: amountMakeSecondary, // used for adding liquidity
+    });
   };
 
   const handleOutputChange = ({ target }) => {
@@ -222,42 +225,58 @@ const AddLiquidity = () => {
         nat: 0n,
       };
       setCentralValue(reset);
-      setLiquidityValue(reset);
+      setSecondaryValue(reset);
       return;
     }
 
     // parse as Nat value
-    const liquidityValueNat = parseAsNat(
+    const secondaryValueNat = parseAsNat(
       newInput,
-      asset.liquidity?.purse.displayInfo?.decimalPlaces,
+      asset.secondary?.purse.displayInfo?.decimalPlaces,
     );
-
-    setLiquidityValue({ decimal: newInput, nat: liquidityValueNat });
-    setInputType(SWAP_OUT);
     // agoric stuff
     const amountMakeLiquidity = AmountMath.make(
-      asset.liquidity.brand,
-      liquidityValueNat,
+      asset.secondary.brand,
+      secondaryValueNat,
     );
+
+    setSecondaryValue({
+      decimal: newInput,
+      nat: secondaryValueNat,
+      amountMake: amountMakeLiquidity,
+    });
+    setInputType(SWAP_OUT);
 
     // calculate swapTFrom price
     // multiply userInput 'from' amount to 'to' amount using provided rate.
-    const CentralNat = floorMultiplyBy(
+    const amountMakeCentral = floorMultiplyBy(
       amountMakeLiquidity,
       invertRatio(assetExchange.marketRate),
     );
 
     // convert bigInt to int, seems extra but doing it for consistent decimal places
     const CentralValString = stringifyNat(
-      CentralNat.value,
+      amountMakeCentral.value,
       asset.central?.purse?.displayInfo?.decimalPlaces,
       PLACES_TO_SHOW,
     );
     setError(null);
     setCentralValue({
       decimal: CentralValString,
-      nat: CentralNat.value,
+      nat: amountMakeCentral.value,
+      amountMake: amountMakeCentral,
     });
+  };
+
+  const handleAddLiquidity = () => {
+    addLiquidityService(
+      centralValue.amountMake,
+      asset.central?.purse,
+      secondaryValue.amountMake,
+      asset.secondary?.purse,
+      ammAPI,
+      walletP,
+    );
   };
 
   return (
@@ -277,10 +296,10 @@ const AddLiquidity = () => {
 
         <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-liquidity" />
 
-        <SectionLiquidity
+        <SecondaryAssetLiquidity
           disabled={error === assetState.EMPTY}
-          type="liquidity"
-          value={liquidityValue.decimal}
+          type="secondary"
+          value={secondaryValue.decimal}
           handleChange={handleOutputChange}
         />
       </div>
@@ -288,7 +307,7 @@ const AddLiquidity = () => {
         <RateLiquidity
           {...assetExchange}
           central={asset.central}
-          liquidity={asset.liquidity}
+          secondary={asset.secondary}
         />
       )}
 
@@ -302,21 +321,10 @@ const AddLiquidity = () => {
         disabled={error === assetState.EMPTY}
         onClick={() => {
           if (!assetExists) setError('Please select assets first');
-          else if (!(liquidityValue && centralValue)) {
+          else if (!(secondaryValue && centralValue)) {
             setError('Please enter the amounts first');
           } else {
-            setPool({
-              ...pool,
-              data: pool.data.concat({
-                ...asset,
-                id: v4(),
-                liquidityValue,
-                centralValue,
-              }),
-            });
-            setLiquidityValue('');
-            setCentralValue('');
-            setAsset({ ...asset, liquidity: null });
+            handleAddLiquidity();
           }
         }}
       >
