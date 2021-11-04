@@ -21,7 +21,7 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
   } = state;
 
   // if type liquidity then we don't want to show centralBrand
-  if (type === 'liquidity') {
+  if (type === 'secondary') {
     assets = assets.filter(item => {
       return item.brand !== centralBrand;
     });
