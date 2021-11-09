@@ -1,6 +1,7 @@
 import { E } from '@agoric/captp';
-import { AmountMath } from '@agoric/ertp';
+import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
 import { makeRatio } from '@agoric/zoe/src/contractSupport';
+import { uniqueId } from 'lodash';
 import { dappConfig } from '../utils/config.js';
 
 export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
@@ -89,6 +90,36 @@ export const getPoolAllocationService = async ammAPI => {
   return interArr;
 };
 
+const createNewPurse = async (
+  liquidityBrand,
+  walletP,
+  instanceID,
+  contractName,
+) => {
+  console.log('CREATING PURSE');
+  const board = await E(walletP).getBoard();
+  const zoe = await E(walletP).getZoe();
+  const instance = await E(board).getValue(instanceID);
+  const issuers = await E(zoe).getIssuers(instance);
+  const liquidityBrandName = await E(liquidityBrand).getAllegedName();
+  console.log("HERE's ISSUERS: ", issuers);
+
+  const liquidityIssuer = issuers[liquidityBrandName];
+
+  if (!liquidityIssuer) {
+    throw Error('Liquidity issuer not found in AMM');
+  }
+  const liquidityId = await E(board).getId(liquidityIssuer);
+  await E(walletP).suggestIssuer(liquidityBrandName, liquidityId);
+
+  // purseName of newly created purse will come out as array
+  const newName = [];
+  newName.push(contractName);
+  newName.push(liquidityBrandName);
+
+  return newName;
+};
+
 export const addLiquidityService = async (
   centralAmount,
   centralValuePurse,
@@ -96,17 +127,39 @@ export const addLiquidityService = async (
   secondaryValuePurse,
   ammAPI,
   walletP,
+  purses,
 ) => {
   const alloc = await E(ammAPI).getPoolAllocation(secondaryValuePurse.brand);
-  const liqudity = alloc.Liquidity;
-
+  const liquidity = alloc.Liquidity;
   console.log(alloc);
 
-  if (!liqudity) {
+  if (!liquidity) {
     return Error('Liquidity brand not found');
   }
 
-  const liquidityAmount = AmountMath.make(liqudity.brand, centralAmount.value);
+  const liquidityAmount = AmountMath.make(liquidity.brand, centralAmount.value);
+
+  const {
+    AMM_INSTALLATION_BOARD_ID,
+    AMM_INSTANCE_BOARD_ID,
+    CONTRACT_NAME,
+  } = dappConfig;
+  let liquidityPurse = purses.find(purse => purse.brand === liquidity.brand);
+  console.log('PURSES', purses);
+  console.log('liquidity brand: ', liquidity.brand);
+  console.log(liquidityPurse);
+  if (liquidityPurse) {
+    liquidityPurse = liquidityPurse.pursePetname;
+  } else {
+    liquidityPurse = await createNewPurse(
+      liquidity.brand,
+      walletP,
+      AMM_INSTANCE_BOARD_ID,
+      CONTRACT_NAME,
+    );
+  }
+
+  console.log('LIQUIDITY PURSE', liquidityPurse);
 
   console.log(
     'Adding liquidity, here are the values:',
@@ -121,9 +174,26 @@ export const addLiquidityService = async (
 
   const id = `${Date.now()}`;
 
-  const { AMM_INSTALLATION_BOARD_ID, AMM_INSTANCE_BOARD_ID } = dappConfig;
+  const invitation = await E(ammAPI).makeAddLiquidityInvitation();
+  // const zoe = await E(walletP).getZoe();
 
-  const invitation = E(ammAPI).makeAddLiquidityInvitation();
+  // *******************************************************************
+  // RIGHT NOW IT WILL CRASH SAYING WE CANT FIND WITHDRAW METHOD
+  // *******************************************************************
+
+  // const walletAdmin = await E(zoe).getAdminFacet();
+
+  // const centralPurse = await E(walletAdmin).getPurse(
+  //   centralValuePurse.pursePetname,
+  // );
+  const centralPayment = await E(centralValuePurse).withdraw(centralAmount);
+
+  // const secondaryPurse = await E(walletAdmin).getPurse(
+  //   secondaryValuePurse.pursePetname,
+  // );
+  const secondaryPayment = await E(secondaryValuePurse).withdraw(
+    secondaryAmount,
+  );
 
   const offerConfig = {
     id,
@@ -135,31 +205,35 @@ export const addLiquidityService = async (
         Secondary: {
           // The pursePetname identifies which purse we want to use
           pursePetname: secondaryValuePurse.pursePetname,
-          value: secondaryAmount,
+          value: secondaryAmount.value,
         },
         Central: {
           // The pursePetname identifies which purse we want to use
           pursePetname: centralValuePurse.pursePetname,
-          value: centralAmount,
+          value: centralAmount.value,
         },
       },
       want: {
         Liquidity: {
           // The pursePetname identifies which purse we want to use
-          pursePetname: secondaryValuePurse.pursePetname,
-          value: liquidityAmount,
+          pursePetname: liquidityPurse,
+          value: liquidityAmount.value,
         },
       },
+    },
+    payments: {
+      centralPayment,
+      secondaryPayment,
     },
   };
 
   console.info('ADD LIQUIDITY CONFIG: ', offerConfig);
 
-  try {
-    await E(walletP).addOffer(offerConfig);
-  } catch (error) {
-    console.error(error);
-  }
+  // try {
+  //   await E(walletP).addOffer(offerConfig);
+  // } catch (error) {
+  //   console.error(error);
+  // }
 
   return { message: 'Offer successfully sent' };
 };

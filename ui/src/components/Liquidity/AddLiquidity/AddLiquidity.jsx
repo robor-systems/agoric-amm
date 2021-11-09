@@ -60,6 +60,7 @@ const AddLiquidity = () => {
   const {
     brandToInfo,
     autoswap: { ammAPI, centralBrand },
+    purses,
   } = state;
 
   const assetExists =
@@ -276,6 +277,7 @@ const AddLiquidity = () => {
       asset.secondary?.purse,
       ammAPI,
       walletP,
+      purses,
     );
   };
 
