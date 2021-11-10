@@ -186,14 +186,14 @@ export const addLiquidityService = async (
   // const centralPurse = await E(walletAdmin).getPurse(
   //   centralValuePurse.pursePetname,
   // );
-  const centralPayment = await E(centralValuePurse).withdraw(centralAmount);
+  // const centralPayment = await E(centralValuePurse).withdraw(centralAmount);
 
   // const secondaryPurse = await E(walletAdmin).getPurse(
   //   secondaryValuePurse.pursePetname,
   // );
-  const secondaryPayment = await E(secondaryValuePurse).withdraw(
-    secondaryAmount,
-  );
+  // const secondaryPayment = await E(secondaryValuePurse).withdraw(
+  //   secondaryAmount,
+  // );
 
   const offerConfig = {
     id,
@@ -221,19 +221,19 @@ export const addLiquidityService = async (
         },
       },
     },
-    payments: {
-      centralPayment,
-      secondaryPayment,
-    },
   };
+  // payments: {
+  //   centralPayment,
+  //   secondaryPayment,
+  // },
 
   console.info('ADD LIQUIDITY CONFIG: ', offerConfig);
 
-  // try {
-  //   await E(walletP).addOffer(offerConfig);
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  try {
+    await E(walletP).addOffer(offerConfig);
+  } catch (error) {
+    console.error(error);
+  }
 
   return { message: 'Offer successfully sent' };
 };
