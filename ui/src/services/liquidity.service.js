@@ -1,7 +1,9 @@
 import { E } from '@agoric/captp';
-import { AmountMath, AssetKind, makeIssuerKit } from '@agoric/ertp';
-import { makeRatio } from '@agoric/zoe/src/contractSupport';
-import { uniqueId } from 'lodash';
+import { AmountMath } from '@agoric/ertp';
+import {
+  calcSecondaryRequired,
+  makeRatio,
+} from '@agoric/zoe/src/contractSupport';
 import { dappConfig } from '../utils/config.js';
 
 export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
@@ -131,6 +133,24 @@ export const addLiquidityService = async (
 ) => {
   const alloc = await E(ammAPI).getPoolAllocation(secondaryValuePurse.brand);
   const liquidity = alloc.Liquidity;
+
+  const centralPoolValue = alloc.Central.value;
+  const secondaryPoolValue = alloc.Secondary.value;
+
+  const secondaryValue = calcSecondaryRequired(
+    centralAmount.value,
+    centralPoolValue,
+    secondaryPoolValue,
+    secondaryAmount.value,
+  );
+
+  console.log(
+    'Secondary Value: ',
+    secondaryAmount.value,
+    'New value: ',
+    secondaryValue,
+  );
+
   console.log(alloc);
 
   if (!liquidity) {
@@ -144,10 +164,13 @@ export const addLiquidityService = async (
     AMM_INSTANCE_BOARD_ID,
     CONTRACT_NAME,
   } = dappConfig;
+
   let liquidityPurse = purses.find(purse => purse.brand === liquidity.brand);
-  console.log('PURSES', purses);
+
   console.log('liquidity brand: ', liquidity.brand);
+  console.log('PURSES', purses);
   console.log(liquidityPurse);
+
   if (liquidityPurse) {
     liquidityPurse = liquidityPurse.pursePetname;
   } else {
@@ -161,39 +184,9 @@ export const addLiquidityService = async (
 
   console.log('LIQUIDITY PURSE', liquidityPurse);
 
-  console.log(
-    'Adding liquidity, here are the values:',
-    centralAmount,
-    centralValuePurse,
-    secondaryAmount,
-    secondaryValuePurse,
-    ammAPI,
-    walletP,
-    liquidityAmount,
-  );
-
   const id = `${Date.now()}`;
 
   const invitation = await E(ammAPI).makeAddLiquidityInvitation();
-  // const zoe = await E(walletP).getZoe();
-
-  // *******************************************************************
-  // RIGHT NOW IT WILL CRASH SAYING WE CANT FIND WITHDRAW METHOD
-  // *******************************************************************
-
-  // const walletAdmin = await E(zoe).getAdminFacet();
-
-  // const centralPurse = await E(walletAdmin).getPurse(
-  //   centralValuePurse.pursePetname,
-  // );
-  // const centralPayment = await E(centralValuePurse).withdraw(centralAmount);
-
-  // const secondaryPurse = await E(walletAdmin).getPurse(
-  //   secondaryValuePurse.pursePetname,
-  // );
-  // const secondaryPayment = await E(secondaryValuePurse).withdraw(
-  //   secondaryAmount,
-  // );
 
   const offerConfig = {
     id,
@@ -205,7 +198,7 @@ export const addLiquidityService = async (
         Secondary: {
           // The pursePetname identifies which purse we want to use
           pursePetname: secondaryValuePurse.pursePetname,
-          value: secondaryAmount.value,
+          value: secondaryValue,
         },
         Central: {
           // The pursePetname identifies which purse we want to use
@@ -222,11 +215,6 @@ export const addLiquidityService = async (
       },
     },
   };
-  // payments: {
-  //   centralPayment,
-  //   secondaryPayment,
-  // },
-
   console.info('ADD LIQUIDITY CONFIG: ', offerConfig);
 
   try {
