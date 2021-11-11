@@ -1,33 +1,73 @@
 import _ from 'lodash';
+import { E } from '@agoric/captp';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { v4 } from 'uuid';
 import AssetListItem from '../ListItem/AssetListItem';
 import ListItem from '../ListItem/ListItem';
 import SkeletonListItem from '../ListItem/SkeletonListItem';
 
 const AssetDialog = ({ type, setSelectedAsset }) => {
+  const mounted = useRef(false);
   // selected asset
   const [asset] = useContext(AssetContext);
   // get state
   const { state } = useApplicationContext();
 
+  const [parsedAssets, setParsedAssets] = useState([]);
+
   // get assets from
-  let { assets } = state;
 
   const {
     autoswap: { centralBrand },
   } = state;
 
-  // if type liquidity then we don't want to show centralBrand
-  if (type === 'secondary') {
-    assets = assets.filter(item => {
-      return item.brand !== centralBrand;
-    });
-  }
+  const refinedLiquidityBrands = async items => {
+    const refinedItems = [];
+    for await (const item of items) {
+      // if component unmounted before completion
+      if (mounted.current === false) {
+        return;
+      }
+      const brandName = await E(item.brand).getAllegedName();
+      console.log(brandName);
+      if (!brandName.includes('Liquidity')) {
+        refinedItems.push(item);
+      }
+    }
+    setParsedAssets(refinedItems);
+  };
 
-  if (!assets.length)
+  useEffect(() => {
+    mounted.current = true;
+    const { assets } = state;
+    let refinedAssets;
+    // if type liquidity then we don't want to show centralBrand
+    if (type === 'secondary') {
+      refinedAssets = assets.filter(item => {
+        return item.brand !== centralBrand;
+      });
+      setParsedAssets(refinedAssets);
+    } else {
+      refinedAssets = assets.filter(item => {
+        if (Array.isArray(item.name)) {
+          const name = item.name.join('.');
+          return !name.includes('Liquidity');
+        }
+        return !item.name.includes('Liquidity');
+      });
+      setParsedAssets(refinedAssets);
+    }
+    // asycn refine liquidity assets through brands not names
+    refinedLiquidityBrands(assets);
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  if (!parsedAssets.length)
     return (
       <div className="flex flex-col gap-4 p-5 overflow-auto ">
         {Array(4)
@@ -42,7 +82,7 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
 
   return (
     <div className="flex flex-col gap-4 p-5 overflow-auto ">
-      {assets.map(item => (
+      {parsedAssets.map(item => (
         <div
           key={v4()}
           onClick={() => {

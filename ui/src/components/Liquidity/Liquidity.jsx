@@ -38,10 +38,10 @@ const Liquidity = () => {
   } = state;
 
   useEffect(() => {
-    // const getUserSupply = async () => {
-    //   const supply = await getUserLiquidity(ammAPI, state.purses);
-    //   console.log('Here"s the supply: ', supply);
-    // };
+    // TODO: next step is to figure out how to get user supply.
+    const getUserSupply = async () => {
+      getUserLiquidityService(state.assets);
+    };
 
     const getPool = async () => {
       const poolAllocations = await getPoolAllocationService(ammAPI);
@@ -49,7 +49,7 @@ const Liquidity = () => {
       setPool({ ...pool, allocations: poolAllocations });
     };
 
-    // state && state.purses && getUserSupply();
+    state && state.assets && getUserSupply();
     state && state.purses && getPool();
 
     setCentralInfo(getInfoForBrand(brandToInfo, centralBrand));

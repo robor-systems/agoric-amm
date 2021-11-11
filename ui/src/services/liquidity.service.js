@@ -1,6 +1,7 @@
 import { E } from '@agoric/captp';
 import { AmountMath } from '@agoric/ertp';
 import {
+  calcLiqValueToMint,
   calcSecondaryRequired,
   makeRatio,
 } from '@agoric/zoe/src/contractSupport';
@@ -26,29 +27,30 @@ export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
   return poolRate;
 };
 
-export const getUserLiquidityService = async (ammAPI, purses) => {
-  let interArr = [];
-  const promises = [];
-  /* eslint-disable no-await-in-loop */
-  purses.forEach(purse => {
-    promises.push(E(ammAPI).getLiquiditySupply(purse.brand));
-  });
+export const getUserLiquidityService = async assets => {
+  console.log(assets);
+  // let interArr = [];
+  // const promises = [];
+  // /* eslint-disable no-await-in-loop */
+  // purses.forEach(purse => {
+  //   promises.push(E(ammAPI).getLiquiditySupply(purse.brand));
+  // });
 
-  await Promise.allSettled(promises)
-    .then(results => {
-      results = results.map((item, index) => {
-        return { ...item, brand: purses[index].brand };
-      });
-      interArr = results
-        .filter(item => item.status === 'fulfilled')
-        .map(item => {
-          return { value: item.value, brand: item.brand };
-        });
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  return interArr;
+  // await Promise.allSettled(promises)
+  //   .then(results => {
+  //     results = results.map((item, index) => {
+  //       return { ...item, brand: purses[index].brand };
+  //     });
+  //     interArr = results
+  //       .filter(item => item.status === 'fulfilled')
+  //       .map(item => {
+  //         return { value: item.value, brand: item.brand };
+  //       });
+  //   })
+  //   .catch(error => {
+  //     console.error(error);
+  //   });
+  // return interArr;
 };
 
 export const getPoolAllocationService = async ammAPI => {
@@ -132,7 +134,7 @@ export const addLiquidityService = async (
   purses,
 ) => {
   const alloc = await E(ammAPI).getPoolAllocation(secondaryValuePurse.brand);
-  const liquidity = alloc.Liquidity;
+  console.log(alloc);
 
   const centralPoolValue = alloc.Central.value;
   const secondaryPoolValue = alloc.Secondary.value;
@@ -151,13 +153,20 @@ export const addLiquidityService = async (
     secondaryValue,
   );
 
-  console.log(alloc);
-
+  const liquidity = alloc.Liquidity;
   if (!liquidity) {
     return Error('Liquidity brand not found');
   }
 
-  const liquidityAmount = AmountMath.make(liquidity.brand, centralAmount.value);
+  const liquidityValue = calcLiqValueToMint(
+    liquidity.value,
+    centralAmount.value,
+    centralPoolValue,
+  );
+
+  console.log('NEW LIQUIDITY VALUE: ', liquidityValue);
+
+  const liquidityAmount = AmountMath.make(liquidity.brand, liquidityValue);
 
   const {
     AMM_INSTALLATION_BOARD_ID,
