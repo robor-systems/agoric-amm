@@ -1,12 +1,39 @@
-import PoolContext from 'context/PoolContext';
 import React, { useContext } from 'react';
+import { useApplicationContext } from 'context/Application';
+import AssetContext from 'context/AssetContext';
+import ErrorContext from 'context/ErrorContext';
 
 const ALL = 'ALL';
 const YOURS = 'YOURS';
 
 const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
-  const [pool, setPool] = useContext(PoolContext);
-  console.log(Central, Secondary);
+  // get state
+  const { state } = useApplicationContext();
+  const [error, setError] = useContext(ErrorContext);
+  const [asset, setAsset] = useContext(AssetContext);
+
+  const setAddLiquidity = () => {
+    const { assets } = state;
+    const secondarySelected = item.Secondary;
+
+    const assetSelected = assets.find(elem => {
+      return elem.code === secondarySelected.info.petname;
+    });
+
+    if (!assetSelected) {
+      setError("Can't find wallet for selected asset.");
+
+      setTimeout(() => {
+        setError('');
+      }, 2500);
+      return;
+    }
+
+    setAsset({
+      ...asset,
+      secondary: assetSelected,
+    });
+  };
 
   return (
     <div className="border w-full p-4 flex flex-col gap-2 text-gray-500">
@@ -30,12 +57,14 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
         <h4>{Secondary.value}</h4>
       </div>
       <div className="flex gap-3 mt-2">
-        <button className="btn-primary w-full p-0.5">Add</button>
+        <button className="btn-primary w-full p-0.5" onClick={setAddLiquidity}>
+          Add
+        </button>
         {type === YOURS ? (
           <button
             className="btn-primary w-full p-0.5"
             onClick={() => {
-              setPool({ ...pool, selectRemove: item });
+              setAsset({ ...asset, selectRemove: item });
               handleClose();
             }}
           >

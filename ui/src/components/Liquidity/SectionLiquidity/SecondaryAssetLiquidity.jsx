@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useEffect, useState, useContext } from 'react';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 
@@ -11,10 +12,16 @@ const SecondaryAssetLiquidity = ({ type, value, handleChange, disabled }) => {
 
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
+  console.log(selected);
 
   return (
     <>
-      <DialogSwap handleClose={() => setOpen(false)} open={open} type={type} />
+      <DialogSwap
+        handleClose={() => setOpen(false)}
+        open={open}
+        type={type}
+        asset={selected}
+      />
       <div className="flex flex-col bg-alternative p-4 rounded-sm gap-2 select-none">
         <h3 className="text-xs uppercase text-gray-500 tracking-wide font-medium select-none">
           Input
@@ -38,6 +45,22 @@ const SecondaryAssetLiquidity = ({ type, value, handleChange, disabled }) => {
               </div>
               <h3 className="text-xs text-gray-500 font-semibold">
                 Purse: <span>{selected.purse.name}</span>{' '}
+              </h3>
+            </div>
+          ) : selected ? (
+            <div
+              className="flex flex-col w-28  p-1 rounded-sm hover:bg-black cursor-pointer hover:bg-opacity-5"
+              onClick={() => {
+                setOpen(true);
+              }}
+            >
+              <div className="flex  items-center justify-between">
+                <h2 className="text-xl uppercase font-medium">
+                  {selected?.code}
+                </h2>
+              </div>
+              <h3 className="text-xs text-primary font-semibold flex items-center gap-1">
+                Select Purse <FiChevronDown className="text-xl" />
               </h3>
             </div>
           ) : (

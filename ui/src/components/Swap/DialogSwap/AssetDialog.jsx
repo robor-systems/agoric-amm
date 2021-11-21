@@ -43,10 +43,17 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
     mounted.current = true;
     const { assets } = state;
     let refinedAssets;
-    // if type liquidity then we don't want to show centralBrand
+    // if type secondary then we don't want to show centralBrand
     if (type === 'secondary') {
       refinedAssets = assets.filter(item => {
         return item.brand !== centralBrand;
+      });
+      refinedAssets = refinedAssets.filter(item => {
+        if (Array.isArray(item.name)) {
+          const name = item.name.join('.');
+          return !name.includes('Liquidity');
+        }
+        return !item.name.includes('Liquidity');
       });
       setParsedAssets(refinedAssets);
     } else {
@@ -59,7 +66,7 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
       });
       setParsedAssets(refinedAssets);
     }
-    // asycn refine liquidity assets through brands not names
+    // async refine liquidity assets through brands not names
     refinedLiquidityBrands(assets);
 
     return () => {

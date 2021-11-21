@@ -15,6 +15,7 @@ import {
   invertRatio,
 } from '@agoric/zoe/src/contractSupport';
 import AssetContext from 'context/AssetContext';
+import ErrorContext from 'context/ErrorContext';
 import { useApplicationContext } from 'context/Application';
 
 import { assetState } from 'utils/constant';
@@ -49,7 +50,7 @@ const AddLiquidity = () => {
     amountMake: undefined,
   });
   const [assetExchange, setAssetExchange] = useState(undefined);
-  const [error, setError] = useState(undefined);
+  const [error, setError] = useContext(ErrorContext);
   const [asset, setAsset] = useContext(AssetContext);
   const [pool, setPool] = useContext(PoolContext);
   const [inputType, setInputType] = useState(SWAP_IN);
