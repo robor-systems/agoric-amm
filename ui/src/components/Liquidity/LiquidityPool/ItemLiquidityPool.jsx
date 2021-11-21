@@ -21,7 +21,7 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
     });
 
     if (!assetSelected) {
-      setError("Can't find wallet for selected asset.");
+      setError("Can't find the selected asset in your wallet.");
 
       setTimeout(() => {
         setError('');
