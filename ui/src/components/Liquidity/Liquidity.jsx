@@ -13,7 +13,7 @@ import { getInfoForBrand } from 'utils/helpers';
 
 import { motion } from 'framer-motion';
 import React, { useState, useEffect, useContext } from 'react';
-import { FiChevronRight } from 'react-icons/fi';
+import { FiChevronRight, FiLoader } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
 import RemoveLiquidity from './RemoveLiquidity/RemoveLiquidity';
@@ -39,19 +39,36 @@ const Liquidity = () => {
   } = state;
 
   useEffect(() => {
-    // TODO: next step is to figure out how to get user supply.
-    const getUserSupply = async () => {
-      getUserLiquidityService(state.assets);
-    };
-
     const getPool = async () => {
-      const poolAllocations = await getPoolAllocationService(ammAPI);
-      console.log('POOL ALLOCATIONS: ', poolAllocations);
-      setPool({ ...pool, allocations: poolAllocations });
+      const poolAllocations = await getPoolAllocationService(
+        ammAPI,
+        state.assets,
+      );
+      if (poolAllocations.status === 200) {
+        const { allocations } = poolAllocations;
+        console.log('POOL ALLOCATIONS: ', allocations);
+        setPool({ ...pool, allocations });
+      } else {
+        // TODO: should be printed on screen
+        console.error('Something went wrong');
+      }
+
+      // further process userPairs to determine liquidity percentages
+      const userLiquidity = await getUserLiquidityService(
+        ammAPI,
+        poolAllocations.userPairs,
+      );
+
+      if (userLiquidity.status === 200) {
+        // TODO use userPairs to show user's liquidity in the screen.
+        setPool({ ...pool, userPairs: userLiquidity.payload });
+      } else {
+        // TODO: should be printed on screen
+        console.error('Something went wrong');
+      }
     };
 
-    state && state.assets && getUserSupply();
-    state && state.purses && getPool();
+    state && state.assets && getPool();
 
     setCentralInfo(getInfoForBrand(brandToInfo, centralBrand));
   }, [state.purses]);

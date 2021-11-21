@@ -1,5 +1,6 @@
 import { E } from '@agoric/captp';
 import { AmountMath } from '@agoric/ertp';
+import { stringifyPurseValue } from '@agoric/ui-components';
 import {
   calcLiqValueToMint,
   calcSecondaryRequired,
@@ -27,33 +28,41 @@ export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
   return poolRate;
 };
 
-export const getUserLiquidityService = async assets => {
-  console.log(assets);
-  // let interArr = [];
-  // const promises = [];
-  // /* eslint-disable no-await-in-loop */
-  // purses.forEach(purse => {
-  //   promises.push(E(ammAPI).getLiquiditySupply(purse.brand));
-  // });
+export const getUserLiquidityService = async (ammAPI, pairs) => {
+  // intermediate array for storing results
+  const promises = [];
 
-  // await Promise.allSettled(promises)
-  //   .then(results => {
-  //     results = results.map((item, index) => {
-  //       return { ...item, brand: purses[index].brand };
-  //     });
-  //     interArr = results
-  //       .filter(item => item.status === 'fulfilled')
-  //       .map(item => {
-  //         return { value: item.value, brand: item.brand };
-  //       });
-  //   })
-  //   .catch(error => {
-  //     console.error(error);
-  //   });
-  // return interArr;
+  try {
+    pairs.forEach(pair => {
+      promises.push(E(ammAPI).getLiquiditySupply(pair.Secondary.brand));
+    });
+  } catch (error) {
+    console.error(error);
+    return {
+      status: 500,
+      message: 'something went wrong while getting liquidity supply',
+    };
+  }
+
+  let interArr = [];
+  await Promise.allSettled(promises).then(results => {
+    results = results.map((item, index) => {
+      return {
+        ...item,
+        userLiquidity: pairs[index].User.value,
+        userLiquidityNAT: pairs[index].User.valueNAT,
+        brand: pairs[index].User.brand,
+      };
+    });
+
+    interArr = [...results.filter(item => item.status === 'fulfilled')];
+  });
+
+  return { status: 200, message: "we're working on it.", payload: interArr };
 };
 
-export const getPoolAllocationService = async ammAPI => {
+export const getPoolAllocationService = async (ammAPI, assets) => {
+  // intermediate array for storing results
   let interArr = [];
   const promises = [];
   let allPoolBrands;
@@ -77,21 +86,57 @@ export const getPoolAllocationService = async ammAPI => {
   await Promise.allSettled(promises)
     .then(results => {
       results = results.map((item, index) => {
-        console.log(item);
         return { ...item, brand: allPoolBrands[index] };
       });
       interArr = results
         .filter(item => item.status === 'fulfilled')
         .map(item => {
-          console.log('HERE ARE THE RESULTS FROM THE PROMISES: ', item);
           return item.value;
         });
     })
     .catch(error => {
       console.error(error);
+      return {
+        status: 500,
+        message: 'something went wrong gathering allocation pools',
+      };
     });
 
-  return interArr;
+  const userLiquidityPairs = [];
+  // identify brands of which user already has liquidity
+  interArr = interArr.map(elem => {
+    const userLiquidityFound = assets.find(asset => {
+      return asset.brand === elem.Liquidity.brand;
+    });
+
+    // if user has liquidity then add it in 'User' attribute
+    if (userLiquidityFound) {
+      const firstPurse = [...userLiquidityFound.purses].shift();
+      const balance = stringifyPurseValue(firstPurse);
+      const newElem = {
+        ...elem,
+        User: {
+          brand: userLiquidityFound.brand,
+          value: balance,
+          valueNAT: firstPurse.currentAmount.value,
+        },
+      };
+
+      // storing user liquidity pairs for further processing
+      userLiquidityPairs.push(newElem);
+
+      return newElem;
+    }
+
+    return elem;
+  });
+
+  return {
+    status: 200,
+    message: 'successfully extracted allocation pools',
+    allocations: interArr,
+    userPairs: userLiquidityPairs,
+  };
 };
 
 const createNewPurse = async (
