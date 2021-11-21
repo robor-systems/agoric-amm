@@ -155,18 +155,18 @@ export const addLiquidityService = async (
 
   const liquidity = alloc.Liquidity;
   if (!liquidity) {
-    return Error('Liquidity brand not found');
+    return { status: 500, message: 'Liquidity brand not found' };
   }
 
-  const liquidityValue = calcLiqValueToMint(
-    liquidity.value,
+  const actualLiquidity = await E(ammAPI).getLiquiditySupply(
+    secondaryValuePurse.brand,
+  );
+
+  const liquidityValueTrue = calcLiqValueToMint(
+    actualLiquidity,
     centralAmount.value,
     centralPoolValue,
   );
-
-  console.log('NEW LIQUIDITY VALUE: ', liquidityValue);
-
-  const liquidityAmount = AmountMath.make(liquidity.brand, liquidityValue);
 
   const {
     AMM_INSTALLATION_BOARD_ID,
@@ -219,18 +219,18 @@ export const addLiquidityService = async (
         Liquidity: {
           // The pursePetname identifies which purse we want to use
           pursePetname: liquidityPurse,
-          value: liquidityAmount.value,
+          value: liquidityValueTrue,
         },
       },
     },
   };
   console.info('ADD LIQUIDITY CONFIG: ', offerConfig);
 
-  try {
-    await E(walletP).addOffer(offerConfig);
-  } catch (error) {
-    console.error(error);
-  }
+  // try {
+  //   await E(walletP).addOffer(offerConfig);
+  // } catch (error) {
+  //   console.error(error);
+  // }
 
-  return { message: 'Offer successfully sent' };
+  return { status: 200, message: 'Offer successfully sent' };
 };

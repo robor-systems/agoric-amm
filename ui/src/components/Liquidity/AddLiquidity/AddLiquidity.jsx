@@ -39,20 +39,21 @@ const PLACES_TO_SHOW = 2;
 
 const AddLiquidity = () => {
   const [centralValue, setCentralValue] = useState({
-    decimal: undefined,
+    decimal: '',
     nat: 0n,
     amountMake: undefined,
   });
   const [secondaryValue, setSecondaryValue] = useState({
-    decimal: undefined,
+    decimal: '',
     nat: 0n,
     amountMake: undefined,
   });
-  const [assetExchange, setAssetExchange] = useState(null);
-  const [error, setError] = useState(null);
+  const [assetExchange, setAssetExchange] = useState(undefined);
+  const [error, setError] = useState(undefined);
   const [asset, setAsset] = useContext(AssetContext);
   const [pool, setPool] = useContext(PoolContext);
   const [inputType, setInputType] = useState(SWAP_IN);
+  const [showLoader, setShowLoader] = useState(false);
 
   // get state
   const { state, walletP } = useApplicationContext();
@@ -149,11 +150,17 @@ const AddLiquidity = () => {
 
   useEffect(() => {
     if (centralValue && secondaryValue) setError(null);
-    if (asset.central?.purse.balance < centralValue.decimal)
+    if (
+      parseFloat(asset.central?.purse.balance) <
+      parseFloat(centralValue.decimal)
+    ) {
       setError(`Insufficient ${asset.central.code} balance`);
-    else if (asset.secondary?.purse.balance < secondaryValue.decimal)
+    } else if (
+      parseFloat(asset.secondary?.purse.balance) <
+      parseFloat(secondaryValue.decimal)
+    ) {
       setError(`Insufficient ${asset.secondary.code} balance`);
-    else setError(null);
+    } else setError(null);
   }, [centralValue, secondaryValue]);
 
   useEffect(() => {
@@ -170,7 +177,7 @@ const AddLiquidity = () => {
       newInput = 0;
     } else if (!newInput) {
       const reset = {
-        decimal: undefined,
+        decimal: '',
         nat: 0n,
       };
       setCentralValue(reset);
@@ -222,7 +229,7 @@ const AddLiquidity = () => {
       newInput = 0;
     } else if (!newInput) {
       const reset = {
-        decimal: undefined,
+        decimal: '',
         nat: 0n,
       };
       setCentralValue(reset);
@@ -269,8 +276,13 @@ const AddLiquidity = () => {
     });
   };
 
-  const handleAddLiquidity = () => {
-    addLiquidityService(
+  const handleAddLiquidity = async () => {
+    if (error) {
+      return;
+    }
+    setShowLoader(true);
+
+    const response = await addLiquidityService(
       centralValue.amountMake,
       asset.central?.purse,
       secondaryValue.amountMake,
@@ -279,6 +291,24 @@ const AddLiquidity = () => {
       walletP,
       purses,
     );
+
+    // if passed then reset everything
+    if (response.status === 200) {
+      const reset = {
+        decimal: '',
+        nat: 0n,
+        amountMake: undefined,
+      };
+      setAsset({
+        ...asset,
+        central: undefined,
+        secondary: undefined,
+      });
+      setCentralValue(reset);
+      setSecondaryValue(reset);
+      setAssetExchange(undefined);
+    }
+    setShowLoader(false);
   };
 
   return (
@@ -315,12 +345,12 @@ const AddLiquidity = () => {
 
       <button
         className={clsx(
-          'bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
+          'bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase flex justify-center',
           assetExists
             ? 'bg-primary hover:bg-primaryDark text-white'
             : 'text-gray-500',
         )}
-        disabled={error === assetState.EMPTY}
+        disabled={error === assetState.EMPTY || showLoader}
         onClick={() => {
           if (!assetExists) setError('Please select assets first');
           else if (!(secondaryValue && centralValue)) {
@@ -330,7 +360,11 @@ const AddLiquidity = () => {
           }
         }}
       >
-        ADD LIQUIDITY
+        {showLoader ? (
+          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white-900"></div>
+        ) : (
+          'ADD LIQUIDITY'
+        )}
       </button>
 
       {error && (
