@@ -35,15 +35,21 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
     });
   };
 
+  const setRemoveLiquidity = () => {
+    console.log('Setting remove liquidity values');
+    const { assets } = state;
+    const secondarySelected = item.Secondary;
+  };
+
   return (
     <div className="border w-full p-4 flex flex-col gap-2 text-gray-500">
       <h3 className="font-medium text-lg text-black">
         {Central.info?.petname} / {Secondary.info?.petname}
       </h3>
       {type === YOURS ? (
-        <div className="flex justify-between ">
-          <h4 className="text-md ">Share of Pool:</h4>
-          {/* <h4>{Number(liquidityValue / 100).toPrecision(4)}%</h4> */}
+        <div className="flex justify-between text-black">
+          <h4 className="text-md">Share of Pool:</h4>
+          <h4>{item.User.share}%</h4>
         </div>
       ) : (
         ''
@@ -63,10 +69,7 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
         {type === YOURS ? (
           <button
             className="btn-primary w-full p-0.5"
-            onClick={() => {
-              setAsset({ ...asset, selectRemove: item });
-              handleClose();
-            }}
+            onClick={setRemoveLiquidity}
           >
             Remove
           </button>

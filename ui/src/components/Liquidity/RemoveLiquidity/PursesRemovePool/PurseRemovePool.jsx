@@ -1,5 +1,5 @@
 import { useApplicationContext } from 'context/Application';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
@@ -7,11 +7,27 @@ import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 
 const PurseRemovePool = ({ pool, type, amount }) => {
   const [asset] = useContext(AssetContext);
+  const [centralAsset, setCentralAsset] = useState({});
 
   const { state } = useApplicationContext();
-  const { assets } = state;
+  const {
+    assets,
+    autoswap: { centralBrand },
+  } = state;
 
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (type === 'central') {
+      const assetArr = assets?.find(item => {
+        return item.brand === centralBrand;
+      });
+      if (assetArr) {
+        // assumption that first elem will contain the obj
+        setCentralAsset(assetArr);
+      }
+    }
+  }, []);
 
   if (!pool)
     return (
@@ -41,7 +57,7 @@ const PurseRemovePool = ({ pool, type, amount }) => {
         open={open}
         type={type}
         purseOnly
-        asset={assets.find(item => item.code === pool.code)}
+        asset={centralAsset}
       />
       {asset[type]?.purse ? (
         <div

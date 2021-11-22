@@ -23,12 +23,12 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
   } = state;
 
   useEffect(() => {
-    const assetArr = assets?.filter(item => {
+    const assetArr = assets?.find(item => {
       return item.brand === centralBrand;
     });
-    if (assetArr.length > 0) {
+    if (assetArr) {
       // assumption that first elem will contain the obj
-      setCentralAsset(assetArr[0]);
+      setCentralAsset(assetArr);
     }
   }, [assets, centralBrand]);
 

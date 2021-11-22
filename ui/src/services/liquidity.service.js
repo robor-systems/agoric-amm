@@ -1,6 +1,6 @@
 import { E } from '@agoric/captp';
-import { AmountMath } from '@agoric/ertp';
 import { stringifyPurseValue } from '@agoric/ui-components';
+import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import {
   calcLiqValueToMint,
   calcSecondaryRequired,
@@ -47,16 +47,33 @@ export const getUserLiquidityService = async (ammAPI, pairs) => {
   let interArr = [];
   await Promise.allSettled(promises).then(results => {
     results = results.map((item, index) => {
+      // converting liquidities to float for easy percentage calculation
+      const totalLiquidityDec = parseFloat(stringifyNat(item.value, 0, 0));
+      const userLiquidityDec = parseFloat(
+        stringifyNat(pairs[index].User.valueNAT, 0, 0),
+      );
+
+      const poolShare = parseFloat(
+        ((userLiquidityDec / totalLiquidityDec) * 100).toFixed(8),
+      );
+
+      if (poolShare === 0) return [];
+
       return {
         ...item,
         userLiquidity: pairs[index].User.value,
         userLiquidityNAT: pairs[index].User.valueNAT,
         brand: pairs[index].User.brand,
+        Central: pairs[index].Central,
+        Secondary: pairs[index].Secondary,
+        percentShare: poolShare,
       };
     });
 
     interArr = [...results.filter(item => item.status === 'fulfilled')];
   });
+
+  console.log(interArr);
 
   return { status: 200, message: "we're working on it.", payload: interArr };
 };
@@ -271,11 +288,11 @@ export const addLiquidityService = async (
   };
   console.info('ADD LIQUIDITY CONFIG: ', offerConfig);
 
-  // try {
-  //   await E(walletP).addOffer(offerConfig);
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  try {
+    await E(walletP).addOffer(offerConfig);
+  } catch (error) {
+    console.error(error);
+  }
 
   return { status: 200, message: 'Offer successfully sent' };
 };

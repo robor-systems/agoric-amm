@@ -27,8 +27,8 @@ import { stringifyAmountValue } from '@agoric/ui-components';
 import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import { getInfoForBrand, displayPetname } from 'utils/helpers';
 
-import CentralAssetLiquidity from '../SectionLiquidity/CentralAssetLiquidity';
-import SecondaryAssetLiquidity from '../SectionLiquidity/SecondaryAssetLiquidity';
+import CentralAssetLiquidity from './SectionLiquidity/CentralAssetLiquidity';
+import SecondaryAssetLiquidity from './SectionLiquidity/SecondaryAssetLiquidity';
 import RateLiquidity from '../RateLiquidity/RateLiquidity';
 
 // used for indicating user's input type

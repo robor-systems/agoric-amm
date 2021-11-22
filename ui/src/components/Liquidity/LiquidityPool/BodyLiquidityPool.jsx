@@ -28,8 +28,6 @@ const BodyLiquidityPool = props => {
       const newPool = pool.allocations.map(item => {
         const central = item.Central;
         const secondary = item.Secondary;
-        // CMT(danish): liquidity not being used currently but might have some use in the future
-        // const liquidity = item.Liquidity;
 
         const centralInfo = getInfoForBrand(brandToInfo, central.brand);
         const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
@@ -53,7 +51,46 @@ const BodyLiquidityPool = props => {
 
       setUpdatedPool(newPool);
     };
+
     pool.allocations && updatePools();
+  }, []);
+
+  useEffect(() => {
+    const updateUserPools = () => {
+      const { userPairs } = pool;
+      console.log('Getting user pools');
+      console.log(userPairs);
+
+      const newUserPairs = userPairs.map(pair => {
+        const central = pair.Central;
+        const secondary = pair.Secondary;
+
+        const centralInfo = getInfoForBrand(brandToInfo, central.brand);
+        const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
+
+        const centralValString = stringifyNat(
+          central.value,
+          centralInfo.decimalPlaces,
+          PLACES_TO_SHOW,
+        );
+
+        const secondaryValString = stringifyNat(
+          secondary.value,
+          secondaryInfo.decimalPlaces,
+          PLACES_TO_SHOW,
+        );
+
+        return {
+          Central: { info: centralInfo, value: centralValString },
+          Secondary: { info: secondaryInfo, value: secondaryValString },
+          User: { share: pair.percentShare },
+        };
+      });
+
+      setUserPool(newUserPairs);
+    };
+
+    pool.userPairs && updateUserPools();
   }, []);
 
   return (

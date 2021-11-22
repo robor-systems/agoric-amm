@@ -5,7 +5,7 @@ import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 
-import DialogSwap from '../../Swap/DialogSwap/DialogSwap';
+import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 
 const SecondaryAssetLiquidity = ({ type, value, handleChange, disabled }) => {
   const [open, setOpen] = useState(false);
