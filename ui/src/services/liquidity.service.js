@@ -296,3 +296,18 @@ export const addLiquidityService = async (
 
   return { status: 200, message: 'Offer successfully sent' };
 };
+
+export const removeLiquidityService = (
+  central,
+  secondary,
+  amount,
+  purses,
+  ammAPI,
+  walletP,
+) => {
+  console.log(central, secondary, amount);
+  // determine value to be returned to users
+  const { liquidityInfo } = secondary;
+  console.log(purses);
+  console.log('removing liquidity');
+};

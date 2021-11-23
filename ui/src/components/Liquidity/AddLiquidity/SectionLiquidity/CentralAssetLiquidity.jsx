@@ -27,7 +27,6 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
       return item.brand === centralBrand;
     });
     if (assetArr) {
-      // assumption that first elem will contain the obj
       setCentralAsset(assetArr);
     }
   }, [assets, centralBrand]);

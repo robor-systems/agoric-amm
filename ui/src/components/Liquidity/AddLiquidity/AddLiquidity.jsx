@@ -157,7 +157,7 @@ const AddLiquidity = () => {
     ) {
       setError(`Insufficient ${asset.central.code} balance`);
     } else if (
-      parseFloat(asset.secondary?.purse.balance) <
+      parseFloat(asset.secondary?.purse?.balance) <
       parseFloat(secondaryValue.decimal)
     ) {
       setError(`Insufficient ${asset.secondary.code} balance`);

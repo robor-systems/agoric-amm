@@ -83,7 +83,12 @@ const BodyLiquidityPool = props => {
         return {
           Central: { info: centralInfo, value: centralValString },
           Secondary: { info: secondaryInfo, value: secondaryValString },
-          User: { share: pair.percentShare },
+          User: {
+            share: pair.percentShare,
+            brand: pair.brand,
+            userLiquidityNAT: pair.userLiquidityNAT,
+            totaLiquidity: pair.value,
+          },
         };
       });
 

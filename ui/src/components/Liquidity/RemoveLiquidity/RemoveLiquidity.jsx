@@ -1,34 +1,57 @@
+import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import AssetContext from 'context/AssetContext';
 import PoolContext from 'context/PoolContext';
+import { useApplicationContext } from 'context/Application';
+
 import { motion } from 'framer-motion';
-import React, { useContext, useEffect, useState } from 'react';
 import { FiArrowDown } from 'react-icons/fi';
+
+import { removeLiquidityService } from 'services/liquidity.service';
+
 import AmountToRemove from './AmountToRemove';
 import PoolSelector from './PoolSelector/PoolSelector';
 import PursesRemovePool from './PursesRemovePool/PursesRemovePool';
 
 const RemoveLiquidity = props => {
-  const [pool, setPool] = useContext(PoolContext);
+  const [pool] = useContext(PoolContext);
   const [error, setError] = useState(false);
   const [asset, setAsset] = useContext(AssetContext);
   const [amount, setAmount] = useState('');
   const [validated, setValidated] = useState(false);
 
+  // get state
+  const { state, walletP } = useApplicationContext();
+
+  const {
+    brandToInfo,
+    autoswap: { ammAPI, centralBrand },
+    purses,
+  } = state;
+
   const handleRemovePool = () => {
-    if (!pool?.selectRemove) setError('Please select pool first');
-    else if (!amount) setError('Please enter the amount first');
-    else if (!(asset?.central && asset.liquidity))
-      setError('Please select the purses first');
-    else {
-      setAsset({ central: null, liquidity: null });
-      setAmount('');
-      setPool({
-        ...pool,
-        selectRemove: null,
-        data: pool.data.filter(item => item.id !== pool?.selectRemove.id),
-      });
+    if (!asset.centralRemove && !asset.secondaryRemove) {
+      setError('Please select purses first');
+      return;
+    } else if (!amount) {
+      setError('Please enter the amount first');
+      return;
     }
+
+    asset.centralRemove &&
+      asset.secondaryRemove &&
+      removeLiquidityService(
+        asset.centralRemove,
+        asset.secondaryRemove,
+        amount,
+        purses,
+        ammAPI,
+        walletP,
+      );
+
+    // // reset values
+    // setAsset({ centralRemove: undefined, secondaryRemove: undefined });
+    // setAmount('');
   };
 
   useEffect(() => {
@@ -37,15 +60,15 @@ const RemoveLiquidity = props => {
   }, [pool?.selectRemove]);
 
   useEffect(() => {
-    (pool?.selectRemove || amount || (asset?.central && asset?.liquidity)) &&
+    (amount || (asset?.centralRemove && asset?.secondaryRemove)) &&
       setError(null);
 
-    pool?.selectRemove &&
-      amount &&
-      asset?.central &&
-      asset?.liquidity &&
+    setValidated(false);
+    amount &&
+      asset?.centralRemove?.purse &&
+      asset?.secondaryRemove?.purse &&
       setValidated(true);
-  }, [pool, amount, asset]);
+  }, [amount, asset]);
 
   return (
     <motion.div
@@ -57,8 +80,17 @@ const RemoveLiquidity = props => {
     >
       <PoolSelector {...props} />
       <div className="flex flex-col  gap-4 relative">
-        <AmountToRemove value={amount} setValue={setAmount} />
-        <FiArrowDown className=" p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-remove" />
+        <AmountToRemove
+          value={amount}
+          setValue={setAmount}
+          poolShare={asset?.secondaryRemove?.liquidityInfo?.share}
+        />
+        <FiArrowDown
+          className={
+            'p-2 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon-remove'
+          }
+          style={{ top: asset.secondaryRemove ? '48.5%' : '' }}
+        />
         <PursesRemovePool amount={amount} />
       </div>
       <button

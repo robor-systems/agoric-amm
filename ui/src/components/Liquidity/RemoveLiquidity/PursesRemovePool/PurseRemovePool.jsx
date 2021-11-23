@@ -1,33 +1,15 @@
-import { useApplicationContext } from 'context/Application';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
+
 import AssetContext from 'context/AssetContext';
+
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 
 const PurseRemovePool = ({ pool, type, amount }) => {
   const [asset] = useContext(AssetContext);
-  const [centralAsset, setCentralAsset] = useState({});
-
-  const { state } = useApplicationContext();
-  const {
-    assets,
-    autoswap: { centralBrand },
-  } = state;
 
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (type === 'central') {
-      const assetArr = assets?.find(item => {
-        return item.brand === centralBrand;
-      });
-      if (assetArr) {
-        // assumption that first elem will contain the obj
-        setCentralAsset(assetArr);
-      }
-    }
-  }, []);
 
   if (!pool)
     return (
@@ -57,7 +39,7 @@ const PurseRemovePool = ({ pool, type, amount }) => {
         open={open}
         type={type}
         purseOnly
-        asset={centralAsset}
+        asset={pool}
       />
       {asset[type]?.purse ? (
         <div
@@ -74,6 +56,7 @@ const PurseRemovePool = ({ pool, type, amount }) => {
             <div className="flex  items-center justify-between">
               <h2 className="text-xl uppercase font-medium">{pool.code}</h2>
 
+              {/* The amount here needs to be extracted from the correct source */}
               {amount && (
                 <h2 className="text-green-600">
                   +{Number(amount * (pool.value / 100)).toPrecision(4)}

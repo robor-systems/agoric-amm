@@ -9,11 +9,12 @@ const YOURS = 'YOURS';
 const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
   // get state
   const { state } = useApplicationContext();
-  const [error, setError] = useContext(ErrorContext);
+  const { assets } = state;
+
+  const { setError } = useContext(ErrorContext);
   const [asset, setAsset] = useContext(AssetContext);
 
   const setAddLiquidity = () => {
-    const { assets } = state;
     const secondarySelected = item.Secondary;
 
     const assetSelected = assets.find(elem => {
@@ -36,9 +37,29 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
   };
 
   const setRemoveLiquidity = () => {
-    console.log('Setting remove liquidity values');
-    const { assets } = state;
     const secondarySelected = item.Secondary;
+
+    let assetSelected = assets.find(elem => {
+      return elem.code === secondarySelected.info.petname;
+    });
+
+    if (!assetSelected) {
+      setError("Can't find the selected asset in your wallet.");
+
+      setTimeout(() => {
+        setError('');
+      }, 2500);
+      return;
+    }
+
+    console.log(item);
+
+    assetSelected = { ...assetSelected, liquidityInfo: { ...item.User } };
+
+    setAsset({
+      ...asset,
+      secondaryRemove: assetSelected,
+    });
   };
 
   return (
