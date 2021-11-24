@@ -38,7 +38,8 @@ const RemoveLiquidity = props => {
       return;
     }
 
-    asset.centralRemove &&
+    const removeLiquidityResp =
+      asset.centralRemove &&
       asset.secondaryRemove &&
       removeLiquidityService(
         asset.centralRemove,
@@ -49,9 +50,15 @@ const RemoveLiquidity = props => {
         walletP,
       );
 
-    // // reset values
-    // setAsset({ centralRemove: undefined, secondaryRemove: undefined });
-    // setAmount('');
+    if (removeLiquidityResp.status === 200) {
+      console.log(removeLiquidityResp.message);
+    } else {
+      console.error(removeLiquidityResp);
+    }
+
+    // reset values
+    setAsset({ centralRemove: undefined, secondaryRemove: undefined });
+    setAmount('');
   };
 
   useEffect(() => {
