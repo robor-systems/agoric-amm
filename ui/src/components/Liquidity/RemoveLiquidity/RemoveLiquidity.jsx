@@ -24,8 +24,7 @@ const RemoveLiquidity = props => {
   const { state, walletP } = useApplicationContext();
 
   const {
-    brandToInfo,
-    autoswap: { ammAPI, centralBrand },
+    autoswap: { ammAPI },
     purses,
   } = state;
 
