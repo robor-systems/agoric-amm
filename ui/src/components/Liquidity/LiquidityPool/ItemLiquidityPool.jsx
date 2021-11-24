@@ -54,7 +54,7 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
 
     console.log(item);
 
-    assetSelected = { ...assetSelected, liquidityInfo: { ...item.User } };
+    assetSelected = { ...assetSelected, liquidityInfo: { ...item } };
 
     setAsset({
       ...asset,

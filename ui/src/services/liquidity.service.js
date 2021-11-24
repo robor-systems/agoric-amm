@@ -1,12 +1,21 @@
 import { E } from '@agoric/captp';
 import { stringifyPurseValue } from '@agoric/ui-components';
+import { parseAsNat } from '@agoric/ui-components/dist/display/natValue/parseAsNat';
 import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import {
   calcLiqValueToMint,
   calcSecondaryRequired,
+  calcValueToRemove,
   makeRatio,
 } from '@agoric/zoe/src/contractSupport';
+
 import { dappConfig } from '../utils/config.js';
+
+const {
+  AMM_INSTALLATION_BOARD_ID,
+  AMM_INSTANCE_BOARD_ID,
+  CONTRACT_NAME,
+} = dappConfig;
 
 export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
   if (brand === centralBrand) {
@@ -43,6 +52,7 @@ export const getUserLiquidityService = async (ammAPI, pairs) => {
       message: 'something went wrong while getting liquidity supply',
     };
   }
+  console.log(pairs);
 
   let interArr = [];
   await Promise.allSettled(promises).then(results => {
@@ -75,7 +85,11 @@ export const getUserLiquidityService = async (ammAPI, pairs) => {
 
   console.log(interArr);
 
-  return { status: 200, message: "we're working on it.", payload: interArr };
+  return {
+    status: 200,
+    message: 'Successfully extracted user liquidity',
+    payload: interArr,
+  };
 };
 
 export const getPoolAllocationService = async (ammAPI, assets) => {
@@ -230,12 +244,6 @@ export const addLiquidityService = async (
     centralPoolValue,
   );
 
-  const {
-    AMM_INSTALLATION_BOARD_ID,
-    AMM_INSTANCE_BOARD_ID,
-    CONTRACT_NAME,
-  } = dappConfig;
-
   let liquidityPurse = purses.find(purse => purse.brand === liquidity.brand);
 
   console.log('liquidity brand: ', liquidity.brand);
@@ -256,8 +264,19 @@ export const addLiquidityService = async (
   console.log('LIQUIDITY PURSE', liquidityPurse);
 
   const id = `${Date.now()}`;
-
-  const invitation = await E(ammAPI).makeAddLiquidityInvitation();
+  let invitation;
+  try {
+    invitation = await E(ammAPI).makeAddLiquidityInvitation();
+  } catch (error) {
+    return {
+      status: 500,
+      message:
+        error ||
+        error.message ||
+        error.error ||
+        'Something went wrong while creating invitation for add liquidity',
+    };
+  }
 
   const offerConfig = {
     id,
@@ -292,12 +311,20 @@ export const addLiquidityService = async (
     await E(walletP).addOffer(offerConfig);
   } catch (error) {
     console.error(error);
+    return {
+      status: 500,
+      message:
+        error ||
+        error.message ||
+        error.error ||
+        'Something went wrong while sending remove liquidity offer',
+    };
   }
 
-  return { status: 200, message: 'Offer successfully sent' };
+  return { status: 200, message: 'Add liquidity offer successfully sent' };
 };
 
-export const removeLiquidityService = (
+export const removeLiquidityService = async (
   central,
   secondary,
   amount,
@@ -305,9 +332,117 @@ export const removeLiquidityService = (
   ammAPI,
   walletP,
 ) => {
-  console.log(central, secondary, amount);
+  if (!central.purse || !secondary.purse) {
+    return {
+      status: 400,
+      message: 'Central or secondary purses not provided ',
+    };
+  }
   // determine value to be returned to users
   const { liquidityInfo } = secondary;
-  console.log(purses);
-  console.log('removing liquidity');
+  const { userLiquidityNAT, totaLiquidity } = liquidityInfo.User;
+
+  const liquidityBrand = liquidityInfo.User.brand;
+  const liquidityPurse = purses.find(purse => purse.brand === liquidityBrand);
+
+  if (!liquidityPurse) {
+    return {
+      status: 500,
+      message: 'Cannot find a purse for liquidity tokens brand',
+    };
+  }
+
+  // get central and secondary pool values
+  const centralPool = liquidityInfo.Central;
+  const secondaryPool = liquidityInfo.Secondary;
+
+  // determine nat values of total pools
+  const centralPoolValueNAT = parseAsNat(
+    centralPool?.value,
+    centralPool?.info?.decimalPlaces,
+  );
+  const secondaryPoolValueNAT = parseAsNat(
+    secondaryPool?.value,
+    secondaryPool?.info?.decimalPlaces,
+  );
+
+  const userLiquidityFloat = parseFloat(stringifyNat(userLiquidityNAT, 0, 0));
+  // get new liquidity according to percentage reduction
+  const newUserLiquidityNAT = parseAsNat(
+    (userLiquidityFloat * (amount / 100)).toString(),
+  );
+
+  const centralTokenWant = calcValueToRemove(
+    totaLiquidity,
+    centralPoolValueNAT,
+    newUserLiquidityNAT,
+  );
+
+  const secondaryTokenWant = calcValueToRemove(
+    totaLiquidity,
+    secondaryPoolValueNAT,
+    newUserLiquidityNAT,
+  );
+
+  const id = `${Date.now()}`;
+
+  let invitation;
+  try {
+    invitation = await E(ammAPI).makeRemoveLiquidityInvitation();
+  } catch (error) {
+    return {
+      status: 500,
+      message:
+        error ||
+        error.message ||
+        error.error ||
+        'Something went wrong while creating invitation for remove liquidity',
+    };
+  }
+
+  const offerConfig = {
+    id,
+    invitation,
+    installationHandleBoardId: AMM_INSTALLATION_BOARD_ID,
+    instanceHandleBoardId: AMM_INSTANCE_BOARD_ID,
+    proposalTemplate: {
+      give: {
+        Liquidity: {
+          // The pursePetname identifies which purse we want to use
+          pursePetname: liquidityPurse.pursePetname,
+          value: newUserLiquidityNAT,
+        },
+      },
+      want: {
+        Secondary: {
+          // The pursePetname identifies which purse we want to use
+          pursePetname: secondary?.purse?.pursePetname,
+          value: secondaryTokenWant,
+        },
+        Central: {
+          // The pursePetname identifies which purse we want to use
+          pursePetname: central?.purse?.pursePetname,
+          value: centralTokenWant,
+        },
+      },
+    },
+  };
+
+  console.info('REMOVE LIQUIDITY CONFIG: ', offerConfig);
+
+  try {
+    await E(walletP).addOffer(offerConfig);
+  } catch (error) {
+    console.error(error);
+    return {
+      status: 500,
+      message:
+        error ||
+        error.message ||
+        error.error ||
+        'Something went wrong while sending remove liquidity offer',
+    };
+  }
+
+  return { status: 200, message: 'Remove liquidity offer successfully sent' };
 };

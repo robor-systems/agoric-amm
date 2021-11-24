@@ -83,7 +83,7 @@ const RemoveLiquidity = props => {
         <AmountToRemove
           value={amount}
           setValue={setAmount}
-          poolShare={asset?.secondaryRemove?.liquidityInfo?.share}
+          poolShare={asset?.secondaryRemove?.liquidityInfo?.User?.share}
         />
         <FiArrowDown
           className={
