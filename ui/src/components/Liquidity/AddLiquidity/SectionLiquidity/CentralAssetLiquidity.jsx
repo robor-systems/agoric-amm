@@ -9,7 +9,12 @@ import { assetState } from 'utils/constant';
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 import { useApplicationContext } from 'context/Application';
 
-const CentralAssetLiquidity = ({ type, value, handleChange }) => {
+const CentralAssetLiquidity = ({
+  type,
+  value,
+  handleChange,
+  rateAvailable,
+}) => {
   const [open, setOpen] = useState(false);
   const [centralAsset, setCentralAsset] = useState({});
 
@@ -145,7 +150,11 @@ const CentralAssetLiquidity = ({ type, value, handleChange }) => {
               type="number"
               placeholder="0.0"
               value={value}
-              disabled={selected?.mode === assetState.EMPTY || !selected?.purse}
+              disabled={
+                selected?.mode === assetState.EMPTY ||
+                !selected?.purse ||
+                rateAvailable
+              }
               onChange={handleChange}
               className="input-primary w-full"
             />

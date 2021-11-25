@@ -7,12 +7,17 @@ import { FiChevronDown } from 'react-icons/fi';
 
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 
-const SecondaryAssetLiquidity = ({ type, value, handleChange, disabled }) => {
+const SecondaryAssetLiquidity = ({
+  type,
+  value,
+  handleChange,
+  disabled,
+  rateAvailable,
+}) => {
   const [open, setOpen] = useState(false);
 
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
-  console.log(selected);
 
   return (
     <>
@@ -78,7 +83,7 @@ const SecondaryAssetLiquidity = ({ type, value, handleChange, disabled }) => {
               placeholder="0.0"
               value={value}
               onChange={handleChange}
-              disabled={disabled}
+              disabled={disabled || rateAvailable}
               className="input-primary w-full"
             />
             {asset[type]?.purse && (

@@ -11,12 +11,6 @@ import {
 
 import { dappConfig } from '../utils/config.js';
 
-const {
-  AMM_INSTALLATION_BOARD_ID,
-  AMM_INSTANCE_BOARD_ID,
-  CONTRACT_NAME,
-} = dappConfig;
-
 export const requestRatio = async (brand, makeRate, centralBrand, ammAPI) => {
   if (brand === centralBrand) {
     // See marketPrice comment above
@@ -56,7 +50,7 @@ export const getUserLiquidityService = async (ammAPI, pairs) => {
 
   let interArr = [];
   await Promise.allSettled(promises).then(results => {
-    results = results.map((item, index) => {
+    results = results?.map((item, index) => {
       // converting liquidities to float for easy percentage calculation
       const totalLiquidityDec = parseFloat(stringifyNat(item.value, 0, 0));
       const userLiquidityDec = parseFloat(
@@ -116,7 +110,7 @@ export const getPoolAllocationService = async (ammAPI, assets) => {
 
   await Promise.allSettled(promises)
     .then(results => {
-      results = results.map((item, index) => {
+      results = results?.map((item, index) => {
         return { ...item, brand: allPoolBrands[index] };
       });
       interArr = results
@@ -135,7 +129,7 @@ export const getPoolAllocationService = async (ammAPI, assets) => {
 
   const userLiquidityPairs = [];
   // identify brands of which user already has liquidity
-  interArr = interArr.map(elem => {
+  interArr = interArr?.map(elem => {
     const userLiquidityFound = assets.find(asset => {
       return asset.brand === elem.Liquidity.brand;
     });
@@ -177,6 +171,7 @@ const createNewPurse = async (
   contractName,
 ) => {
   console.log('CREATING PURSE');
+  console.log(instanceID, contractName);
   const board = await E(walletP).getBoard();
   const zoe = await E(walletP).getZoe();
   const instance = await E(board).getValue(instanceID);
@@ -209,6 +204,12 @@ export const addLiquidityService = async (
   walletP,
   purses,
 ) => {
+  const {
+    AMM_INSTALLATION_BOARD_ID,
+    AMM_INSTANCE_BOARD_ID,
+    CONTRACT_NAME,
+  } = dappConfig;
+
   const alloc = await E(ammAPI).getPoolAllocation(secondaryValuePurse.brand);
   console.log(alloc);
 
@@ -338,6 +339,8 @@ export const removeLiquidityService = async (
       message: 'Central or secondary purses not provided ',
     };
   }
+
+  const { AMM_INSTALLATION_BOARD_ID, AMM_INSTANCE_BOARD_ID } = dappConfig;
   // determine value to be returned to users
   const { liquidityInfo } = secondary;
   const { userLiquidityNAT, totaLiquidity } = liquidityInfo.User;

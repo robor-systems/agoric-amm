@@ -89,7 +89,7 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
 
   return (
     <div className="flex flex-col gap-4 p-5 overflow-auto ">
-      {parsedAssets.map(item => (
+      {parsedAssets?.map(item => (
         <div
           key={v4()}
           onClick={() => {

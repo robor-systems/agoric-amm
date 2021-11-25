@@ -25,7 +25,7 @@ const BodyLiquidityPool = props => {
 
   useEffect(() => {
     const updatePools = () => {
-      const newPool = pool.allocations.map(item => {
+      const newPool = pool?.allocations?.map(item => {
         const central = item.Central;
         const secondary = item.Secondary;
 
@@ -61,7 +61,7 @@ const BodyLiquidityPool = props => {
       console.log('Getting user pools');
       console.log(userPairs);
 
-      const newUserPairs = userPairs.map(pair => {
+      const newUserPairs = userPairs?.map(pair => {
         const central = pair.Central;
         const secondary = pair.Secondary;
 
@@ -103,7 +103,7 @@ const BodyLiquidityPool = props => {
       <HeaderLiquidityPool type="all" />
       <div className="flex flex-col p-5 gap-6 ">
         {updatedPool.length ? (
-          updatedPool.map(item => (
+          updatedPool?.map(item => (
             <ItemLiquidityPool
               key={v4()}
               {...item}
@@ -119,7 +119,7 @@ const BodyLiquidityPool = props => {
       <HeaderLiquidityPool type="yours" />
       <div className="flex flex-col p-5 gap-6 ">
         {userPool.length ? (
-          userPool.map(item => (
+          userPool?.map(item => (
             <ItemLiquidityPool
               key={v4()}
               {...item}

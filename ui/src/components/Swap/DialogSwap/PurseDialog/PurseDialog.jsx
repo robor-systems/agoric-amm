@@ -24,7 +24,7 @@ const PurseDialog = ({
     <>
       {!purseOnly && (
         <button
-          className="uppercase  font-medium flex gap-1 hover:bg-gray-100 p-1 m-3 w-max"
+          className="uppercase font-medium flex gap-1 hover:bg-gray-100 p-1 m-3 w-max"
           onClick={() => {
             setAsset({ ...asset, [type]: null });
             setSelectedAsset({ ...selectedAsset, [type]: null });
@@ -62,7 +62,7 @@ const PurseDialog = ({
       </div>
 
       <div className="flex flex-col px-5 pb-5 gap-4 overflow-auto">
-        {purses.map(purse => (
+        {purses?.map(purse => (
           <div
             key={purse.id}
             onClick={() => {

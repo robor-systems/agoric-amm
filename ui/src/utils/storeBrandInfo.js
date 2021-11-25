@@ -42,7 +42,7 @@ export const storeAllBrandsFromTerms = async ({
 
   const displayInfos = await Promise.all(displayInfoPs);
 
-  const newBrandToInfo = brands.map((brand, i) => {
+  const newBrandToInfo = brands?.map((brand, i) => {
     const decimalPlaces = displayInfos[i] && displayInfos[i].decimalPlaces;
     return [
       brand,
@@ -103,7 +103,7 @@ export const updateBrandPetnames = ({
   issuersFromNotifier,
 }) => {
   console.log('BRANDS', issuersFromNotifier);
-  const resultPs = issuersFromNotifier.map(([petname, { brand, issuer }]) => {
+  const resultPs = issuersFromNotifier?.map(([petname, { brand, issuer }]) => {
     return storeBrand({ dispatch, brandToInfo, issuer, brand, petname });
   });
 

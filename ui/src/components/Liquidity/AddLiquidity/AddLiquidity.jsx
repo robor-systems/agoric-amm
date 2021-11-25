@@ -52,7 +52,6 @@ const AddLiquidity = () => {
   const [assetExchange, setAssetExchange] = useState(undefined);
   const [error, setError] = useContext(ErrorContext);
   const [asset, setAsset] = useContext(AssetContext);
-  const [pool, setPool] = useContext(PoolContext);
   const [inputType, setInputType] = useState(SWAP_IN);
   const [showLoader, setShowLoader] = useState(false);
 
@@ -146,6 +145,8 @@ const AddLiquidity = () => {
   useEffect(() => {
     if (asset.central && asset.secondary && ammAPI) {
       getRates();
+    } else {
+      setAssetExchange({ ...assetExchange, rate: undefined });
     }
   }, [asset, ammAPI, centralBrand]);
 
@@ -325,6 +326,7 @@ const AddLiquidity = () => {
           type="central"
           value={centralValue.decimal}
           handleChange={handleInputChange}
+          rateAvailable={!assetExchange?.rate}
         />
 
         <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-liquidity" />
@@ -334,6 +336,7 @@ const AddLiquidity = () => {
           type="secondary"
           value={secondaryValue.decimal}
           handleChange={handleOutputChange}
+          rateAvailable={!assetExchange?.rate}
         />
       </div>
       {assetExists && assetExchange && (
