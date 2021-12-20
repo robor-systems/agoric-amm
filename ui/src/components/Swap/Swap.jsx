@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-
+import Loader from 'react-loader-spinner';
 import clsx from 'clsx';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
@@ -36,6 +36,8 @@ const Swap = () => {
   const [asset, setAsset] = useContext(AssetContext);
   const [optionsEnabled, setOptionsEnabled] = useState(false);
   const [error, setError] = useState(null);
+  const [assetloader, setAssetLoader] = useState(false);
+  const [exchangeRateLoader, setExchangeRateLoader] = useState(false);
   const [swapFrom, setSwapFrom] = useState({
     decimal: undefined,
     nat: 0n,
@@ -63,9 +65,23 @@ const Swap = () => {
   } = state;
 
   useEffect(() => {
-    console.log(assetExchange);
+    // console.log(assetExchange);
   }, [assetExchange]);
 
+  useEffect(() => {
+    console.log('<-------------Brand Info------->');
+    console.log(brandToInfo);
+    console.log('<-------------ammAPI------->');
+    console.log(ammAPI);
+    console.log('< ------------- central Brand-------> ');
+    console.log(centralBrand);
+    if (brandToInfo.length <= 0) {
+      setAssetLoader(true);
+    }
+    if (brandToInfo.length > 0) {
+      setAssetLoader(false);
+    }
+  }, [state]);
   const makeInverseFromAmounts = (x, y) => makeRatioFromAmounts(y, x);
   const composeRatio = (x, y) =>
     makeRatioFromAmounts(floorMultiplyBy(x.numerator, y), x.denominator);
@@ -84,6 +100,8 @@ const Swap = () => {
       giveInfo.decimalPlaces,
       placesToShow,
     );
+    console.log(`Inside if in get exchangeRates : ${exchangeRateLoader}`);
+    setExchangeRateLoader(current => !current);
 
     setAssetExchange({
       give: { code: displayPetname(giveInfo.petname), giveInfo },
@@ -114,6 +132,10 @@ const Swap = () => {
    */
 
   const getRates = async () => {
+    if (asset.from && asset.to && !exchangeRateLoader) {
+      console.log(`Inside if in get getRates : ${exchangeRateLoader}`);
+      setExchangeRateLoader(current => !current);
+    }
     let inputRate = null;
     asset.from &&
       (inputRate = await requestRatio(
@@ -141,6 +163,8 @@ const Swap = () => {
 
   useEffect(() => {
     if ((asset.from || asset.to) && ammAPI) {
+      console.log(asset.from);
+      console.log(asset.to);
       getRates();
     }
   }, [asset, ammAPI, centralBrand]);
@@ -172,13 +196,22 @@ const Swap = () => {
       return;
     }
 
+    // console.log(
+    //   swapType === SWAP_IN ? 'CASE SWAP_IN' : 'CASE SWAP_OUT',
+    //   'FINAL VALUES: ',
+    //   swapFrom.nat,
+    //   swapTo.nat,
+    //   'slippage adjusted: ',
+    //   swapType === SWAP_IN ? swapTo.limitNat : swapFrom.limitNat,
+    // );
     console.log(
-      swapType === SWAP_IN ? 'CASE SWAP_IN' : 'CASE SWAP_OUT',
-      'FINAL VALUES: ',
-      swapFrom.nat,
-      swapTo.nat,
-      'slippage adjusted: ',
-      swapType === SWAP_IN ? swapTo.limitNat : swapFrom.limitNat,
+      walletP,
+      ammAPI,
+      asset.from.purse,
+      swapType === SWAP_IN ? swapFrom.nat : swapFrom.limitNat,
+      asset.to.purse,
+      swapType === SWAP_OUT ? swapTo.nat : swapTo.limitNat,
+      true,
     );
 
     makeSwapOffer(
@@ -257,7 +290,7 @@ const Swap = () => {
       setError('Value too small, no room for slippage.');
       return;
     } else {
-      console.log('Lower limit nat', lowerLimitNat);
+      // console.log('Lower limit nat', lowerLimitNat);
     }
     setError(null);
     setSwapTo({
@@ -332,102 +365,117 @@ const Swap = () => {
   };
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, boxShadow: 'none' }}
-      animate={{ opacity: 1, boxShadow: '0px 0px 99px var(--color-secondary)' }}
-      transition={{ duration: 0.8 }}
-      className="flex flex-col p-4 rounded-sm gap-4 w-screen max-w-lg relative  select-none overflow-hidden"
-    >
-      <motion.div className="flex justify-between items-center gap-8 " layout>
-        <h1 className="text-2xl font-semibold">Swap</h1>
-        <h3
-          className="flex  items-center text-sm gap-2 p-1 text-gray-500 cursor-pointer hover:bg-gray-100 rounded-sm"
+    <>
+      <motion.div
+        layout
+        initial={{ opacity: 0, boxShadow: 'none' }}
+        animate={{
+          opacity: 1,
+          boxShadow: '0px 0px 99px var(--color-secondary)',
+        }}
+        transition={{ duration: 0.8 }}
+        className="flex flex-col p-4 rounded-sm gap-4 w-screen max-w-lg relative  select-none overflow-hidden"
+      >
+        <motion.div className="flex justify-between items-center gap-8 " layout>
+          <h1 className="text-2xl font-semibold">Swap</h1>
+          <h3
+            className="flex  items-center text-sm gap-2 p-1 text-gray-500 cursor-pointer hover:bg-gray-100 rounded-sm"
+            onClick={() => {
+              setOptionsEnabled(!optionsEnabled);
+            }}
+          >
+            More options {optionsEnabled ? <FiChevronUp /> : <FiChevronDown />}
+          </h3>
+        </motion.div>
+
+        {optionsEnabled && (
+          <OptionsSwap slippage={slippage} setSlippage={setSlippage} />
+        )}
+        {assetloader ? (
+          <motion.div className="flex flex-row justify-center items-center">
+            {' '}
+            <Loader type="Oval" color="#d73252" height={60} width={60} />
+          </motion.div>
+        ) : (
+          <motion.div className="flex flex-col gap-4 relative" layout>
+            <div className="flex flex-col gap-4 relative">
+              <SectionSwap
+                type="from"
+                value={swapFrom.decimal}
+                handleChange={handleInputChange}
+                rateAvailable={!assetExchange?.rate}
+              />
+
+              <FiRepeat
+                className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
+                onClick={() => {
+                  setAsset({
+                    from: asset.to,
+                    to: asset.from,
+                  });
+                  setSwapFrom(swapTo);
+                  setSwapTo(swapFrom);
+                  setAssetExchange({
+                    ...assetExchange,
+                    marketRate: invertRatio(assetExchange.marketRate),
+                  });
+                }}
+              />
+            </div>
+
+            <SectionSwap
+              type="to"
+              value={swapTo.decimal}
+              handleChange={handleOutputChange}
+              rateAvailable={!assetExchange?.rate}
+            />
+          </motion.div>
+        )}
+        {!exchangeRateLoader && assetExists && assetExchange && (
+          <ExtraInformation
+            {...assetExchange}
+            swapFrom={swapFrom}
+            swapTo={swapTo}
+            swapType={swapType}
+          />
+        )}
+        {exchangeRateLoader && (
+          <div className="flex flex-row justify-center items-center">
+            <Loader type="Oval" color="#d73252" height={40} width={40} />
+          </div>
+        )}
+
+        <motion.button
+          layout
+          className={clsx(
+            'flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
+            (assetExists || swapped) && !error
+              ? 'bg-primary hover:bg-primaryDark text-white'
+              : 'text-gray-500',
+          )}
+          disabled={error}
           onClick={() => {
-            setOptionsEnabled(!optionsEnabled);
+            if (Object.values(asset).filter(item => item).length < 2)
+              setError('Please select assets first');
+            else if (!(swapFrom && swapTo)) {
+              setError('Please enter the amount first');
+            } else if (swapped) {
+              setError('Please wait!');
+            } else {
+              handleSwap();
+            }
           }}
         >
-          More options {optionsEnabled ? <FiChevronUp /> : <FiChevronDown />}
-        </h3>
-      </motion.div>
+          {swapped ? <FiCheck size={28} /> : 'swap'}
+        </motion.button>
 
-      {optionsEnabled && (
-        <OptionsSwap slippage={slippage} setSlippage={setSlippage} />
-      )}
-
-      <motion.div className="flex flex-col gap-4 relative" layout>
-        <div className="flex flex-col gap-4 relative">
-          <SectionSwap
-            type="from"
-            value={swapFrom.decimal}
-            handleChange={handleInputChange}
-            rateAvailable={!assetExchange?.rate}
-          />
-
-          <FiRepeat
-            className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
-            onClick={() => {
-              setAsset({
-                from: asset.to,
-                to: asset.from,
-              });
-              setSwapFrom(swapTo);
-              setSwapTo(swapFrom);
-              setAssetExchange({
-                ...assetExchange,
-                marketRate: invertRatio(assetExchange.marketRate),
-              });
-            }}
-          />
-        </div>
-
-        <SectionSwap
-          type="to"
-          value={swapTo.decimal}
-          handleChange={handleOutputChange}
-          rateAvailable={!assetExchange?.rate}
-        />
-      </motion.div>
-
-      {assetExists && assetExchange && (
-        <ExtraInformation
-          {...assetExchange}
-          swapFrom={swapFrom}
-          swapTo={swapTo}
-          swapType={swapType}
-        />
-      )}
-
-      <motion.button
-        layout
-        className={clsx(
-          'flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
-          (assetExists || swapped) && !error
-            ? 'bg-primary hover:bg-primaryDark text-white'
-            : 'text-gray-500',
+        {error && (
+          <motion.h3 layout className="text-red-600">
+            {error}
+          </motion.h3>
         )}
-        disabled={error}
-        onClick={() => {
-          if (Object.values(asset).filter(item => item).length < 2)
-            setError('Please select assets first');
-          else if (!(swapFrom && swapTo)) {
-            setError('Please enter the amount first');
-          } else if (swapped) {
-            setError('Please wait!');
-          } else {
-            handleSwap();
-          }
-        }}
-      >
-        {swapped ? <FiCheck size={28} /> : 'swap'}
-      </motion.button>
-
-      {error && (
-        <motion.h3 layout className="text-red-600">
-          {error}
-        </motion.h3>
-      )}
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 
