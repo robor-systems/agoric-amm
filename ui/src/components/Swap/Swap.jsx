@@ -440,9 +440,10 @@ const Swap = () => {
           />
         )}
         {exchangeRateLoader && (
-          <div className="flex flex-row justify-center items-center">
-            <Loader type="Oval" color="#d73252" height={40} width={40} />
-          </div>
+          <motion.div className="flex flex-row justify-left items-center text-gray-400">
+            <Loader type="Oval" color="#62d2cb" height={15} width={15} />
+            <div className="pl-2 text-lg">Fetching best price...</div>
+          </motion.div>
         )}
 
         <motion.button
