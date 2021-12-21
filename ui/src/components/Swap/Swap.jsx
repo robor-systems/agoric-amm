@@ -174,10 +174,23 @@ const Swap = () => {
   }, [asset]);
 
   useEffect(() => {
-    if (swapFrom && swapTo) setError(null);
+    if (swapFrom && swapTo) {
+      console.log('Running set Null');
+      setError(null);
+    }
 
-    if (asset?.from?.purse?.balance < swapFrom.decimal)
+    if (swapFrom || swapTo) {
+      console.log(parseFloat(swapFrom.decimal).toFixed(2));
+      console.log(parseFloat(asset?.from?.purse?.balance).toFixed(2));
+    }
+    console.log(
+      parseFloat(asset?.from?.purse?.balance) < parseFloat(swapFrom.decimal),
+    );
+    if (
+      parseFloat(asset?.from?.purse?.balance) < parseFloat(swapFrom.decimal)
+    ) {
       setError(`Insufficient ${asset.from.code} balance`);
+    }
   }, [swapFrom, swapTo]);
 
   // If the user entered the "In" amount, then keep that fixed and
