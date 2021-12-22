@@ -1,6 +1,5 @@
-import PoolContext from 'context/PoolContext';
-import { v4 } from 'uuid';
 import { motion } from 'framer-motion';
+import Loader from 'react-loader-spinner';
 
 import { FiPlus } from 'react-icons/fi';
 import React, { useContext, useEffect, useState } from 'react';
@@ -39,6 +38,7 @@ const SWAP_OUT = 'OUT';
 const PLACES_TO_SHOW = 2;
 
 const AddLiquidity = () => {
+  const [exchangeRateLoader, setExchangeRateLoader] = useState(false);
   const [centralValue, setCentralValue] = useState({
     decimal: '',
     nat: 0n,
@@ -85,7 +85,7 @@ const AddLiquidity = () => {
       giveInfo.decimalPlaces,
       placesToShow,
     );
-
+    setExchangeRateLoader(current => !current);
     setAssetExchange({
       give: { code: displayPetname(giveInfo.petname), giveInfo },
       want: {
@@ -115,6 +115,10 @@ const AddLiquidity = () => {
    */
 
   const getRates = async () => {
+    if (asset.central && asset.secondary && !exchangeRateLoader) {
+      console.log(`Inside if in get getRates : ${exchangeRateLoader}`);
+      setExchangeRateLoader(current => !current);
+    }
     console.log('GETTING RATES', asset);
     let inputRate = null;
     asset.central &&
@@ -174,6 +178,7 @@ const AddLiquidity = () => {
   }, [asset]);
 
   const handleInputChange = ({ target }) => {
+    console.log(target.value);
     let newInput = target.value;
     if (newInput < 0) {
       newInput = 0;
@@ -339,12 +344,18 @@ const AddLiquidity = () => {
           rateAvailable={!assetExchange?.rate}
         />
       </div>
-      {assetExists && assetExchange && (
+      {!exchangeRateLoader && assetExists && assetExchange && (
         <RateLiquidity
           {...assetExchange}
           central={asset.central}
           secondary={asset.secondary}
         />
+      )}
+      {exchangeRateLoader && (
+        <motion.div className="flex flex-row justify-left items-center text-gray-400">
+          <Loader type="Oval" color="#62d2cb" height={15} width={15} />
+          <div className="pl-2 text-lg">Fetching best price...</div>
+        </motion.div>
       )}
 
       <button

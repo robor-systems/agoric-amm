@@ -20,7 +20,6 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
     const assetSelected = assets.find(elem => {
       return elem.code === secondarySelected.info.petname;
     });
-
     if (!assetSelected) {
       setError("Can't find the selected asset in your wallet.");
 
@@ -29,7 +28,6 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
       }, 2500);
       return;
     }
-
     setAsset({
       ...asset,
       secondary: assetSelected,

@@ -1,4 +1,6 @@
 import { Tab } from '@headlessui/react';
+import Loader from 'react-loader-spinner';
+
 import clsx from 'clsx';
 import {
   getPoolAllocationService,
@@ -26,6 +28,8 @@ const Liquidity = () => {
         ? 'border-b-4 border-alternativeBright text-alternativeBright '
         : 'bg-white text-gray-400',
     );
+  const [assetloader, setAssetLoader] = useState(false);
+  const [userPoolLoaded, setUserPoolLoaded] = useState(false);
   const [open, setOpen] = useState(false);
   const liquidityHook = useState({ central: null, liquidity: null });
   const errorHook = useState(undefined);
@@ -37,7 +41,14 @@ const Liquidity = () => {
     brandToInfo,
     autoswap: { ammAPI, centralBrand },
   } = state;
-
+  useEffect(() => {
+    if (brandToInfo.length <= 0) {
+      setAssetLoader(true);
+    }
+    if (brandToInfo.length > 0) {
+      setAssetLoader(false);
+    }
+  }, [state]);
   useEffect(() => {
     const getPool = async () => {
       const poolAllocations = await getPoolAllocationService(
@@ -115,10 +126,34 @@ const Liquidity = () => {
               </Tab.List>
               <Tab.Panels>
                 <Tab.Panel>
-                  <AddLiquidity />
+                  {assetloader ? (
+                    <motion.div className="flex flex-row justify-center items-center">
+                      {' '}
+                      <Loader
+                        type="Oval"
+                        color="#62d2cb"
+                        height={60}
+                        width={60}
+                      />
+                    </motion.div>
+                  ) : (
+                    <AddLiquidity />
+                  )}
                 </Tab.Panel>
                 <Tab.Panel>
-                  <RemoveLiquidity setOpen={setOpen} />
+                  {assetloader ? (
+                    <motion.div className="flex flex-row justify-center items-center">
+                      {' '}
+                      <Loader
+                        type="Oval"
+                        color="#62d2cb"
+                        height={60}
+                        width={60}
+                      />
+                    </motion.div>
+                  ) : (
+                    <RemoveLiquidity setOpen={setOpen} />
+                  )}
                 </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>

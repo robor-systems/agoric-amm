@@ -25,9 +25,15 @@ const App = () => {
           alt="Agoric Logo"
           className="absolute top-0 left-0  py-6  px-6 "
         />
-        <Tab.Group defaultIndex={0} onChange={i => setIndex(i)}>
+        <Tab.Group
+          defaultIndex={0}
+          onChange={i => {
+            setIndex(i);
+            console.log(i);
+          }}
+        >
           <Tab.List className="bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-20 transition-all duration-300 ease-in-out">
-            <Tab className={''}>
+            <Tab>
               <motion.div
                 whileTap={{ scale: 0.9 }}
                 className={clsx(
@@ -35,7 +41,7 @@ const App = () => {
                   index === 0 ? 'bg-alternative ' : 'bg-white',
                 )}
               >
-                Swap
+                Swaps
               </motion.div>
             </Tab>
             <Tab>

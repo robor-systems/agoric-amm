@@ -100,7 +100,6 @@ const Swap = () => {
       giveInfo.decimalPlaces,
       placesToShow,
     );
-    console.log(`Inside if in get exchangeRates : ${exchangeRateLoader}`);
     setExchangeRateLoader(current => !current);
 
     setAssetExchange({
@@ -133,7 +132,6 @@ const Swap = () => {
 
   const getRates = async () => {
     if (asset.from && asset.to && !exchangeRateLoader) {
-      console.log(`Inside if in get getRates : ${exchangeRateLoader}`);
       setExchangeRateLoader(current => !current);
     }
     let inputRate = null;
@@ -163,8 +161,6 @@ const Swap = () => {
 
   useEffect(() => {
     if ((asset.from || asset.to) && ammAPI) {
-      console.log(asset.from);
-      console.log(asset.to);
       getRates();
     }
   }, [asset, ammAPI, centralBrand]);
@@ -175,13 +171,12 @@ const Swap = () => {
 
   useEffect(() => {
     if (swapFrom && swapTo) {
-      console.log('Running set Null');
       setError(null);
     }
 
     if (swapFrom || swapTo) {
-      console.log(parseFloat(swapFrom.decimal).toFixed(2));
-      console.log(parseFloat(asset?.from?.purse?.balance).toFixed(2));
+      // console.log(parseFloat(swapFrom.decimal).toFixed(2));
+      // console.log(parseFloat(asset?.from?.purse?.balance).toFixed(2));
     }
     console.log(
       parseFloat(asset?.from?.purse?.balance) < parseFloat(swapFrom.decimal),
@@ -260,8 +255,12 @@ const Swap = () => {
       };
       setSwapFrom(reset);
       setSwapTo(reset);
+      console.log('Reseting Value');
+      console.log(swapFrom);
+      console.log(swapTo);
       return;
     }
+    console.log('Printing:', newInput);
 
     // parse as Nat value
     const swapFromNat = parseAsNat(
@@ -407,7 +406,7 @@ const Swap = () => {
         {assetloader ? (
           <motion.div className="flex flex-row justify-center items-center">
             {' '}
-            <Loader type="Oval" color="#d73252" height={60} width={60} />
+            <Loader type="Oval" color="#62d2cb" height={60} width={60} />
           </motion.div>
         ) : (
           <motion.div className="flex flex-col gap-4 relative" layout>
