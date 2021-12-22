@@ -58,7 +58,8 @@ const Liquidity = () => {
       if (poolAllocations.status === 200) {
         const { allocations } = poolAllocations;
         console.log('POOL ALLOCATIONS: ', allocations);
-        setPool({ ...pool, allocations });
+        const status = poolAllocations.status;
+        setPool({ ...pool, allocations, allLiquidityStatus: status });
       } else {
         // TODO: should be printed on screen
         console.error('Something went wrong');
@@ -69,10 +70,17 @@ const Liquidity = () => {
         ammAPI,
         poolAllocations.userPairs,
       );
-
       if (userLiquidity.status === 200) {
+        const len = userLiquidity.payload.length;
         // TODO use userPairs to show user's liquidity in the screen.
-        setPool({ ...pool, userPairs: userLiquidity.payload });
+        console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
+        const status = userLiquidity.status;
+        setPool({
+          ...pool,
+          userPairs: userLiquidity.payload,
+          userLiquidityStatus: len > 0 ? status : 300,
+          userLiquiditiesLength: len,
+        });
       } else {
         // TODO: should be printed on screen
         console.error('Something went wrong');

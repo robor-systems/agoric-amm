@@ -17,7 +17,8 @@ const ALL = 'ALL';
 const YOURS = 'YOURS';
 
 const BodyLiquidityPool = props => {
-  const [loadUserLiquidityPools, setLoadUserLiquidityPools] = useState(false);
+  const [loadUserLiquidityPools, setLoadUserLiquidityPools] = useState(true);
+  const [loadAllLiquidityPools, setLoadAllLiquidityPools] = useState(true);
   const [pool] = useContext(PoolContext);
   const [updatedPool, setUpdatedPool] = useState([]);
   const [userPool, setUserPool] = useState([]);
@@ -27,8 +28,12 @@ const BodyLiquidityPool = props => {
   const { brandToInfo } = state;
 
   useEffect(() => {
+    // updatedPool.length > 0 && setLoadAllLiquidityPools(false);
+    // userPool.length > 0 && setLoadAllLiquidityPools(false);
+  }, []);
+
+  useEffect(() => {
     const updatePools = () => {
-      // console.log('Update Pool Function Running');
       const newPool = pool?.allocations?.map(item => {
         const central = item.Central;
         const secondary = item.Secondary;
@@ -54,20 +59,19 @@ const BodyLiquidityPool = props => {
       });
 
       setUpdatedPool(newPool);
-      // console.log('Update Pool Function Complete');
     };
-
-    pool.allocations && updatePools();
-  }, []);
-
+    if (pool.allLiquidityStatus === 200) {
+      console.log('All Liquidity Pools Loaded');
+      pool.allocations && updatePools();
+      pool.allocations &&
+        loadAllLiquidityPools &&
+        setLoadAllLiquidityPools(false);
+    }
+  }, [pool]);
   useEffect(() => {
-    // console.log('Running the useEffect');
     const updateUserPools = () => {
-      // console.log('User Pool Function Running');
+      setLoadUserLiquidityPools(true);
       const { userPairs } = pool;
-      // console.log('Getting user pools');
-      // console.log(userPairs);
-
       const newUserPairs = userPairs?.map(pair => {
         const central = pair.Central;
         const secondary = pair.Secondary;
@@ -80,13 +84,11 @@ const BodyLiquidityPool = props => {
           centralInfo.decimalPlaces,
           PLACES_TO_SHOW,
         );
-
         const secondaryValString = stringifyNat(
           secondary.value,
           secondaryInfo.decimalPlaces,
           PLACES_TO_SHOW,
         );
-        // console.log('userPool length : ', userPairs.length);
         return {
           Central: { info: centralInfo, value: centralValString },
           Secondary: { info: secondaryInfo, value: secondaryValString },
@@ -98,25 +100,21 @@ const BodyLiquidityPool = props => {
           },
         };
       });
-      setUserPool(newUserPairs);
-      // console.log('User Pool Function Complete');
-    };
-    pool.userPairs && updateUserPools();
-  }, []);
-
-  useEffect(() => {
-    console.log(pool?.userPairs?.length);
-    if (pool?.userPairs?.length > 0) {
-      console.log('User Liquidity Pools Loaded');
-      console.log(pool.userPairs);
-      console.log('User Liquidity Pools Loaded');
-    }
-    console.log(pool?.allocations?.length);
-    if (pool?.allocations?.length > 0) {
-      console.log('All Liquidity Pools Loaded');
-      console.log(pool.userPairs);
-      console.log('All Liquidity Pools Loaded');
+      console.log('printing user pairs : ', newUserPairs);
       setLoadUserLiquidityPools(false);
+      setUserPool(newUserPairs);
+    };
+    console.log('printing pools userpair : ', pool.userLiquiditiesLength);
+    if (pool.userLiquidityStatus === 200 && pool.userLiquiditiesLength > 0) {
+      console.log('User Liquidity Pools Loaded:', pool.userPairs);
+      pool.userPairs.length && updateUserPools();
+      pool.userPairs &&
+        loadUserLiquidityPools &&
+        setLoadUserLiquidityPools(false);
+    }
+    if (pool.userLiquidityStatus === 300 && pool.userLiquiditiesLength === 0) {
+      console.log('User Liquidity Pools Loaded:', pool.userPairs);
+      pool.userPairs && setLoadUserLiquidityPools(false);
     }
   }, [pool]);
   return (
@@ -134,7 +132,20 @@ const BodyLiquidityPool = props => {
             />
           ))
         ) : (
-          <h4 className="text-lg">Liquidity positions not found.</h4>
+          <>
+            {' '}
+            {!loadAllLiquidityPools && (
+              <h4 className="text-lg">Liquidity positions not found.</h4>
+            )}
+          </>
+        )}
+        {loadAllLiquidityPools ? (
+          <div className="flex flex-row justify-left items-center text-gray-400">
+            <Loader type="Oval" color="#62d2cb" height={15} width={15} />
+            <div className="pl-2 text-lg">Fetching all liquidity pools...</div>
+          </div>
+        ) : (
+          <></>
         )}
       </motion.div>
       <HeaderLiquidityPool type="yours" />
@@ -150,8 +161,12 @@ const BodyLiquidityPool = props => {
             />
           ))
         ) : (
-          // <h4 className="text-lg">You have no liquidity positions.</h4>
-          <></>
+          <>
+            {' '}
+            {!loadUserLiquidityPools && (
+              <h4 className="text-lg">You have no liquidity positions.</h4>
+            )}
+          </>
         )}
         {loadUserLiquidityPools ? (
           <div className="flex flex-row justify-left items-center text-gray-400">

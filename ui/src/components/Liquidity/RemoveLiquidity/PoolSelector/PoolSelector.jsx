@@ -1,9 +1,11 @@
 import PoolContext from 'context/PoolContext';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 const PoolSelector = ({ setOpen }) => {
   const [pool] = useContext(PoolContext);
-
+  useEffect(() => {
+    console.log('running remove');
+  }, [pool.selectRemove]);
   return (
     <div className="flex justify-between">
       <h2 className="text-lg font-medium">
@@ -14,7 +16,10 @@ const PoolSelector = ({ setOpen }) => {
 
       <a
         className="text-lg text-primary hover:underline cursor-pointer"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          console.log(pool);
+          setOpen(true);
+        }}
       >
         {pool?.selectRemove ? `Change Pool` : 'Choose'}
       </a>
