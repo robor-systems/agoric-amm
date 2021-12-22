@@ -417,7 +417,6 @@ const Swap = () => {
                 handleChange={handleInputChange}
                 rateAvailable={!assetExchange?.rate}
               />
-
               <FiRepeat
                 className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
                 onClick={() => {
@@ -434,7 +433,6 @@ const Swap = () => {
                 }}
               />
             </div>
-
             <SectionSwap
               type="to"
               value={swapTo.decimal}

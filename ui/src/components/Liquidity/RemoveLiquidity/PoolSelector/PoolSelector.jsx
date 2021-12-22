@@ -4,7 +4,9 @@ import React, { useContext, useEffect } from 'react';
 const PoolSelector = ({ setOpen }) => {
   const [pool] = useContext(PoolContext);
   useEffect(() => {
-    console.log('running remove');
+    console.log('test');
+    console.log(pool.selectRemove);
+    console.log('test');
   }, [pool.selectRemove]);
   return (
     <div className="flex justify-between">
@@ -12,12 +14,12 @@ const PoolSelector = ({ setOpen }) => {
         {pool?.selectRemove
           ? `${pool.selectRemove.central.code}/${pool.selectRemove.liquidity.code} Pool`
           : 'No Pool Selected'}
+        {pool.selectRemove}
       </h2>
 
       <a
         className="text-lg text-primary hover:underline cursor-pointer"
         onClick={() => {
-          console.log(pool);
           setOpen(true);
         }}
       >
