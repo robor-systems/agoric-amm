@@ -285,7 +285,6 @@ const Swap = () => {
       limitNat: lowerLimitNat,
     });
   };
-
   const handleOutputChange = ({ target }) => {
     let newInput = target.value;
     if (newInput < 0) {

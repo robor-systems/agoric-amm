@@ -11,7 +11,10 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
 
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
-
+  const onMax = () => {
+    asset[type] &&
+      handleChange({ target: { value: asset[type].purse.balance } });
+  };
   console.log('open', open);
 
   return (
@@ -65,6 +68,7 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
               <button
                 className="bg-transparent hover:bg-gray-100 text-[#3BC7BE] font-semibold py-[3px] px-1 border border-[#3BC7BE] rounded text-xs leading-3 font-"
                 disabled={rateAvailable}
+                onClick={onMax}
               >
                 Max
               </button>
