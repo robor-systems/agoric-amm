@@ -5,6 +5,7 @@
   --color-alternative-bright: #3bc7be;
   --color-primary: #d73252;
   --color-primary-dark: #ba2b47;
+  --currentColor: #d1d5db;
 }
 
 @import 'base.css';

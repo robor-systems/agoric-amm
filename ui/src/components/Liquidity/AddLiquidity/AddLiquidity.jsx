@@ -334,8 +334,11 @@ const AddLiquidity = () => {
           rateAvailable={!assetExchange?.rate}
         />
 
-        <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-liquidity" />
-
+        {/* <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-liquidity" /> */}
+        <FiPlus
+          size="30"
+          className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 position-swap-icon-liquidity border-4 border-white"
+        />
         <SecondaryAssetLiquidity
           disabled={error === assetState.EMPTY}
           type="secondary"

@@ -92,8 +92,12 @@ const RemoveLiquidity = props => {
           poolShare={asset?.secondaryRemove?.liquidityInfo?.User?.share}
         />
         <FiArrowDown
+          // className={
+          //   'p-2 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon-remove'
+          // }
+          size={30}
           className={
-            'p-2 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon-remove'
+            'p-1 bg-alternative text-3xl absolute left-6 position-swap-icon-remove border-4 border-white'
           }
           style={{ top: asset.secondaryRemove ? '48.5%' : '' }}
         />

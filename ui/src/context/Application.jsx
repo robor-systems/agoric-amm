@@ -24,6 +24,7 @@ import {
   updateVault,
   setAutoswap,
   setApproved,
+  updateOffers,
 } from '../store/store';
 
 import {
@@ -70,7 +71,7 @@ function watchVault(id, dispatch) {
   });
 }
 
-function watchOffers(dispatch, INSTANCE_BOARD_ID) {
+function watchOffers(dispatch, INSTANCE_BOARD_ID, state) {
   const watchedVaults = new Set();
   async function offersUpdater() {
     const offerNotifier = E(walletP).getOffersNotifier();
@@ -90,6 +91,7 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID) {
         }
       }
       console.log('======== OFFERS', offers);
+      dispatch(updateOffers(offers));
     }
   }
   offersUpdater().catch(err => console.error('Offers watcher exception', err));
@@ -235,7 +237,7 @@ export default function Provider({ children }) {
           E(walletP).suggestIssuer('RUN', RUN_ISSUER_BOARD_ID),
         ]);
 
-        watchOffers(dispatch, INSTANCE_BOARD_ID);
+        watchOffers(dispatch, INSTANCE_BOARD_ID, state);
       },
       onDisconnect() {
         dispatch(setConnected(false));

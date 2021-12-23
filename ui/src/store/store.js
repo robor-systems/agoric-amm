@@ -25,6 +25,7 @@ export const {
     createVault,
     setVaultToManageId,
     updateVault,
+    updateOffers,
     resetVault,
     setAutoswap,
     setAssets,
@@ -47,6 +48,7 @@ export const {
     collaterals: null,
     vaultToManageId: null,
     assets: [],
+    walletOffers: [],
   },
   actions: {
     createVault: (state, { id, vault }) => {
@@ -56,6 +58,15 @@ export const {
           ...state.vaults,
           [id]: vault,
         },
+      };
+    },
+    updateOffers: (state, offers) => {
+      console.log('============Update offer reducer=====================');
+      console.log(offers);
+      console.log('============Update offer reducer=====================');
+      return {
+        ...state,
+        walletOffers: offers,
       };
     },
     updateVault: ({ vaults, ...state }, { id, vault }) => {
