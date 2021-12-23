@@ -63,22 +63,28 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
                 MAX
               </button>
             </div> */}
-            <div className="absolute top-3 left-3">
-              {' '}
-              <button
-                className="bg-transparent hover:bg-gray-100 text-[#3BC7BE] font-semibold py-[3px] px-1 border border-[#3BC7BE] rounded text-xs leading-3 font-"
-                disabled={rateAvailable}
-                onClick={onMax}
-              >
-                Max
-              </button>
-            </div>
+            {asset[type]?.purse && (
+              <div className="absolute top-3 left-3">
+                {' '}
+                <button
+                  className={
+                    'bg-transparent hover:bg-gray-100 text-[#3BC7BE] font-semibold py-[3px] px-1 border border-[#3BC7BE] rounded text-xs leading-3'
+                  }
+                  disabled={rateAvailable}
+                  onClick={onMax}
+                >
+                  Max
+                </button>
+              </div>
+            )}
             <input
               type="number"
               placeholder="0.0"
               value={value}
               onChange={handleChange}
-              className="rounded-sm bg-white bg-opacity-100 text-xl p-3 pl-[52px] leading-6 w-full hover:outline-none focus:outline-none border-none"
+              className={`rounded-sm bg-white bg-opacity-100 text-xl p-3 leading-6 w-full hover:outline-none focus:outline-none border-none ${
+                asset[type]?.purse ? 'pl-[52px]' : 'pl-[12px]'
+              }`}
               disabled={rateAvailable}
               min="0"
               max="10000000"

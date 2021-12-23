@@ -394,16 +394,18 @@ const Swap = () => {
               className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
               size="30"
               onClick={() => {
-                setAsset({
-                  from: asset.to,
-                  to: asset.from,
-                });
-                setSwapFrom(swapTo);
-                setSwapTo(swapFrom);
-                setAssetExchange({
-                  ...assetExchange,
-                  marketRate: invertRatio(assetExchange.marketRate),
-                });
+                if (asset.to && asset.from) {
+                  setAsset({
+                    from: asset.to,
+                    to: asset.from,
+                  });
+                  setSwapFrom(swapTo);
+                  setSwapTo(swapFrom);
+                  setAssetExchange({
+                    ...assetExchange,
+                    marketRate: invertRatio(assetExchange.marketRate),
+                  });
+                }
               }}
             />
           </div>
