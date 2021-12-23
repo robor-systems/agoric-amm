@@ -6,6 +6,7 @@ import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
 
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
+import CustomInput from 'components/components/CustomInput';
 
 const SecondaryAssetLiquidity = ({
   type,
@@ -77,22 +78,13 @@ const SecondaryAssetLiquidity = ({
               Select asset
             </button>
           )}
-          <div className="relative flex-grow">
-            <input
-              type="number"
-              placeholder="0.0"
-              value={value}
-              onChange={handleChange}
-              disabled={disabled || rateAvailable}
-              className="input-primary w-full"
-            />
-            {asset[type]?.purse && (
-              <div className="absolute right-3 top-1.5 text-gray-400 flex flex-col text-right text-sm bg-white">
-                <div>Balance: {asset[type].purse.balance}</div>
-                <div>~ ${asset[type].purse.balanceUSD}</div>
-              </div>
-            )}
-          </div>
+          <CustomInput
+            value={value}
+            handleChange={handleChange}
+            asset={asset}
+            type={type}
+            rateAvailable={rateAvailable}
+          />
         </div>
       </div>
     </>

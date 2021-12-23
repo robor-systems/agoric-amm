@@ -8,6 +8,7 @@ import { FiChevronDown } from 'react-icons/fi';
 import { assetState } from 'utils/constant';
 import DialogSwap from 'components/Swap/DialogSwap/DialogSwap';
 import { useApplicationContext } from 'context/Application';
+import CustomInput from 'components/components/CustomInput';
 
 const CentralAssetLiquidity = ({
   type,
@@ -144,27 +145,13 @@ const CentralAssetLiquidity = ({
             <img src={selected?.image || placeholderAgoric} />
           </div>
           <AssetSelector selected={selected} setOpen={setOpen} />
-
-          <div className="relative flex-grow">
-            <input
-              type="number"
-              placeholder="0.0"
-              value={value}
-              disabled={
-                selected?.mode === assetState.EMPTY ||
-                !selected?.purse ||
-                rateAvailable
-              }
-              onChange={handleChange}
-              className="input-primary w-full"
-            />
-            {asset[type]?.purse && (
-              <div className="absolute right-3 top-1.5 text-gray-400 flex flex-col text-right text-sm bg-white">
-                <div>Balance: {asset[type].purse.balance}</div>
-                <div>~ ${asset[type].purse.balanceUSD}</div>
-              </div>
-            )}
-          </div>
+          <CustomInput
+            value={value}
+            handleChange={handleChange}
+            asset={asset}
+            type={type}
+            rateAvailable={rateAvailable}
+          />
         </div>
       </div>
     </>

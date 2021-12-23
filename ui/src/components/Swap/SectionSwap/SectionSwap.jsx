@@ -4,17 +4,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
+import CustomInput from 'components/components/CustomInput';
 import DialogSwap from '../DialogSwap/DialogSwap';
 
 const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
   const [open, setOpen] = useState(false);
-
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
-  const onMax = () => {
-    asset[type] &&
-      handleChange({ target: { value: asset[type].purse.balance } });
-  };
   console.log('open', open);
 
   return (
@@ -57,45 +53,13 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
               Select asset
             </button>
           )}
-          <div className="relative flex-grow">
-            {/* <div>
-              <button className="absolute top-3 left-3 bg-transparent text-[#6dd] py-2 px-4 border border-[#62d2cb] rounded-md w-8 h-2 text-xs">
-                MAX
-              </button>
-            </div> */}
-            {asset[type]?.purse && (
-              <div className="absolute top-3 left-3">
-                {' '}
-                <button
-                  className={
-                    'bg-transparent hover:bg-gray-100 text-[#3BC7BE] font-semibold py-[3px] px-1 border border-[#3BC7BE] rounded text-xs leading-3'
-                  }
-                  disabled={rateAvailable}
-                  onClick={onMax}
-                >
-                  Max
-                </button>
-              </div>
-            )}
-            <input
-              type="number"
-              placeholder="0.0"
-              value={value}
-              onChange={handleChange}
-              className={`rounded-sm bg-white bg-opacity-100 text-xl p-3 leading-6 w-full hover:outline-none focus:outline-none border-none ${
-                asset[type]?.purse ? 'pl-[52px]' : 'pl-[12px]'
-              }`}
-              disabled={rateAvailable}
-              min="0"
-              max="10000000"
-            />
-            {asset[type]?.purse && (
-              <div className="absolute right-3 top-1 text-gray-400 flex flex-col text-right text-sm bg-white">
-                <div>Balance: {asset[type].purse.balance}</div>
-                <div>~ ${asset[type].purse.balanceUSD}</div>
-              </div>
-            )}
-          </div>
+          <CustomInput
+            value={value}
+            handleChange={handleChange}
+            asset={asset}
+            type={type}
+            rateAvailable={rateAvailable}
+          />
         </div>
       </motion.div>
     </>
