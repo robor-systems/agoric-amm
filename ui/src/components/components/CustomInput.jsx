@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 function CustomInput({ value, handleChange, asset, type, rateAvailable }) {
+  const [balance, setBalance] = useState(0);
   const onMax = () => {
-    asset[type] &&
-      handleChange({ target: { value: asset[type].purse.balance } });
+    if (asset.to && asset.from) {
+      asset[type] &&
+        handleChange({ target: { value: asset[type].purse.balance } });
+    }
   };
+  useEffect(() => {
+    asset[type]?.purse?.balance && setBalance(asset[type].purse.balance);
+  }, [asset[type]]);
   return (
     <div className="relative flex-grow">
       {asset[type]?.purse && (
@@ -29,13 +35,13 @@ function CustomInput({ value, handleChange, asset, type, rateAvailable }) {
         className={`rounded-sm bg-white bg-opacity-100 text-xl p-3 leading-6 w-full hover:outline-none focus:outline-none border-none ${
           asset[type]?.purse ? 'pl-[52px]' : 'pl-[12px]'
         }`}
-        disabled={rateAvailable}
+        disabled={rateAvailable || !asset.to || !asset.from}
         min="0"
         max="10000000"
       />
       {asset[type]?.purse && (
         <div className="absolute right-3 top-1 text-gray-400 flex flex-col text-right text-sm bg-white">
-          <div>Balance: {asset[type].purse.balance}</div>
+          <div>Balance: {balance}</div>
           <div>~ ${asset[type].purse.balanceUSD}</div>
         </div>
       )}

@@ -74,17 +74,29 @@ const Swap = ({ setToast }) => {
       if (walletOffers[currentOfferId]?.status === 'accept') {
         setSwapButtonStatus('Swapped');
         setToast('clear', 'dismiss');
-        setToast('Assets successfully swapped', 'success');
-        setTimeout(() => {}, 1000);
+        setTimeout(() => {
+          setToast('Assets successfully swapped', 'success');
+        }, 500);
         setTimeout(() => {
           setSwapped(false);
           setSwapButtonStatus('Swap');
         }, 3000);
       } else if (walletOffers[currentOfferId]?.status === 'decline') {
-        setSwapButtonStatus('Not Swapped');
+        setSwapButtonStatus('declined');
         setToast('clear', 'dismiss');
-        setToast('Swap declined by Wallet', 'error');
-        setTimeout(() => {}, 1000);
+        setTimeout(() => {
+          setToast('Swap declined by User', 'error');
+        }, 500);
+        setTimeout(() => {
+          setSwapped(false);
+          setSwapButtonStatus('Swap');
+        }, 3000);
+      } else if (walletOffers[currentOfferId]?.error) {
+        setSwapButtonStatus('rejected');
+        setToast('clear', 'dismiss');
+        setTimeout(() => {
+          setToast('Swap offer rejected by Wallet', 'warning');
+        }, 500);
         setTimeout(() => {
           setSwapped(false);
           setSwapButtonStatus('Swap');
@@ -97,6 +109,8 @@ const Swap = ({ setToast }) => {
     makeRatioFromAmounts(floorMultiplyBy(x.numerator, y), x.denominator);
 
   const getExchangeRate = (placesToShow, marketRate, inputRate, outputRate) => {
+    setSwapFrom({ decimal: 0, nat: 0n });
+    setSwapTo({ decimal: 0, nat: 0n });
     const giveInfo = getInfoForBrand(brandToInfo, inputRate.brand);
     const wantInfo = getInfoForBrand(brandToInfo, outputRate.brand);
     const oneDisplayUnit = 10n ** Nat(wantInfo.decimalPlaces);
@@ -228,8 +242,6 @@ const Swap = ({ setToast }) => {
       true, // swapIn will always be true
     );
     setSwapped(true);
-    // setSwapFrom({ decimal: 0, nat: 0n });
-    // setSwapTo({ decimal: 0, nat: 0n });
   };
 
   const handleInputChange = ({ target }) => {
@@ -391,48 +403,48 @@ const Swap = ({ setToast }) => {
         {optionsEnabled && (
           <OptionsSwap slippage={slippage} setSlippage={setSlippage} />
         )}
-        {assetloader ? (
+        {/* {assetloader ? (
           <motion.div className="flex flex-row justify-center items-center">
             {' '}
             <Loader type="Oval" color="#62d2cb" height={60} width={60} />
           </motion.div>
-        ) : (
-          <motion.div className="flex flex-col gap-4 relative" layout>
-            <div className="flex flex-col gap-4 relative">
-              <SectionSwap
-                type="from"
-                value={swapFrom.decimal}
-                handleChange={handleInputChange}
-                rateAvailable={!assetExchange?.rate}
-              />
-              <FiRepeat
-                // className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
-                className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
-                size="30"
-                onClick={() => {
-                  if (asset.to && asset.from) {
-                    setAsset({
-                      from: asset.to,
-                      to: asset.from,
-                    });
-                    setSwapFrom(swapTo);
-                    setSwapTo(swapFrom);
-                    setAssetExchange({
-                      ...assetExchange,
-                      marketRate: invertRatio(assetExchange.marketRate),
-                    });
-                  }
-                }}
-              />
-            </div>
+        ) : ( */}
+        <motion.div className="flex flex-col gap-4 relative" layout>
+          <div className="flex flex-col gap-4 relative">
             <SectionSwap
-              type="to"
-              value={swapTo.decimal}
-              handleChange={handleOutputChange}
+              type="from"
+              value={swapFrom.decimal}
+              handleChange={handleInputChange}
               rateAvailable={!assetExchange?.rate}
             />
-          </motion.div>
-        )}
+            <FiRepeat
+              // className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
+              className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
+              size="30"
+              onClick={() => {
+                if (asset.to && asset.from) {
+                  setAsset({
+                    from: asset.to,
+                    to: asset.from,
+                  });
+                  setSwapFrom(swapTo);
+                  setSwapTo(swapFrom);
+                  setAssetExchange({
+                    ...assetExchange,
+                    marketRate: invertRatio(assetExchange.marketRate),
+                  });
+                }
+              }}
+            />
+          </div>
+          <SectionSwap
+            type="to"
+            value={swapTo.decimal}
+            handleChange={handleOutputChange}
+            rateAvailable={!assetExchange?.rate}
+          />
+        </motion.div>
+        {/* )} */}
         {!exchangeRateLoader && assetExists && assetExchange && (
           <ExtraInformation
             {...assetExchange}

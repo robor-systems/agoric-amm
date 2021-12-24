@@ -21,6 +21,7 @@ const App = () => {
       position: 'top-right',
       hideProgressBar: false,
       closeOnClick: true,
+      newestOnTop: true,
       pauseOnHover: false,
       draggable: false,
       progress: false,
@@ -45,18 +46,7 @@ const App = () => {
   };
   return (
     <PoolWrapper>
-      <ToastContainer
-        width={50}
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <ToastContainer />
       {/* Same as */}
       <ToastContainer />
       <motion.div

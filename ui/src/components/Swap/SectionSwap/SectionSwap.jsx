@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import placeholderAgoric from 'assets/placeholder-agoric.png';
