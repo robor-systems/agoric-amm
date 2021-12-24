@@ -59,11 +59,12 @@ const Liquidity = () => {
       }
 
       // further process userPairs to determine liquidity percentages
+      console.log('poolAllocations userPairs:', poolAllocations.userPairs);
       const userLiquidity = await getUserLiquidityService(
         ammAPI,
         poolAllocations.userPairs,
       );
-      if (userLiquidity.status === 200) {
+      if (userLiquidity.status === 200 || userLiquidity.status === 204) {
         // TODO use userPairs to show user's liquidity in the screen.
         console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
         const status = userLiquidity.status;
@@ -79,9 +80,8 @@ const Liquidity = () => {
     };
 
     state && state.assets && getPool();
-
     setCentralInfo(getInfoForBrand(brandToInfo, centralBrand));
-  }, [state.purses]);
+  }, [state.assets]);
 
   return (
     <AssetWrapper assetHook={liquidityHook}>

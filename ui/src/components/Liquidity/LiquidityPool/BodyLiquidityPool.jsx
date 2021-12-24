@@ -26,6 +26,7 @@ const BodyLiquidityPool = props => {
   // get state
   const { state } = useApplicationContext();
   const { brandToInfo } = state;
+  const userLiquidityPoolsExist = () => {};
 
   useEffect(() => {
     const updatePools = () => {
@@ -55,10 +56,14 @@ const BodyLiquidityPool = props => {
 
       setUpdatedPool(newPool);
     };
-    if (pool.allLiquidityStatus === 200) {
+    if (pool?.allLiquidityStatus === 200) {
       console.log('All Liquidity Pools Loaded:', pool.allocations);
-      pool.allocations && updatePools();
-      pool.allocations.length > 0 && setLoadAllLiquidityPools(false);
+      pool?.allocations && updatePools();
+      pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
+      // if (pool.userPairs.length === 0) {
+      loadUserLiquidityPools &&
+        setLoadUserLiquidityPools(pool.allocations.every(item => item.user));
+      // }
     }
   }, [pool.allocations]);
   useEffect(() => {
@@ -102,9 +107,6 @@ const BodyLiquidityPool = props => {
       pool.userPairs && updateUserPools();
       console.log('inside if :', pool.userPairs > 0 && loadUserLiquidityPools);
       pool.userPairs > 0 && setLoadUserLiquidityPools(false);
-    }
-    if (pool.userLiquidityStatus === 204) {
-      setLoadUserLiquidityPools(false);
     }
   }, [pool.userPairs]);
   return (
