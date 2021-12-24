@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import 'styles/globals.css';
 import agoricLogo from 'assets/agoric-logo.svg';
 import Swap from 'components/Swap/Swap';
@@ -14,8 +16,49 @@ const App = () => {
 
   const swapHook = useState({ from: null, to: null });
 
+  const setToast = (msg, type) => {
+    const toastProperties = {
+      position: 'top-right',
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: false,
+    };
+    type === 'loading' &&
+      toast.loading(msg, {
+        ...toastProperties,
+      });
+    type === 'dismiss' && toast.dismiss();
+    type === 'success' &&
+      toast.success(msg, {
+        ...toastProperties,
+      });
+    type === 'warning' &&
+      toast.warning(msg, {
+        ...toastProperties,
+      });
+    type === 'error' &&
+      toast.error(msg, {
+        ...toastProperties,
+      });
+  };
   return (
     <PoolWrapper>
+      <ToastContainer
+        width={50}
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      {/* Same as */}
+      <ToastContainer />
       <motion.div
         className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative"
         layout
@@ -59,7 +102,7 @@ const App = () => {
           <Tab.Panels>
             <Tab.Panel>
               <AssetWrapper assetHook={swapHook}>
-                <Swap />
+                <Swap setToast={setToast} />
               </AssetWrapper>
             </Tab.Panel>
             <Tab.Panel>

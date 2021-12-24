@@ -245,7 +245,11 @@ export default function Provider({ children }) {
       },
       onMessage(data) {
         const obj = JSON.parse(data);
-        walletDispatch && walletDispatch(obj);
+        console.log('Printing Object empty: ', obj);
+        console.log(!obj.exception);
+        if (!obj.exception) {
+          walletDispatch && walletDispatch(obj);
+        }
       },
     });
     return deactivateWebSocket;

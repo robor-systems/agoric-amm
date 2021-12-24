@@ -209,6 +209,7 @@ const AddLiquidity = () => {
       amountMake: amountMakeCentral, // used for adding liquidity
     });
     setInputType(SWAP_IN);
+    console.log(inputType);
     // calculate swapTo price
     // multiply userInput 'from' amount to 'to' amount using provided rate.
     const amountMakeSecondary = floorMultiplyBy(

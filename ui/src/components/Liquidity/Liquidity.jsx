@@ -1,5 +1,4 @@
 import { Tab } from '@headlessui/react';
-import Loader from 'react-loader-spinner';
 
 import clsx from 'clsx';
 import {
@@ -15,7 +14,7 @@ import { getInfoForBrand } from 'utils/helpers';
 
 import { motion } from 'framer-motion';
 import React, { useState, useEffect, useContext } from 'react';
-import { FiChevronRight, FiLoader } from 'react-icons/fi';
+import { FiChevronRight } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
 import RemoveLiquidity from './RemoveLiquidity/RemoveLiquidity';
@@ -29,7 +28,6 @@ const Liquidity = () => {
         : 'bg-white text-gray-400',
     );
   const [assetloader, setAssetLoader] = useState(false);
-  const [userPoolLoaded, setUserPoolLoaded] = useState(false);
   const [open, setOpen] = useState(false);
   const liquidityHook = useState({ central: null, liquidity: null });
   const errorHook = useState(undefined);

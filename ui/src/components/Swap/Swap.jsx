@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import Loader from 'react-loader-spinner';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import clsx from 'clsx';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
@@ -34,31 +34,7 @@ const UNIT_BASIS_NAT = 10000n;
 const SWAP_IN = 'IN';
 const SWAP_OUT = 'OUT';
 
-const Swap = () => {
-  const notify = () => {
-    toast('Default Notification !');
-
-    toast.success('Success Notification !', {
-      position: toast.POSITION.TOP_CENTER,
-    });
-
-    toast.error('Error Notification !', {
-      position: toast.POSITION.TOP_LEFT,
-    });
-
-    toast.warn('Warning Notification !', {
-      position: toast.POSITION.BOTTOM_LEFT,
-    });
-
-    toast.info('Info Notification !', {
-      position: toast.POSITION.BOTTOM_CENTER,
-    });
-
-    toast('Custom Style Notification with css class!', {
-      position: toast.POSITION.BOTTOM_RIGHT,
-      className: 'foo-bar',
-    });
-  };
+const Swap = ({ setToast }) => {
   const [asset, setAsset] = useContext(AssetContext);
   const [optionsEnabled, setOptionsEnabled] = useState(false);
   const [error, setError] = useState(null);
@@ -97,16 +73,22 @@ const Swap = () => {
     if (swapped) {
       if (walletOffers[currentOfferId]?.status === 'accept') {
         setSwapButtonStatus('Swapped');
+        setToast('clear', 'dismiss');
+        setToast('Assets successfully swapped', 'success');
+        setTimeout(() => {}, 1000);
         setTimeout(() => {
           setSwapped(false);
           setSwapButtonStatus('Swap');
-        }, 2000);
+        }, 3000);
       } else if (walletOffers[currentOfferId]?.status === 'decline') {
         setSwapButtonStatus('Not Swapped');
+        setToast('clear', 'dismiss');
+        setToast('Swap declined by Wallet', 'error');
+        setTimeout(() => {}, 1000);
         setTimeout(() => {
           setSwapped(false);
           setSwapButtonStatus('Swap');
-        }, 2000);
+        }, 3000);
       }
     }
   }, [walletOffers[currentOfferId]]);
@@ -223,6 +205,7 @@ const Swap = () => {
     } else if (error) {
       return;
     }
+    setToast('Please approve the offer in your wallet.', 'loading');
     setCurrentOfferId(walletOffers.length);
     console.log('saving current OfferId :', currentOfferId);
     console.log(
@@ -408,48 +391,48 @@ const Swap = () => {
         {optionsEnabled && (
           <OptionsSwap slippage={slippage} setSlippage={setSlippage} />
         )}
-        {/* {assetloader ? (
+        {assetloader ? (
           <motion.div className="flex flex-row justify-center items-center">
             {' '}
             <Loader type="Oval" color="#62d2cb" height={60} width={60} />
           </motion.div>
-        ) : ( */}
-        <motion.div className="flex flex-col gap-4 relative" layout>
-          <div className="flex flex-col gap-4 relative">
+        ) : (
+          <motion.div className="flex flex-col gap-4 relative" layout>
+            <div className="flex flex-col gap-4 relative">
+              <SectionSwap
+                type="from"
+                value={swapFrom.decimal}
+                handleChange={handleInputChange}
+                rateAvailable={!assetExchange?.rate}
+              />
+              <FiRepeat
+                // className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
+                className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
+                size="30"
+                onClick={() => {
+                  if (asset.to && asset.from) {
+                    setAsset({
+                      from: asset.to,
+                      to: asset.from,
+                    });
+                    setSwapFrom(swapTo);
+                    setSwapTo(swapFrom);
+                    setAssetExchange({
+                      ...assetExchange,
+                      marketRate: invertRatio(assetExchange.marketRate),
+                    });
+                  }
+                }}
+              />
+            </div>
             <SectionSwap
-              type="from"
-              value={swapFrom.decimal}
-              handleChange={handleInputChange}
+              type="to"
+              value={swapTo.decimal}
+              handleChange={handleOutputChange}
               rateAvailable={!assetExchange?.rate}
             />
-            <FiRepeat
-              // className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
-              className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
-              size="30"
-              onClick={() => {
-                if (asset.to && asset.from) {
-                  setAsset({
-                    from: asset.to,
-                    to: asset.from,
-                  });
-                  setSwapFrom(swapTo);
-                  setSwapTo(swapFrom);
-                  setAssetExchange({
-                    ...assetExchange,
-                    marketRate: invertRatio(assetExchange.marketRate),
-                  });
-                }
-              }}
-            />
-          </div>
-          <SectionSwap
-            type="to"
-            value={swapTo.decimal}
-            handleChange={handleOutputChange}
-            rateAvailable={!assetExchange?.rate}
-          />
-        </motion.div>
-        {/* )} */}
+          </motion.div>
+        )}
         {!exchangeRateLoader && assetExists && assetExchange && (
           <ExtraInformation
             {...assetExchange}
@@ -482,8 +465,7 @@ const Swap = () => {
             } else if (swapped) {
               setError('Please wait!');
             } else {
-              notify();
-              // handleSwap();
+              handleSwap();
             }
           }}
         >
