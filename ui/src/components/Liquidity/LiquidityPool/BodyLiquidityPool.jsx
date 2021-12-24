@@ -28,11 +28,6 @@ const BodyLiquidityPool = props => {
   const { brandToInfo } = state;
 
   useEffect(() => {
-    // updatedPool.length > 0 && setLoadAllLiquidityPools(false);
-    // userPool.length > 0 && setLoadAllLiquidityPools(false);
-  }, []);
-
-  useEffect(() => {
     const updatePools = () => {
       const newPool = pool?.allocations?.map(item => {
         const central = item.Central;
@@ -61,11 +56,9 @@ const BodyLiquidityPool = props => {
       setUpdatedPool(newPool);
     };
     if (pool.allLiquidityStatus === 200) {
-      console.log('All Liquidity Pools Loaded');
+      console.log('All Liquidity Pools Loaded:', pool.allocations);
       pool.allocations && updatePools();
-      pool.allocations &&
-        loadAllLiquidityPools &&
-        setLoadAllLiquidityPools(false);
+      pool.allocations.length > 0 && setLoadAllLiquidityPools(false);
     }
   }, [pool.allocations]);
   useEffect(() => {
@@ -100,21 +93,18 @@ const BodyLiquidityPool = props => {
           },
         };
       });
-      console.log('printing user pairs : ', newUserPairs);
-      setLoadUserLiquidityPools(false);
+      console.log('inside function : ', newUserPairs.length > 0);
+      newUserPairs.length > 0 && setLoadUserLiquidityPools(false);
       setUserPool(newUserPairs);
     };
-    console.log('printing pools userpair : ', pool.userLiquiditiesLength);
-    if (pool.userLiquidityStatus === 200 && pool.userLiquiditiesLength > 0) {
+    if (pool.userLiquidityStatus === 200) {
       console.log('User Liquidity Pools Loaded:', pool.userPairs);
-      pool.userPairs.length && updateUserPools();
-      pool.userPairs &&
-        loadUserLiquidityPools &&
-        setLoadUserLiquidityPools(false);
+      pool.userPairs && updateUserPools();
+      console.log('inside if :', pool.userPairs > 0 && loadUserLiquidityPools);
+      pool.userPairs > 0 && setLoadUserLiquidityPools(false);
     }
-    if (pool.userLiquidityStatus === 300 && pool.userLiquiditiesLength === 0) {
-      console.log('User Liquidity Pools Loaded:', pool.userPairs);
-      pool.userPairs && setLoadUserLiquidityPools(false);
+    if (pool.userLiquidityStatus === 204) {
+      setLoadUserLiquidityPools(false);
     }
   }, [pool.userPairs]);
   return (

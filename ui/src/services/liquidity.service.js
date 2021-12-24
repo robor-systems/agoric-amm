@@ -73,14 +73,13 @@ export const getUserLiquidityService = async (ammAPI, pairs) => {
         percentShare: poolShare,
       };
     });
-
     interArr = [...results.filter(item => item.status === 'fulfilled')];
   });
 
   console.log(interArr);
 
   return {
-    status: 200,
+    status: interArr.length > 0 ? 200 : 204,
     message: 'Successfully extracted user liquidity',
     payload: interArr,
   };

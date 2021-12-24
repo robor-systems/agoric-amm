@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import React, { useState, useEffect } from 'react';
+import { setToast } from 'utils/helpers';
+import { useApplicationContext } from 'context/Application';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'styles/globals.css';
 import agoricLogo from 'assets/agoric-logo.svg';
@@ -13,37 +15,23 @@ import { motion } from 'framer-motion';
 
 const App = () => {
   const [index, setIndex] = useState(0);
-
+  const { state } = useApplicationContext();
+  useEffect(() => {
+    if (state?.error?.name) {
+      let time = 0;
+      state.error.name.split(',').forEach(name => {
+        setTimeout(() => {
+          setToast(name, 'warning', {
+            position: 'top-right',
+            autoClose: false,
+          });
+        }, time);
+        time += 2000;
+      });
+    }
+  }, [state?.error]);
   const swapHook = useState({ from: null, to: null });
 
-  const setToast = (msg, type) => {
-    const toastProperties = {
-      position: 'top-right',
-      hideProgressBar: false,
-      closeOnClick: true,
-      newestOnTop: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: false,
-    };
-    type === 'loading' &&
-      toast.loading(msg, {
-        ...toastProperties,
-      });
-    type === 'dismiss' && toast.dismiss();
-    type === 'success' &&
-      toast.success(msg, {
-        ...toastProperties,
-      });
-    type === 'warning' &&
-      toast.warning(msg, {
-        ...toastProperties,
-      });
-    type === 'error' &&
-      toast.error(msg, {
-        ...toastProperties,
-      });
-  };
   return (
     <PoolWrapper>
       <ToastContainer />
@@ -92,7 +80,7 @@ const App = () => {
           <Tab.Panels>
             <Tab.Panel>
               <AssetWrapper assetHook={swapHook}>
-                <Swap setToast={setToast} />
+                <Swap />
               </AssetWrapper>
             </Tab.Panel>
             <Tab.Panel>

@@ -59,6 +59,7 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
             asset={asset}
             type={type}
             rateAvailable={rateAvailable}
+            useCase="swap"
           />
         </div>
       </motion.div>

@@ -29,6 +29,7 @@ export const {
     resetVault,
     setAutoswap,
     setAssets,
+    setError,
   },
 } = autodux({
   slice: 'treasury',
@@ -49,6 +50,7 @@ export const {
     vaultToManageId: null,
     assets: [],
     walletOffers: [],
+    error: {},
   },
   actions: {
     createVault: (state, { id, vault }) => {
@@ -93,11 +95,16 @@ export const {
     }),
     mergeBrandToInfo: (state, newBrandToInfo) => {
       const merged = new Map([...state.brandToInfo, ...newBrandToInfo]);
-
       const brandToInfo = [...merged.entries()];
       return {
         ...state,
         brandToInfo,
+      };
+    },
+    setError: (state, error) => {
+      return {
+        ...state,
+        error,
       };
     },
     setAssets: (state, purses) => {

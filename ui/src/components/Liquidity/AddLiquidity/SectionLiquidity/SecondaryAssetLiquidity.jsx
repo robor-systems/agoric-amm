@@ -84,6 +84,7 @@ const SecondaryAssetLiquidity = ({
             asset={asset}
             type={type}
             rateAvailable={rateAvailable}
+            useCase="liquidity"
           />
         </div>
       </div>

@@ -24,6 +24,7 @@ import {
   setAutoswap,
   setApproved,
   updateOffers,
+  setError,
 } from '../store/store';
 
 import {
@@ -247,7 +248,14 @@ export default function Provider({ children }) {
         const obj = JSON.parse(data);
         console.log('Printing Object empty: ', obj);
         console.log(!obj.exception);
-        if (!obj.exception) {
+        if (obj.exception) {
+          console.log(obj.exception.body);
+          dispatch(
+            setError({
+              name: 'Zoe purse balance is 0.,First send Runs to zoe purse using your wallet.,Then Refresh browser to continue.',
+            }),
+          );
+        } else {
           walletDispatch && walletDispatch(obj);
         }
       },

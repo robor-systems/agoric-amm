@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-
+import { toast } from 'react-toastify';
 import agoricLogo from 'assets/crypto-icons/agoric-logo.png';
 import bldLogo from 'assets/crypto-icons/bld-logo.png';
 import kirkLogo from 'assets/crypto-icons/kirk-logo.png';
@@ -93,6 +93,36 @@ export const getInfoForBrand = (brandToInfo, brand) => {
     return array[1];
   }
   return undefined;
+};
+
+export const setToast = (msg, type, properties) => {
+  const defaultProperties = {
+    position: 'top-right',
+    hideProgressBar: false,
+    closeOnClick: true,
+    newestOnTop: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: false,
+  };
+  const toastProperties = properties ? properties : defaultProperties;
+  type === 'loading' &&
+    toast.loading(msg, {
+      ...toastProperties,
+    });
+  type === 'dismiss' && toast.dismiss();
+  type === 'success' &&
+    toast.success(msg, {
+      ...toastProperties,
+    });
+  type === 'warning' &&
+    toast.warning(msg, {
+      ...toastProperties,
+    });
+  type === 'error' &&
+    toast.error(msg, {
+      ...toastProperties,
+    });
 };
 
 export const displayPetname = pn => (Array.isArray(pn) ? pn.join('.') : pn);

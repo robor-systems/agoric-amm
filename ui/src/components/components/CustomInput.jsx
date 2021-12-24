@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-function CustomInput({ value, handleChange, asset, type, rateAvailable }) {
+function CustomInput({
+  value,
+  handleChange,
+  asset,
+  type,
+  rateAvailable,
+  useCase,
+}) {
   const [balance, setBalance] = useState(0);
   const onMax = () => {
-    if (asset.to && asset.from) {
-      asset[type] &&
-        handleChange({ target: { value: asset[type].purse.balance } });
-    }
+    asset[type] &&
+      handleChange({ target: { value: asset[type].purse.balance } });
   };
   useEffect(() => {
     asset[type]?.purse?.balance && setBalance(asset[type].purse.balance);
@@ -35,7 +40,11 @@ function CustomInput({ value, handleChange, asset, type, rateAvailable }) {
         className={`rounded-sm bg-white bg-opacity-100 text-xl p-3 leading-6 w-full hover:outline-none focus:outline-none border-none ${
           asset[type]?.purse ? 'pl-[52px]' : 'pl-[12px]'
         }`}
-        disabled={rateAvailable || !asset.to || !asset.from}
+        disabled={
+          useCase === 'swap'
+            ? rateAvailable || !asset.to || !asset.from
+            : rateAvailable || !asset.central || !asset.secondary
+        }
         min="0"
         max="10000000"
       />

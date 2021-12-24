@@ -64,15 +64,13 @@ const Liquidity = () => {
         poolAllocations.userPairs,
       );
       if (userLiquidity.status === 200) {
-        const len = userLiquidity.payload.length;
         // TODO use userPairs to show user's liquidity in the screen.
         console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
         const status = userLiquidity.status;
         setPool({
           ...pool,
           userPairs: userLiquidity.payload,
-          userLiquidityStatus: len > 0 ? status : 300,
-          userLiquiditiesLength: len,
+          userLiquidityStatus: status,
         });
       } else {
         // TODO: should be printed on screen
