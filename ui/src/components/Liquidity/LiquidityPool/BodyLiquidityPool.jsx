@@ -67,7 +67,7 @@ const BodyLiquidityPool = props => {
         loadAllLiquidityPools &&
         setLoadAllLiquidityPools(false);
     }
-  }, [pool]);
+  }, [pool.allocations]);
   useEffect(() => {
     const updateUserPools = () => {
       setLoadUserLiquidityPools(true);
@@ -116,7 +116,7 @@ const BodyLiquidityPool = props => {
       console.log('User Liquidity Pools Loaded:', pool.userPairs);
       pool.userPairs && setLoadUserLiquidityPools(false);
     }
-  }, [pool]);
+  }, [pool.userPairs]);
   return (
     <>
       <HeaderLiquidityPool type="all" />

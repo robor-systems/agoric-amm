@@ -20,6 +20,7 @@ import { divide, multiply } from 'lodash';
 
 import React, { useContext, useEffect, useState } from 'react';
 import { FiChevronDown, FiChevronUp, FiRepeat, FiCheck } from 'react-icons/fi';
+import { BiErrorCircle } from 'react-icons/bi';
 import ExtraInformation from './ExtraInformation/ExtraInformation';
 import OptionsSwap from './OptionsSwap/OptionsSwap';
 import SectionSwap from './SectionSwap/SectionSwap';
@@ -55,24 +56,35 @@ const Swap = () => {
   const [swapped, setSwapped] = useState(false);
   const assetExists = Object.values(asset).filter(item => item).length >= 2;
   const [swapType, setSwapType] = useState(SWAP_IN);
-
   // get state
   const { state, walletP } = useApplicationContext();
-
   const {
     brandToInfo,
     walletOffers,
     autoswap: { ammAPI, centralBrand },
   } = state;
-
+  const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
+  const [swapButtonStatus, setSwapButtonStatus] = useState('Swap');
   useEffect(() => {
     brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
   }, []);
   useEffect(() => {
-    console.log('On offers change');
-    console.log('printing :', walletOffers);
-    console.log('On offers change');
-  }, [walletOffers.length]);
+    if (swapped) {
+      if (walletOffers[currentOfferId]?.status === 'accept') {
+        setSwapButtonStatus('Swapped');
+        setTimeout(() => {
+          setSwapped(false);
+          setSwapButtonStatus('Swap');
+        }, 2000);
+      } else if (walletOffers[currentOfferId]?.status === 'decline') {
+        setSwapButtonStatus('Not Swapped');
+        setTimeout(() => {
+          setSwapped(false);
+          setSwapButtonStatus('Swap');
+        }, 2000);
+      }
+    }
+  }, [walletOffers[currentOfferId]]);
   const makeInverseFromAmounts = (x, y) => makeRatioFromAmounts(y, x);
   const composeRatio = (x, y) =>
     makeRatioFromAmounts(floorMultiplyBy(x.numerator, y), x.denominator);
@@ -186,6 +198,8 @@ const Swap = () => {
     } else if (error) {
       return;
     }
+    setCurrentOfferId(walletOffers.length);
+    console.log('saving current OfferId :', currentOfferId);
     console.log(
       walletP,
       ammAPI,
@@ -205,15 +219,9 @@ const Swap = () => {
       swapType === SWAP_OUT ? swapTo.nat : swapTo.limitNat,
       true, // swapIn will always be true
     );
-
     setSwapped(true);
     // setSwapFrom({ decimal: 0, nat: 0n });
     // setSwapTo({ decimal: 0, nat: 0n });
-
-    setTimeout(async () => {
-      // await getRates();
-      setSwapped(false);
-    }, 2000);
   };
 
   const handleInputChange = ({ target }) => {
@@ -453,7 +461,24 @@ const Swap = () => {
             }
           }}
         >
-          {swapped ? <FiCheck size={28} /> : 'swap'}
+          <motion.div className="relative flex-row w-full justify-center items-center">
+            {swapped && swapButtonStatus === 'Swap' && (
+              <Loader
+                className="absolute right-0"
+                type="Oval"
+                color="#fff"
+                height={28}
+                width={28}
+              />
+            )}
+            {swapped && swapButtonStatus === 'Swapped' && (
+              <FiCheck className="absolute right-0" size={28} />
+            )}
+            {swapped && swapButtonStatus === 'Not Swapped' && (
+              <BiErrorCircle className="absolute right-0" size={28} />
+            )}
+            <div className="text-white">{swapButtonStatus}</div>
+          </motion.div>
         </motion.button>
 
         {error && (

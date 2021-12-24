@@ -129,7 +129,7 @@ const Liquidity = () => {
               </Tab.List>
               <Tab.Panels>
                 <Tab.Panel>
-                  {assetloader ? (
+                  {/* {assetloader ? (
                     <motion.div className="flex flex-row justify-center items-center">
                       {' '}
                       <Loader
@@ -139,12 +139,12 @@ const Liquidity = () => {
                         width={60}
                       />
                     </motion.div>
-                  ) : (
-                    <AddLiquidity />
-                  )}
+                  ) : ( */}
+                  <AddLiquidity />
+                  {/* )} */}
                 </Tab.Panel>
                 <Tab.Panel>
-                  {assetloader ? (
+                  {/* {assetloader ? (
                     <motion.div className="flex flex-row justify-center items-center">
                       {' '}
                       <Loader
@@ -154,9 +154,9 @@ const Liquidity = () => {
                         width={60}
                       />
                     </motion.div>
-                  ) : (
-                    <RemoveLiquidity setOpen={setOpen} />
-                  )}
+                  ) : ( */}
+                  <RemoveLiquidity setOpen={setOpen} />
+                  {/* )} */}
                 </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>

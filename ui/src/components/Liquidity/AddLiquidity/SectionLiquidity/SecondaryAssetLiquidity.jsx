@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 
 import AssetContext from 'context/AssetContext';
