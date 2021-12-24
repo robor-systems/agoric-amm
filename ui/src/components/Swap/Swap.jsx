@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Loader from 'react-loader-spinner';
+import { toast } from 'react-toastify';
 import clsx from 'clsx';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
@@ -34,6 +35,30 @@ const SWAP_IN = 'IN';
 const SWAP_OUT = 'OUT';
 
 const Swap = () => {
+  const notify = () => {
+    toast('Default Notification !');
+
+    toast.success('Success Notification !', {
+      position: toast.POSITION.TOP_CENTER,
+    });
+
+    toast.error('Error Notification !', {
+      position: toast.POSITION.TOP_LEFT,
+    });
+
+    toast.warn('Warning Notification !', {
+      position: toast.POSITION.BOTTOM_LEFT,
+    });
+
+    toast.info('Info Notification !', {
+      position: toast.POSITION.BOTTOM_CENTER,
+    });
+
+    toast('Custom Style Notification with css class!', {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      className: 'foo-bar',
+    });
+  };
   const [asset, setAsset] = useContext(AssetContext);
   const [optionsEnabled, setOptionsEnabled] = useState(false);
   const [error, setError] = useState(null);
@@ -457,7 +482,8 @@ const Swap = () => {
             } else if (swapped) {
               setError('Please wait!');
             } else {
-              handleSwap();
+              notify();
+              // handleSwap();
             }
           }}
         >

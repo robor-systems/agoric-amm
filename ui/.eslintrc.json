@@ -28,5 +28,5 @@
       "version": "detect"
     }
   },
-  "extends": ["@agoric", "plugin:react/recommended"]
+  "extends": ["plugin:react/recommended"]
 }

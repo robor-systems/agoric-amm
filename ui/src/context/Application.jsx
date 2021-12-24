@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import 'json5';
 import 'utils/installSESLockdown';
-/* eslint-disable import/no-mutable-exports */
 
 import { makeCapTP, E, Far } from '@agoric/captp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
