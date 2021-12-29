@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
 import Loader from 'react-loader-spinner';
-import { setToast } from '../../../utils/helpers';
 
-import { FiCheck, FiPlus } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 
@@ -30,7 +29,6 @@ import { getInfoForBrand, displayPetname } from 'utils/helpers';
 import CentralAssetLiquidity from './SectionLiquidity/CentralAssetLiquidity';
 import SecondaryAssetLiquidity from './SectionLiquidity/SecondaryAssetLiquidity';
 import RateLiquidity from '../RateLiquidity/RateLiquidity';
-import { BiErrorCircle } from 'react-icons/bi';
 
 // used for indicating user's input type
 const SWAP_IN = 'IN';
@@ -56,59 +54,18 @@ const AddLiquidity = () => {
   const [asset, setAsset] = useContext(AssetContext);
   const [inputType, setInputType] = useState(SWAP_IN);
   const [showLoader, setShowLoader] = useState(false);
+
   // get state
   const { state, walletP } = useApplicationContext();
 
   const {
     brandToInfo,
-    walletOffers,
     autoswap: { ammAPI, centralBrand },
     purses,
   } = state;
-  const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
-  const [buttonStatus, setButtonStatus] = useState('add liquidity');
+
   const assetExists =
     Object.values(asset).filter(item => item?.purse).length >= 2;
-
-  useEffect(() => {
-    if (showLoader) {
-      let addLiquidityStatus = walletOffers[currentOfferId]?.status;
-      if (
-        addLiquidityStatus === 'accept' ||
-        addLiquidityStatus === 'decline' ||
-        walletOffers[currentOfferId]?.error
-      ) {
-        setToast('clear', 'dismiss', null);
-      }
-      if (addLiquidityStatus === 'accept') {
-        setButtonStatus('added');
-        setTimeout(() => {
-          setToast('User Liquidity pool added successfully', 'success', null);
-        }, 500);
-      } else if (addLiquidityStatus === 'decline') {
-        setButtonStatus('declined');
-        setTimeout(() => {
-          setToast('Offer declined by User', 'error', null);
-        }, 500);
-      } else if (walletOffers[currentOfferId]?.error) {
-        setButtonStatus('rejected');
-
-        setTimeout(() => {
-          setToast('Offer rejected by Wallet', 'warning', null);
-        }, 500);
-      }
-      if (
-        addLiquidityStatus === 'accept' ||
-        addLiquidityStatus === 'decline' ||
-        walletOffers[currentOfferId]?.error
-      ) {
-        setTimeout(() => {
-          setButtonStatus('add Liquidity');
-          setShowLoader(false);
-        }, 3000);
-      }
-    }
-  }, [walletOffers[currentOfferId]]);
 
   const makeInverseFromAmounts = (x, y) => makeRatioFromAmounts(y, x);
   const composeRatio = (x, y) =>
@@ -190,40 +147,34 @@ const AddLiquidity = () => {
   };
 
   useEffect(() => {
-    if (!showLoader) {
-      if (asset.central && asset.secondary && ammAPI) {
-        getRates();
-      } else {
-        // setAssetExchange({ ...assetExchange, rate: undefined });
-      }
+    if (asset.central && asset.secondary && ammAPI) {
+      getRates();
+    } else {
+      setAssetExchange({ ...assetExchange, rate: undefined });
     }
   }, [asset, ammAPI, centralBrand]);
 
   useEffect(() => {
-    if (!showLoader) {
-      if (centralValue && secondaryValue) setError(null);
-      if (
-        parseFloat(asset.central?.purse.balance) <
-        parseFloat(centralValue.decimal)
-      ) {
-        setError(`Insufficient ${asset.central.code} balance`);
-      } else if (
-        parseFloat(asset.secondary?.purse?.balance) <
-        parseFloat(secondaryValue.decimal)
-      ) {
-        setError(`Insufficient ${asset.secondary.code} balance`);
-      } else setError(null);
-    }
+    if (centralValue && secondaryValue) setError(null);
+    if (
+      parseFloat(asset.central?.purse.balance) <
+      parseFloat(centralValue.decimal)
+    ) {
+      setError(`Insufficient ${asset.central.code} balance`);
+    } else if (
+      parseFloat(asset.secondary?.purse?.balance) <
+      parseFloat(secondaryValue.decimal)
+    ) {
+      setError(`Insufficient ${asset.secondary.code} balance`);
+    } else setError(null);
   }, [centralValue, secondaryValue]);
 
   useEffect(() => {
-    if (!showLoader) {
-      Object.values(asset).filter(item => item?.purse).length >= 2 &&
-        setError(null);
-      if (asset.central?.mode === assetState.EMPTY) {
-        setError(assetState.EMPTY);
-      } else setError(null);
-    }
+    Object.values(asset).filter(item => item?.purse).length >= 2 &&
+      setError(null);
+    if (asset.central?.mode === assetState.EMPTY) {
+      setError(assetState.EMPTY);
+    } else setError(null);
   }, [asset]);
 
   const handleInputChange = ({ target }) => {
@@ -341,9 +292,6 @@ const AddLiquidity = () => {
     if (error) {
       return;
     }
-
-    setToast('Please approve the offer in your wallet.', 'loading', null);
-    setCurrentOfferId(walletOffers.length);
     setShowLoader(true);
 
     const response = await addLiquidityService(
@@ -357,21 +305,22 @@ const AddLiquidity = () => {
     );
 
     // if passed then reset everything
-    // if (response.status === 200) {
-    //   const reset = {
-    //     decimal: '',
-    //     nat: 0n,
-    //     amountMake: undefined,
-    //   };
-    //   setAsset({
-    //     ...asset,
-    //     central: undefined,
-    //     secondary: undefined,
-    //   });
-    //   setCentralValue(reset);
-    //   setSecondaryValue(reset);
-    //   setAssetExchange(undefined);
-    // }
+    if (response.status === 200) {
+      const reset = {
+        decimal: '',
+        nat: 0n,
+        amountMake: undefined,
+      };
+      setAsset({
+        ...asset,
+        central: undefined,
+        secondary: undefined,
+      });
+      setCentralValue(reset);
+      setSecondaryValue(reset);
+      setAssetExchange(undefined);
+    }
+    setShowLoader(false);
   };
 
   return (
@@ -388,7 +337,6 @@ const AddLiquidity = () => {
           value={centralValue.decimal}
           handleChange={handleInputChange}
           rateAvailable={!assetExchange?.rate}
-          loader={showLoader}
         />
 
         {/* <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-liquidity" /> */}
@@ -402,7 +350,6 @@ const AddLiquidity = () => {
           value={secondaryValue.decimal}
           handleChange={handleOutputChange}
           rateAvailable={!assetExchange?.rate}
-          loader={showLoader}
         />
       </div>
       {!exchangeRateLoader && assetExists && assetExchange && (
@@ -429,37 +376,18 @@ const AddLiquidity = () => {
         disabled={error === assetState.EMPTY || showLoader}
         onClick={() => {
           if (!assetExists) setError('Please select assets first');
-          else if (
-            !(secondaryValue && centralValue) ||
-            !(secondaryValue.decimal > 0 && centralValue.decimal > 0)
-          ) {
+          else if (!(secondaryValue && centralValue)) {
             setError('Please enter the amounts first');
           } else {
-            secondaryValue.decimal > 0 &&
-              centralValue.decimal > 0 &&
-              handleAddLiquidity();
+            handleAddLiquidity();
           }
         }}
       >
-        <motion.div className="relative flex-row w-full justify-center items-center">
-          {showLoader && buttonStatus === 'add liquidity' && (
-            <Loader
-              className="absolute right-0"
-              type="Oval"
-              color="#fff"
-              height={28}
-              width={28}
-            />
-          )}
-          {showLoader && buttonStatus === 'added' && (
-            <FiCheck className="absolute right-0" size={28} />
-          )}
-          {showLoader &&
-            (buttonStatus === 'declined' || buttonStatus === 'rejected') && (
-              <BiErrorCircle className="absolute right-0" size={28} />
-            )}
-          <div className="text-white">{buttonStatus}</div>
-        </motion.div>
+        {showLoader ? (
+          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white-900"></div>
+        ) : (
+          'ADD LIQUIDITY'
+        )}
       </button>
 
       {error && (

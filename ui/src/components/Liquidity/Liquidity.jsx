@@ -18,7 +18,6 @@ import { FiChevronRight } from 'react-icons/fi';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
 import RemoveLiquidity from './RemoveLiquidity/RemoveLiquidity';
-import CustomLoader from 'components/components/CustomLoader';
 
 const Liquidity = () => {
   const tabClasses = ({ selected }) =>
@@ -42,7 +41,7 @@ const Liquidity = () => {
   } = state;
   useEffect(() => {
     brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
-  }, [brandToInfo]);
+  }, []);
   useEffect(() => {
     const getPool = async () => {
       const poolAllocations = await getPoolAllocationService(
@@ -79,6 +78,7 @@ const Liquidity = () => {
         console.error('Something went wrong');
       }
     };
+
     state && state.assets && getPool();
     setCentralInfo(getInfoForBrand(brandToInfo, centralBrand));
   }, [state.assets]);
@@ -125,18 +125,34 @@ const Liquidity = () => {
               </Tab.List>
               <Tab.Panels>
                 <Tab.Panel>
-                  {assetloader ? (
-                    <CustomLoader text="Loading Assets..." size={25} />
-                  ) : (
-                    <AddLiquidity />
-                  )}
+                  {/* {assetloader ? (
+                    <motion.div className="flex flex-row justify-center items-center">
+                      {' '}
+                      <Loader
+                        type="Oval"
+                        color="#62d2cb"
+                        height={60}
+                        width={60}
+                      />
+                    </motion.div>
+                  ) : ( */}
+                  <AddLiquidity />
+                  {/* )} */}
                 </Tab.Panel>
                 <Tab.Panel>
-                  {assetloader ? (
-                    <CustomLoader text="Loading Assets..." size={25} />
-                  ) : (
-                    <RemoveLiquidity setOpen={setOpen} />
-                  )}
+                  {/* {assetloader ? (
+                    <motion.div className="flex flex-row justify-center items-center">
+                      {' '}
+                      <Loader
+                        type="Oval"
+                        color="#62d2cb"
+                        height={60}
+                        width={60}
+                      />
+                    </motion.div>
+                  ) : ( */}
+                  <RemoveLiquidity setOpen={setOpen} />
+                  {/* )} */}
                 </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>

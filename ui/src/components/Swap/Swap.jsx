@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Loader from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
 import clsx from 'clsx';
 import { useApplicationContext } from 'context/Application';
 import { setToast } from '../../utils/helpers';
@@ -25,7 +26,6 @@ import { BiErrorCircle } from 'react-icons/bi';
 import ExtraInformation from './ExtraInformation/ExtraInformation';
 import OptionsSwap from './OptionsSwap/OptionsSwap';
 import SectionSwap from './SectionSwap/SectionSwap';
-import CustomLoader from 'components/components/CustomLoader';
 
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
@@ -69,34 +69,36 @@ const Swap = () => {
   const [swapButtonStatus, setSwapButtonStatus] = useState('Swap');
   useEffect(() => {
     brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
-  }, [brandToInfo]);
+  }, []);
   useEffect(() => {
     if (swapped) {
-      let swapStatus = walletOffers[currentOfferId]?.status;
-      if (swapStatus === 'accept') {
+      if (walletOffers[currentOfferId]?.status === 'accept') {
         setSwapButtonStatus('Swapped');
+
         setToast('clear', 'dismiss', null);
         setTimeout(() => {
           setToast('Assets successfully swapped', 'success', null);
         }, 500);
-      } else if (swapStatus === 'decline') {
+        setTimeout(() => {
+          setSwapped(false);
+          setSwapButtonStatus('Swap');
+        }, 3000);
+      } else if (walletOffers[currentOfferId]?.status === 'decline') {
         setSwapButtonStatus('declined');
         setToast('clear', 'dismiss', null);
         setTimeout(() => {
           setToast('Swap declined by User', 'error', null);
         }, 500);
+        setTimeout(() => {
+          setSwapped(false);
+          setSwapButtonStatus('Swap');
+        }, 3000);
       } else if (walletOffers[currentOfferId]?.error) {
         setSwapButtonStatus('rejected');
         setToast('clear', 'dismiss', null);
         setTimeout(() => {
           setToast('Swap offer rejected by Wallet', 'warning', null);
         }, 500);
-      }
-      if (
-        swapStatus === 'accept' ||
-        swapStatus === 'decline' ||
-        walletOffers[currentOfferId]?.error
-      ) {
         setTimeout(() => {
           setSwapped(false);
           setSwapButtonStatus('Swap');
@@ -410,45 +412,48 @@ const Swap = () => {
         {optionsEnabled && (
           <OptionsSwap slippage={slippage} setSlippage={setSlippage} />
         )}
-        {assetloader ? (
-          <CustomLoader text="Loading Assets..." size={25} />
-        ) : (
-          <motion.div className="flex flex-col gap-4 relative" layout>
-            <div className="flex flex-col gap-4 relative">
-              <SectionSwap
-                type="from"
-                value={swapFrom.decimal}
-                handleChange={handleInputChange}
-                rateAvailable={!assetExchange?.rate}
-              />
-              <FiRepeat
-                // className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
-                className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
-                size="30"
-                onClick={() => {
-                  if (asset.to && asset.from) {
-                    setAsset({
-                      from: asset.to,
-                      to: asset.from,
-                    });
-                    setSwapFrom(swapTo);
-                    setSwapTo(swapFrom);
-                    setAssetExchange({
-                      ...assetExchange,
-                      marketRate: invertRatio(assetExchange.marketRate),
-                    });
-                  }
-                }}
-              />
-            </div>
+        {/* {assetloader ? (
+          <motion.div className="flex flex-row justify-center items-center">
+            {' '}
+            <Loader type="Oval" color="#62d2cb" height={60} width={60} />
+          </motion.div>
+        ) : ( */}
+        <motion.div className="flex flex-col gap-4 relative" layout>
+          <div className="flex flex-col gap-4 relative">
             <SectionSwap
-              type="to"
-              value={swapTo.decimal}
-              handleChange={handleOutputChange}
+              type="from"
+              value={swapFrom.decimal}
+              handleChange={handleInputChange}
               rateAvailable={!assetExchange?.rate}
             />
-          </motion.div>
-        )}
+            <FiRepeat
+              // className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
+              className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
+              size="30"
+              onClick={() => {
+                if (asset.to && asset.from) {
+                  setAsset({
+                    from: asset.to,
+                    to: asset.from,
+                  });
+                  setSwapFrom(swapTo);
+                  setSwapTo(swapFrom);
+                  setAssetExchange({
+                    ...assetExchange,
+                    marketRate: invertRatio(assetExchange.marketRate),
+                  });
+                }
+              }}
+            />
+          </div>
+          <SectionSwap
+            type="to"
+            value={swapTo.decimal}
+            handleChange={handleOutputChange}
+            rateAvailable={!assetExchange?.rate}
+          />
+        </motion.div>
+        {/* )} */}
         {!exchangeRateLoader && assetExists && assetExchange && (
           <ExtraInformation
             {...assetExchange}
@@ -460,7 +465,7 @@ const Swap = () => {
         {exchangeRateLoader && (
           <motion.div className="flex flex-row justify-left items-center text-gray-400">
             <Loader type="Oval" color="#62d2cb" height={15} width={15} />
-            <div className="pl-2 text-lg ">Fetching best price...</div>
+            <div className="pl-2 text-lg">Fetching best price...</div>
           </motion.div>
         )}
 
