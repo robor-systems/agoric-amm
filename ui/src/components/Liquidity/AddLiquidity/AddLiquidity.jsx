@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
+
 import Loader from 'react-loader-spinner';
 
 import { FiPlus } from 'react-icons/fi';
@@ -48,6 +50,7 @@ const AddLiquidity = () => {
     nat: 0n,
     amountMake: undefined,
   });
+  const [wallet, setWallet] = useState(false);
   const [assetExchange, setAssetExchange] = useState(undefined);
   const [error, setError] = useContext(ErrorContext);
   const [asset, setAsset] = useContext(AssetContext);
@@ -55,7 +58,10 @@ const AddLiquidity = () => {
   const [showLoader, setShowLoader] = useState(false);
   const [liquidityButtonStatus,setLiquidityButtonStatus]=useState("Add Liquidity")
   // get state
+  const [ Id, setId ] = useState('liquidityf');
+
   const { state, walletP } = useApplicationContext();
+
   const defaultProperties = {
     position: 'top-right',
     autoClose: 5000,
@@ -73,11 +79,12 @@ const AddLiquidity = () => {
     autoswap: { ammAPI, centralBrand },
     purses,
   } = state;
+  const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
   useEffect(() => {
     if (showLoader && wallet) {
       let liquidityStatus = walletOffers[currentOfferId]?.status;
       if (liquidityStatus === 'accept') {
-        setLiquidityButtonStatus('added');
+        setLiquidityButtonStatus('added');  
         toast.update(Id, { render: 'Liquidity pool added successfully', type: toast.TYPE.SUCCESS, autoClose: 3000, ...defaultProperties });
       } else if (liquidityStatus === 'decline') {
         setLiquidityButtonStatus('declined');
@@ -327,7 +334,6 @@ const AddLiquidity = () => {
     if (error) {
       return;
     }
-    setShowLoader(true);
     setId(
       toast('Please approve the offer in your wallet.', {type:toast.TYPE.INFO,hideProgressBar:true,progress:undefined,...defaultProperties}),
     );
@@ -341,24 +347,24 @@ const AddLiquidity = () => {
       walletP,
       purses,
     );
-
+    setShowLoader(true);
     // if passed then reset everything
-    if (response.status === 200) {
-      const reset = {
-        decimal: '',
-        nat: 0n,
-        amountMake: undefined,
-      };
-      setAsset({
-        ...asset,
-        central: undefined,
-        secondary: undefined,
-      });
-      setCentralValue(reset);
-      setSecondaryValue(reset);
-      setAssetExchange(undefined);
-    }
-    setShowLoader(false);
+    // if (response.status === 200) {
+    //   const reset = {
+    //     decimal: '',
+    //     nat: 0n,
+    //     amountMake: undefined,
+    //   };
+    //   setAsset({
+    //     ...asset,
+    //     central: undefined,
+    //     secondary: undefined,
+    //   });
+    //   setCentralValue(reset);
+    //   setSecondaryValue(reset);
+    //   setAssetExchange(undefined);
+    // }
+    // setShowLoader(false);
   };
 
   return (

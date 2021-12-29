@@ -1,7 +1,7 @@
 import PoolContext from 'context/PoolContext';
 import Loader from 'react-loader-spinner';
 import { useApplicationContext } from 'context/Application';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext,useMemo,useCallback } from 'react';
 import { v4 } from 'uuid';
 
 import { getInfoForBrand } from 'utils/helpers';
@@ -17,6 +17,7 @@ const ALL = 'ALL';
 const YOURS = 'YOURS';
 
 const BodyLiquidityPool = props => {
+  console.log("re rendering body Liquidity Pool");
   const [loadUserLiquidityPools, setLoadUserLiquidityPools] = useState(true);
   const [loadAllLiquidityPools, setLoadAllLiquidityPools] = useState(true);
   const [pool] = useContext(PoolContext);
@@ -26,78 +27,79 @@ const BodyLiquidityPool = props => {
   // get state
   const { state } = useApplicationContext();
   const { brandToInfo } = state;
-  const userLiquidityPoolsExist = () => {};
+  const poolAllocations = useMemo(() => { return pool.allocations },
+  [pool.allocations]); 
+  const newPool = useMemo(() => {
+    return pool?.allocations?.map(item => {
+      const central = item.Central;
+      const secondary = item.Secondary;
 
+      const centralInfo = getInfoForBrand(brandToInfo, central.brand);
+      const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
+
+      const centralValString = stringifyNat(
+        central.value,
+        centralInfo.decimalPlaces,
+        PLACES_TO_SHOW,
+      );
+
+      const secondaryValString = stringifyNat(
+        secondary.value,
+        secondaryInfo.decimalPlaces,
+        PLACES_TO_SHOW,
+      );
+      return {
+        Central: { info: centralInfo, value: centralValString },
+        Secondary: { info: secondaryInfo, value: secondaryValString },
+      };
+    })
+  }, [poolAllocations]);
   useEffect(() => {
     const updatePools = () => {
-      const newPool = pool?.allocations?.map(item => {
-        const central = item.Central;
-        const secondary = item.Secondary;
-
-        const centralInfo = getInfoForBrand(brandToInfo, central.brand);
-        const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
-
-        const centralValString = stringifyNat(
-          central.value,
-          centralInfo.decimalPlaces,
-          PLACES_TO_SHOW,
-        );
-
-        const secondaryValString = stringifyNat(
-          secondary.value,
-          secondaryInfo.decimalPlaces,
-          PLACES_TO_SHOW,
-        );
-        return {
-          Central: { info: centralInfo, value: centralValString },
-          Secondary: { info: secondaryInfo, value: secondaryValString },
-        };
-      });
-
       setUpdatedPool(newPool);
     };
     if (pool?.allLiquidityStatus === 200) {
       console.log('All Liquidity Pools Loaded:', pool.allocations);
       pool?.allocations && updatePools();
       pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
-      // if (pool.userPairs.length === 0) {
       loadUserLiquidityPools &&
         setLoadUserLiquidityPools(pool.allocations.every(item => item.user));
-      // }
     }
-  }, [pool.allocations]);
+  }, [poolAllocations]);
+
+  const newUserPairs = useMemo(() => {
+   return pool.userPairs?.map(pair => {
+      const central = pair.Central;
+      const secondary = pair.Secondary;
+
+      const centralInfo = getInfoForBrand(brandToInfo, central.brand);
+      const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
+
+      const centralValString = stringifyNat(
+        central.value,
+        centralInfo.decimalPlaces,
+        PLACES_TO_SHOW,
+      );
+      const secondaryValString = stringifyNat(
+        secondary.value,
+        secondaryInfo.decimalPlaces,
+        PLACES_TO_SHOW,
+      );
+      return {
+        Central: { info: centralInfo, value: centralValString },
+        Secondary: { info: secondaryInfo, value: secondaryValString },
+        User: {
+          share: pair.percentShare,
+          brand: pair.brand,
+          userLiquidityNAT: pair.userLiquidityNAT,
+          totaLiquidity: pair.value,
+        },
+      };
+    });
+  }, [pool.userPairs]);
   useEffect(() => {
     const updateUserPools = () => {
-      setLoadUserLiquidityPools(true);
-      const { userPairs } = pool;
-      const newUserPairs = userPairs?.map(pair => {
-        const central = pair.Central;
-        const secondary = pair.Secondary;
-
-        const centralInfo = getInfoForBrand(brandToInfo, central.brand);
-        const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
-
-        const centralValString = stringifyNat(
-          central.value,
-          centralInfo.decimalPlaces,
-          PLACES_TO_SHOW,
-        );
-        const secondaryValString = stringifyNat(
-          secondary.value,
-          secondaryInfo.decimalPlaces,
-          PLACES_TO_SHOW,
-        );
-        return {
-          Central: { info: centralInfo, value: centralValString },
-          Secondary: { info: secondaryInfo, value: secondaryValString },
-          User: {
-            share: pair.percentShare,
-            brand: pair.brand,
-            userLiquidityNAT: pair.userLiquidityNAT,
-            totaLiquidity: pair.value,
-          },
-        };
-      });
+      setLoadUserLiquidityPools(true);    
       console.log('inside function : ', newUserPairs.length > 0);
       newUserPairs.length > 0 && setLoadUserLiquidityPools(false);
       setUserPool(newUserPairs);
@@ -111,35 +113,6 @@ const BodyLiquidityPool = props => {
   }, [pool.userPairs]);
   return (
     <>
-      <HeaderLiquidityPool type="all" />
-      <motion.div className="flex flex-col p-5 gap-6 ">
-        {updatedPool.length ? (
-          updatedPool?.map(item => (
-            <ItemLiquidityPool
-              key={v4()}
-              {...item}
-              type={ALL}
-              item={item}
-              {...props}
-            />
-          ))
-        ) : (
-          <>
-            {' '}
-            {!loadAllLiquidityPools && (
-              <h4 className="text-lg">Liquidity positions not found.</h4>
-            )}
-          </>
-        )}
-        {loadAllLiquidityPools ? (
-          <div className="flex flex-row justify-left items-center text-gray-400">
-            <Loader type="Oval" color="#62d2cb" height={15} width={15} />
-            <div className="pl-2 text-lg">Fetching all liquidity pools...</div>
-          </div>
-        ) : (
-          <></>
-        )}
-      </motion.div>
       <HeaderLiquidityPool type="yours" />
       <motion.div className="flex flex-col p-5 gap-6 ">
         {userPool.length ? (
@@ -164,6 +137,35 @@ const BodyLiquidityPool = props => {
           <div className="flex flex-row justify-left items-center text-gray-400">
             <Loader type="Oval" color="#62d2cb" height={15} width={15} />
             <div className="pl-2 text-lg">Fetching user liquidity pools...</div>
+          </div>
+        ) : (
+          <></>
+        )}
+      </motion.div>
+      <HeaderLiquidityPool type="all" />
+      <motion.div className="flex flex-col p-5 gap-6 ">
+        {updatedPool.length ? (
+          updatedPool?.map(item => (
+            <ItemLiquidityPool
+              key={v4()}
+              {...item}
+              type={ALL}
+              item={item}
+              {...props}
+            />
+          ))
+        ) : (
+          <>
+            {' '}
+            {!loadAllLiquidityPools && (
+              <h4 className="text-lg">Liquidity positions not found.</h4>
+            )}
+          </>
+        )}
+        {loadAllLiquidityPools ? (
+          <div className="flex flex-row justify-left items-center text-gray-400">
+            <Loader type="Oval" color="#62d2cb" height={15} width={15} />
+            <div className="pl-2 text-lg">Fetching all liquidity pools...</div>
           </div>
         ) : (
           <></>
