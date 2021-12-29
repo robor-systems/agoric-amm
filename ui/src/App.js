@@ -19,6 +19,7 @@ import WalletToast from 'components/Wallet/WalletToast';
 const App = () => {
   const [index, setIndex] = useState(0);
   const { state } = useApplicationContext();
+
   useEffect(() => {
     if (state?.error?.name) {
       let time = 0;

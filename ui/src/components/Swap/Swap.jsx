@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import Loader from 'react-loader-spinner';
 import clsx from 'clsx';
 import { useApplicationContext } from 'context/Application';
-import { setToast } from '../../utils/helpers';
 import AssetContext from 'context/AssetContext';
 import {
   makeRatioFromAmounts,
@@ -26,6 +25,7 @@ import ExtraInformation from './ExtraInformation/ExtraInformation';
 import OptionsSwap from './OptionsSwap/OptionsSwap';
 import SectionSwap from './SectionSwap/SectionSwap';
 import CustomLoader from 'components/components/CustomLoader';
+import { toast } from 'react-toastify';
 
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
@@ -59,7 +59,7 @@ const Swap = () => {
   const assetExists = Object.values(asset).filter(item => item).length >= 2;
   const [swapType, setSwapType] = useState(SWAP_IN);
   // get state
-  const { Id, setId } = useState('swap');
+  const [ Id, setId ] = useState('swap');
   const { state, walletP } = useApplicationContext();
   const {
     brandToInfo,
@@ -67,30 +67,38 @@ const Swap = () => {
     autoswap: { ammAPI, centralBrand },
   } = state;
   const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
+  const [wallet, setWallet] = useState(false);
   const [swapButtonStatus, setSwapButtonStatus] = useState('Swap');
+  const defaultProperties = {
+    position: 'top-right',
+    hideProgressBar: false,
+    closeOnClick: true,
+    newestOnTop: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: false,
+    containerId: 'Information',
+  };
   useEffect(() => {
     brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
   }, [brandToInfo]);
   useEffect(() => {
-    if (swapped) {
+    if (swapped && wallet) {
       let swapStatus = walletOffers[currentOfferId]?.status;
       if (swapStatus === 'accept') {
         setSwapButtonStatus('Swapped');
-        setToast('clear', 'dismiss', null);
         setTimeout(() => {
-          setToast('Assets successfully swapped', 'success', null);
+          setId(toast.update(Id, {...defaultProperties,render:'Assets successfully swapped',type:toast.TYPE.SUCCESS}));
         }, 500);
       } else if (swapStatus === 'decline') {
         setSwapButtonStatus('declined');
-        setToast('clear', 'dismiss', null);
         setTimeout(() => {
-          setToast('Swap declined by User', 'error', null);
+          setId(toast.update(Id, {...defaultProperties,render:'Swap declined by User',type:toast.TYPE.ERROR}));
         }, 500);
       } else if (walletOffers[currentOfferId]?.error) {
         setSwapButtonStatus('rejected');
-        setToast('clear', 'dismiss', null);
         setTimeout(() => {
-          setToast('Swap offer rejected by Wallet', 'warning', null);
+          setId(toast.update(Id, {...defaultProperties,render:'Swap offer rejected by Wallet',type:toast.TYPE.WARNING}));
         }, 500);
       }
       if (
@@ -99,6 +107,7 @@ const Swap = () => {
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
+          toast.dismiss(Id,{...defaultProperties});
           setSwapped(false);
           setSwapButtonStatus('Swap');
         }, 3000);
@@ -221,9 +230,10 @@ const Swap = () => {
       return;
     }
     setId(
-      setToast('Please approve the offer in your wallet.', 'loading', null),
+      toast.loading('Please approve the offer in your wallet.', {...defaultProperties}),
     );
     setCurrentOfferId(walletOffers.length);
+    setWallet(true);
     console.log('saving current OfferId :', currentOfferId);
     console.log(
       walletP,
@@ -425,7 +435,6 @@ const Swap = () => {
                 rateAvailable={!assetExchange?.rate}
               />
               <FiRepeat
-                // className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 ring-4 ring-white position-swap-icon cursor-pointer hover:bg-alternativeDark z-20"
                 className="transform rotate-90 p-1 bg-alternative  absolute left-6 position-swap-icon cursor-pointer hover:bg-alternativeDark z-20 border-4 border-white box-border"
                 size="30"
                 onClick={() => {

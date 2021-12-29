@@ -190,7 +190,10 @@ export default function Provider({ children }) {
 
         const zoe = E(walletP).getZoe();
         const board = E(walletP).getBoard();
-
+        if(board)
+        {
+          setApproved(true);
+        }
         await Promise.all([
           // setupTreasury(dispatch, brandToInfo, zoe, board, INSTANCE_BOARD_ID),
           setupAMM(dispatch, brandToInfo, zoe, board, AMM_INSTANCE_BOARD_ID),
