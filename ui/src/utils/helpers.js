@@ -135,4 +135,37 @@ export const setToast = (msg, type, properties) => {
   return id;
 };
 
+export const manangeOfferStatus = ({swapped,wallet ,walletOffers,currentOfferId,buttonStatusSuccess,buttonStatusAfter,msg1,msg2,msg3}) => { e
+  if (swapped && wallet) {
+    let swapStatus = walletOffers[currentOfferId]?.status;
+    if (swapStatus === 'accept') {
+      setSwapButtonStatus(buttonStatusSuccess);
+      setTimeout(() => {
+        setId(toast.update(Id, {...defaultProperties,render:msg1,type:toast.TYPE.SUCCESS}));
+      }, 500);
+    } else if (swapStatus === 'decline') {
+      setSwapButtonStatus('declined');
+      setTimeout(() => {
+        setId(toast.update(Id, {...defaultProperties,render:msg2,type:toast.TYPE.ERROR}));
+      }, 500);
+    } else if (walletOffers[currentOfferId]?.error) {
+      setSwapButtonStatus('rejected');
+      setTimeout(() => {
+        setId(toast.update(Id, {...defaultProperties,render:msg3,type:toast.TYPE.WARNING}));
+      }, 500);
+    }
+    if (
+      swapStatus === 'accept' ||
+      swapStatus === 'decline' ||
+      walletOffers[currentOfferId]?.error
+    ) {
+      setTimeout(() => {
+        toast.dismiss(Id,{...defaultProperties});
+        setSwapped(false);
+        setSwapButtonStatus(buttonStatusAfter);
+      }, 3000);
+    }
+  }
+}
+
 export const displayPetname = pn => (Array.isArray(pn) ? pn.join('.') : pn);

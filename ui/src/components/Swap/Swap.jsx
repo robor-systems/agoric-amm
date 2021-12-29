@@ -71,13 +71,14 @@ const Swap = () => {
   const [swapButtonStatus, setSwapButtonStatus] = useState('Swap');
   const defaultProperties = {
     position: 'top-right',
+    autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: true,
-    newestOnTop: true,
-    pauseOnHover: false,
-    draggable: false,
-    progress: false,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
     containerId: 'Information',
+    transition: 'Rotate',
   };
   useEffect(() => {
     brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
@@ -87,19 +88,13 @@ const Swap = () => {
       let swapStatus = walletOffers[currentOfferId]?.status;
       if (swapStatus === 'accept') {
         setSwapButtonStatus('Swapped');
-        setTimeout(() => {
-          setId(toast.update(Id, {...defaultProperties,render:'Assets successfully swapped',type:toast.TYPE.SUCCESS}));
-        }, 500);
+        toast.update(Id, { render: 'Assets successfully swapped', type: toast.TYPE.SUCCESS, autoClose: 3000, ...defaultProperties });
       } else if (swapStatus === 'decline') {
         setSwapButtonStatus('declined');
-        setTimeout(() => {
-          setId(toast.update(Id, {...defaultProperties,render:'Swap declined by User',type:toast.TYPE.ERROR}));
-        }, 500);
+        setId(toast.update(Id, {render:'Swap declined by User',type:toast.TYPE.ERROR,...defaultProperties}));
       } else if (walletOffers[currentOfferId]?.error) {
         setSwapButtonStatus('rejected');
-        setTimeout(() => {
-          setId(toast.update(Id, {...defaultProperties,render:'Swap offer rejected by Wallet',type:toast.TYPE.WARNING}));
-        }, 500);
+        setId(toast.update(Id, {render:'Swap offer rejected by Wallet',type:toast.TYPE.WARNING,...defaultProperties}));
       }
       if (
         swapStatus === 'accept' ||
@@ -107,7 +102,7 @@ const Swap = () => {
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
-          toast.dismiss(Id,{...defaultProperties});
+          toast.dismiss({containerId:"Information"});
           setSwapped(false);
           setSwapButtonStatus('Swap');
         }, 3000);
@@ -230,7 +225,7 @@ const Swap = () => {
       return;
     }
     setId(
-      toast.loading('Please approve the offer in your wallet.', {...defaultProperties}),
+      toast('Please approve the offer in your wallet.', {type:toast.TYPE.INFO,hideProgressBar:true,progress:undefined,...defaultProperties}),
     );
     setCurrentOfferId(walletOffers.length);
     setWallet(true);

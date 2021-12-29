@@ -33,7 +33,6 @@ import RateLiquidity from '../RateLiquidity/RateLiquidity';
 // used for indicating user's input type
 const SWAP_IN = 'IN';
 const SWAP_OUT = 'OUT';
-
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
 
@@ -54,16 +53,52 @@ const AddLiquidity = () => {
   const [asset, setAsset] = useContext(AssetContext);
   const [inputType, setInputType] = useState(SWAP_IN);
   const [showLoader, setShowLoader] = useState(false);
-
+  const [liquidityButtonStatus,setLiquidityButtonStatus]=useState("Add Liquidity")
   // get state
   const { state, walletP } = useApplicationContext();
-
+  const defaultProperties = {
+    position: 'top-right',
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    containerId: 'Information',
+    transition: 'Rotate',
+  };
   const {
     brandToInfo,
+    walletOffers,
     autoswap: { ammAPI, centralBrand },
     purses,
   } = state;
-
+  useEffect(() => {
+    if (showLoader && wallet) {
+      let liquidityStatus = walletOffers[currentOfferId]?.status;
+      if (liquidityStatus === 'accept') {
+        setLiquidityButtonStatus('added');
+        toast.update(Id, { render: 'Liquidity pool added successfully', type: toast.TYPE.SUCCESS, autoClose: 3000, ...defaultProperties });
+      } else if (liquidityStatus === 'decline') {
+        setLiquidityButtonStatus('declined');
+        setId(toast.update(Id, {render:'Offer declined by User',type:toast.TYPE.ERROR,...defaultProperties}));
+      } else if (walletOffers[currentOfferId]?.error) {
+        setLiquidityButtonStatus('rejected');
+        setId(toast.update(Id, {render:'Offer rejected by Wallet',type:toast.TYPE.WARNING,...defaultProperties}));
+      }
+      if (
+        liquidityStatus === 'accept' ||
+        liquidityStatus === 'decline' ||
+        walletOffers[currentOfferId]?.error
+      ) {
+        setTimeout(() => {
+          toast.dismiss({containerId:"Information"});
+          setShowLoader(false);
+          setLiquidityButtonStatus('Add Liquidity');
+        }, 3000);
+      }
+    }
+  }, [walletOffers[currentOfferId]]);
   const assetExists =
     Object.values(asset).filter(item => item?.purse).length >= 2;
 
@@ -293,7 +328,10 @@ const AddLiquidity = () => {
       return;
     }
     setShowLoader(true);
-
+    setId(
+      toast('Please approve the offer in your wallet.', {type:toast.TYPE.INFO,hideProgressBar:true,progress:undefined,...defaultProperties}),
+    );
+    setWallet(true);
     const response = await addLiquidityService(
       centralValue.amountMake,
       asset.central?.purse,

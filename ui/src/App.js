@@ -39,12 +39,20 @@ const App = () => {
 
   return (
     <PoolWrapper>
+      <WalletToast enableMultiContainer containerId={'Wallet'} />
       <ToastContainer
         enableMultiContainer
         containerId="Information"
-        className="right-14 top-[150px] z-0"
+        className="right-14 top-[150px] z-100"
+        newestOnTop={true}
+        hideProgressBar={true}
+        autoClose={true}
+        progress={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable 
+        pauseOnHover
       />
-      <WalletToast enableMultiContainer containerId={'Wallet'} />
       <motion.div
         className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative"
         layout

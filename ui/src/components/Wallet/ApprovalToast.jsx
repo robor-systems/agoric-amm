@@ -46,8 +46,14 @@ function ApprovalToast() {
             render: () => component2,
           });
         } else {
-          console.log('Current toast if else:', Id);
-          setId(toast(component2, properties));
+          console.log('Current toast if else:', state);
+          let custom = state.assets.length > 0 ? { ...properties, autoClose: 3000 } : { ...properties };
+          setId(toast(component2, {...properties}));
+          // setTimeout(() => {
+          //   console.log("removing toast :",Id);
+          //   toast.dismiss(Id);
+          //   toast.dismiss(Id,{containerId: "Wallet"});
+          // },3000) 
         }
       } else {
         
