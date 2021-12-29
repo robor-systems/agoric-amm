@@ -241,6 +241,7 @@ export default function Provider({ children }) {
       },
       onDisconnect() {
         dispatch(setConnected(false));
+        console.log('Running on Disconnect');
         walletAbort && walletAbort();
         dispatch(resetState());
       },
@@ -252,10 +253,12 @@ export default function Provider({ children }) {
           console.log(obj.exception.body);
           dispatch(
             setError({
-              name: 'Zoe purse balance is 0.,First send Runs to zoe purse using your wallet.,Then Refresh browser to continue.',
+              name:
+                'Zoe purse balance is 0.First send Runs to zoe purse using your wallet.Then Refresh browser to continue.',
             }),
           );
         } else {
+          console.log('obj:');
           walletDispatch && walletDispatch(obj);
         }
       },

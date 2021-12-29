@@ -34,7 +34,7 @@ export const {
 } = autodux({
   slice: 'treasury',
   initial: {
-    approved: true,
+    approved: false,
     connected: false,
     account: null,
     purses: null,

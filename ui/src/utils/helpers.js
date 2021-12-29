@@ -104,25 +104,35 @@ export const setToast = (msg, type, properties) => {
     pauseOnHover: false,
     draggable: false,
     progress: false,
+    containerId: 'Information',
   };
   const toastProperties = properties ? properties : defaultProperties;
-  type === 'loading' &&
-    toast.loading(msg, {
-      ...toastProperties,
-    });
-  type === 'dismiss' && toast.dismiss();
-  type === 'success' &&
-    toast.success(msg, {
-      ...toastProperties,
-    });
-  type === 'warning' &&
-    toast.warning(msg, {
-      ...toastProperties,
-    });
-  type === 'error' &&
-    toast.error(msg, {
-      ...toastProperties,
-    });
+  let id;
+  switch (type) {
+    case 'loading': {
+      id = toast.loading(msg, { ...toastProperties });
+      break;
+    }
+    case 'success': {
+      id = toast.success(msg, {
+        ...toastProperties,
+      });
+      break;
+    }
+    case 'warning': {
+      id = toast.warning(msg, {
+        ...toastProperties,
+      });
+      break;
+    }
+    case 'error': {
+      id = toast.error(msg, {
+        ...toastProperties,
+      });
+      break;
+    }
+  }
+  return id;
 };
 
 export const displayPetname = pn => (Array.isArray(pn) ? pn.join('.') : pn);

@@ -1,4 +1,6 @@
 import { FiHelpCircle } from 'react-icons/fi';
+// import ReactTooltip from 'react-tooltip';
+
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -11,7 +13,13 @@ const OptionsSwap = ({ slippage, setSlippage }) => {
     >
       <div className="flex gap-2 items-center">
         <h2>Slippage Tolerance</h2>
-        <FiHelpCircle className="p-1 text-2xl hover:bg-gray-100 rounded-full cursor-pointer" />
+        <div>
+          <FiHelpCircle
+            data-tip
+            data-for="registerTip"
+            className="p-1 te xt-2xl hover:bg-gray-100 rounded-full cursor-pointer"
+          />
+        </div>
       </div>
 
       <div className="flex gap-3">

@@ -6,7 +6,7 @@ import BodyLiquidityPool from './BodyLiquidityPool';
 
 const LiquidityPool = ({ open, setOpen }) => {
   return (
-    <AnimatePresence>
+    <AnimatePresence className="z-20">
       {open && (
         <motion.div
           key={'liquidity-pool'}
