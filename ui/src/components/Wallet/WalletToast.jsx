@@ -18,7 +18,7 @@ function WalletToast() {
       <ToastContainer
         enableMultiContainer
         containerId={'Wallet'}
-        className="min-h-[40px] z-10 top-[26px] right-[15%] sm:right-[25%] md:right-[30%] mt-0 lg:right-20 top-[24px]"
+        className="min-h-[40px] z-10 top-[20%] right-[15%] sm:right-[25%] md:right-[30%] mt-0 lg:right-20 top-[24px]"
         toastClassName="p-1 pr-3 min-h-[40px] border-[1px] border-[#3BC7BE] flex-auto"
         bodyClassName="p-0 flex items-center flex-auto"
         position={'top-center'}
