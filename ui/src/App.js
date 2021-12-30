@@ -16,7 +16,6 @@ import ConnectionToast from 'components/Wallet/ConnectionToast';
 import ApprovalToast from 'components/Wallet/ApprovalToast';
 import WalletToast from 'components/Wallet/WalletToast';
 import InformationToast from 'components/components/InformationToast';
-
 const App = () => {
   const [index, setIndex] = useState(0);
   const { state } = useApplicationContext();
