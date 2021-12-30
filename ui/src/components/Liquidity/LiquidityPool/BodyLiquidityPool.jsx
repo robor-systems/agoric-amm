@@ -62,8 +62,8 @@ const BodyLiquidityPool = props => {
       console.log('All Liquidity Pools Loaded:', pool.allocations);
       pool?.allocations && updatePools();
       pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
-      loadUserLiquidityPools &&
-        setLoadUserLiquidityPools(pool.allocations.every(item => item.user));
+      // loadUserLiquidityPools &&
+      //   setLoadUserLiquidityPools(pool.allocations.every(item => item.user));
     }
   }, [poolAllocations]);
 

@@ -15,6 +15,7 @@ const CentralAssetLiquidity = ({
   value,
   handleChange,
   rateAvailable,
+  showLoader,
 }) => {
   const [open, setOpen] = useState(false);
   const [centralAsset, setCentralAsset] = useState({});
@@ -29,42 +30,48 @@ const CentralAssetLiquidity = ({
   } = state;
 
   useEffect(() => {
-    const assetArr = assets?.find(item => {
-      return item.brand === centralBrand;
-    });
-    if (assetArr) {
-      setCentralAsset(assetArr);
+    if (!showLoader) {
+      const assetArr = assets?.find(item => {
+        return item.brand === centralBrand;
+      });
+      if (assetArr) {
+        setCentralAsset(assetArr);
+      }
     }
   }, [assets, centralBrand]);
 
   useEffect(() => {
-    const purseLength = centralAsset?.purses?.length;
-    let assetMode;
+    if (!showLoader) {
+      const purseLength = centralAsset?.purses?.length;
+      let assetMode;
 
-    switch (purseLength) {
-      case 0:
-        assetMode = assetState.EMPTY;
-        break;
-      case 1:
-        assetMode = assetState.SINGLE;
-        break;
-      default:
-        assetMode = assetState.MULTIPLE;
-        break;
+      switch (purseLength) {
+        case 0:
+          assetMode = assetState.EMPTY;
+          break;
+        case 1:
+          assetMode = assetState.SINGLE;
+          break;
+        default:
+          assetMode = assetState.MULTIPLE;
+          break;
+      }
+
+      setAsset({
+        ...asset,
+        central: {
+          ...centralAsset,
+          purse: assetMode === assetState.SINGLE && centralAsset.purses[0],
+          mode: assetMode,
+        },
+      });
     }
-
-    setAsset({
-      ...asset,
-      central: {
-        ...centralAsset,
-        purse: assetMode === assetState.SINGLE && centralAsset.purses[0],
-        mode: assetMode,
-      },
-    });
   }, [centralAsset]);
 
   useEffect(() => {
-    setSelected(asset[type]);
+    if (!showLoader) {
+      setSelected(asset[type]);
+    }
   }, [asset]);
 
   const AssetSelector = () => {

@@ -22,17 +22,11 @@ const App = () => {
 
   useEffect(() => {
     if (state?.error?.name) {
-      let time = 0;
-      // state.error.name.split(',').forEach(name => {
-      //   setTimeout(() => {
       setToast(state.error.name, 'warning', {
         position: 'top-right',
         autoClose: false,
         containerId: 'Information',
       });
-      // }, time);
-      // time += 2000;
-      // });
     }
   }, [state?.error]);
   const swapHook = useState({ from: null, to: null });
@@ -43,7 +37,7 @@ const App = () => {
       <ToastContainer
         enableMultiContainer
         containerId="Information"
-        className="right-14 top-[150px] z-100"
+        className="right-14 top-[150px] z-10"
         newestOnTop={true}
         hideProgressBar={true}
         autoClose={true}

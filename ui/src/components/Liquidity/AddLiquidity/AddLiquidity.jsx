@@ -3,8 +3,8 @@ import { toast } from 'react-toastify';
 
 import Loader from 'react-loader-spinner';
 
-import { FiPlus } from 'react-icons/fi';
-import React, { useContext, useEffect, useState } from 'react';
+import { FiCheck, FiPlus } from 'react-icons/fi';
+import React, { useContext, useEffect, useState,useMemo } from 'react';
 import clsx from 'clsx';
 
 import { addLiquidityService, requestRatio } from 'services/liquidity.service';
@@ -31,6 +31,8 @@ import { getInfoForBrand, displayPetname } from 'utils/helpers';
 import CentralAssetLiquidity from './SectionLiquidity/CentralAssetLiquidity';
 import SecondaryAssetLiquidity from './SectionLiquidity/SecondaryAssetLiquidity';
 import RateLiquidity from '../RateLiquidity/RateLiquidity';
+import CustomLoader from 'components/components/CustomLoader';
+import { BiErrorCircle } from 'react-icons/bi';
 
 // used for indicating user's input type
 const SWAP_IN = 'IN';
@@ -188,14 +190,20 @@ const AddLiquidity = () => {
     marketRate && getExchangeRate(4, marketRate, inputRate, outputRate);
   };
 
+  const dependencies = useMemo(() => {
+    return [asset]
+  }, [asset]);
   useEffect(() => {
-    if (asset.central && asset.secondary && ammAPI) {
+    if (asset.central && asset.secondary) {
       getRates();
     } else {
       setAssetExchange({ ...assetExchange, rate: undefined });
     }
-  }, [asset, ammAPI, centralBrand]);
+  }, dependencies);
 
+  const dependencies2 = useMemo(() => {
+    return [centralValue, secondaryValue]
+  }, [centralValue, secondaryValue]);
   useEffect(() => {
     if (centralValue && secondaryValue) setError(null);
     if (
@@ -209,7 +217,7 @@ const AddLiquidity = () => {
     ) {
       setError(`Insufficient ${asset.secondary.code} balance`);
     } else setError(null);
-  }, [centralValue, secondaryValue]);
+  }, dependencies2);
 
   useEffect(() => {
     Object.values(asset).filter(item => item?.purse).length >= 2 &&
@@ -337,7 +345,8 @@ const AddLiquidity = () => {
     setId(
       toast('Please approve the offer in your wallet.', {type:toast.TYPE.INFO,hideProgressBar:true,progress:undefined,...defaultProperties}),
     );
-    setWallet(true);
+    setCurrentOfferId(walletOffers.length);
+    setShowLoader(true);
     const response = await addLiquidityService(
       centralValue.amountMake,
       asset.central?.purse,
@@ -347,7 +356,7 @@ const AddLiquidity = () => {
       walletP,
       purses,
     );
-    setShowLoader(true);
+    setWallet(true);
     // if passed then reset everything
     // if (response.status === 200) {
     //   const reset = {
@@ -364,7 +373,6 @@ const AddLiquidity = () => {
     //   setSecondaryValue(reset);
     //   setAssetExchange(undefined);
     // }
-    // setShowLoader(false);
   };
 
   return (
@@ -427,11 +435,24 @@ const AddLiquidity = () => {
           }
         }}
       >
-        {showLoader ? (
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white-900"></div>
-        ) : (
-          'ADD LIQUIDITY'
-        )}
+      <motion.div className="relative flex-row w-full justify-center items-center">
+      {showLoader && liquidityButtonStatus === 'Add Liquidity' && (
+        <Loader
+          className="absolute right-0"
+          type="Oval"
+          color="#fff"
+          height={28}
+          width={28}
+        />
+      )}
+      {showLoader && liquidityButtonStatus === 'Added' && (
+        <FiCheck className="absolute right-0" size={28} />
+      )}
+      {showLoader && liquidityButtonStatus === 'rejected' || liquidityButtonStatus === 'declined' && (
+        <BiErrorCircle className="absolute right-0" size={28} />
+      )}
+      <div className="text-white">{liquidityButtonStatus}</div>
+    </motion.div>
       </button>
 
       {error && (
