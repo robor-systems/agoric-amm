@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import Loader from 'react-loader-spinner';
+import { toast } from "react-toastify";
 import AssetContext from 'context/AssetContext';
 import PoolContext from 'context/PoolContext';
 import { useApplicationContext } from 'context/Application';
@@ -58,13 +59,13 @@ const RemoveLiquidity = props => {
         setId(toast.update(Id, {render:'Swap offer rejected by Wallet',type:toast.TYPE.WARNING,...defaultProperties}));
       }
       if (
-        swapStatus === 'accept' ||
-        swapStatus === 'decline' ||
+        removeStatus === 'accept' ||
+        removeStatus === 'decline' ||
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
           setSwapped(false);
-          setSwapButtonStatus('Confirm Withdrawl');
+          setRemoveButtonStatus('Confirm Withdrawl');
         }, 3000);
       }
     }
@@ -79,6 +80,8 @@ const RemoveLiquidity = props => {
       return;
     }
     setRemoved(true);
+    setId(toast('Please approve the offer in your wallet.', { ...defaultProperties, type: toast.TYPE.INFO, progress: undefined, hideProgressBar: true, autoClose: false }));
+    setCurrentOfferId(walletOffers.length);
     const removeLiquidityResp =
       asset.centralRemove &&
       asset.secondaryRemove &&
@@ -98,8 +101,8 @@ const RemoveLiquidity = props => {
     }
     setWallet(true);
     // reset values
-    setAsset({ centralRemove: undefined, secondaryRemove: undefined });
-    setAmount('');
+    // setAsset({ centralRemove: undefined, secondaryRemove: undefined });
+    // setAmount('');
   };
 
   useEffect(() => {
@@ -154,6 +157,8 @@ const RemoveLiquidity = props => {
         )}
         onClick={handleRemovePool}
       >
+      <motion.div className="relative flex-row w-full justify-center items-center">
+ 
       {removed && removeButtonStatus === 'Confirm Withdrawl' && (
         <Loader
           className="absolute right-0"
@@ -169,7 +174,9 @@ const RemoveLiquidity = props => {
       {removed && removeButtonStatus === 'declined' ||removeButtonStatus === 'rejected' && (
         <BiErrorCircle className="absolute right-0" size={28} />
       )}
-      <div className="text-white">{removeButtonStatus}</div>      </button>
+          <div className="text-white">{removeButtonStatus}</div>
+          </motion.div>
+      </button>
       {error && <h3 className="text-red-600">{error}</h3>}
     </motion.div>
   );

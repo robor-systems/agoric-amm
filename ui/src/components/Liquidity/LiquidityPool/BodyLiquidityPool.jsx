@@ -29,7 +29,7 @@ const BodyLiquidityPool = props => {
   const { brandToInfo } = state;
   const poolAllocations = useMemo(() => { return pool.allocations },
     [pool.allocations]); 
-    const userPairs = useMemo(() => { return pool.userPairs },
+  const userPairs = useMemo(() => { return pool.userPairs },
     [pool.userPairs]); 
   const newPool = useMemo(() => {
     return pool?.allocations?.map(item => {
@@ -98,7 +98,7 @@ const BodyLiquidityPool = props => {
         },
       };
     });
-  }, userPairs);
+  }, [userPairs]);
   useEffect(() => {
     const updateUserPools = () => {
       setLoadUserLiquidityPools(true);    
@@ -112,7 +112,7 @@ const BodyLiquidityPool = props => {
       console.log('inside if :', pool.userPairs > 0 && loadUserLiquidityPools);
       pool.userPairs > 0 && setLoadUserLiquidityPools(false);
     }
-  }, userPairs);
+  }, [userPairs]);
   return (
     <>
       <HeaderLiquidityPool type="yours" />

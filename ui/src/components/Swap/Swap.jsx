@@ -483,7 +483,7 @@ const Swap = () => {
           }}
         >
           <motion.div className="relative flex-row w-full justify-center items-center">
-            {swapped && swapButtonStatus === 'Swap' && (swapButtonStatus==='rejected' ||swapButtonStatus === 'declined') (
+            {swapped && swapButtonStatus === 'Swap' &&  (
               <Loader
                 className="absolute right-0"
                 type="Oval"
@@ -495,7 +495,7 @@ const Swap = () => {
             {swapped && swapButtonStatus === 'Swapped' && (
               <FiCheck className="absolute right-0" size={28} />
             )}
-            {swapped && swapButtonStatus === 'rejected' ||swapButtonStatus === 'declined'  && (
+            {swapped && (swapButtonStatus === 'rejected' || swapButtonStatus === 'declined')  && (
               <BiErrorCircle className="absolute right-0" size={28} />
             )}
             <div className="text-white">{swapButtonStatus}</div>
