@@ -66,14 +66,12 @@ const AddLiquidity = () => {
 
   const defaultProperties = {
     position: 'top-right',
-    autoClose: 5000,
+    autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    progress: undefined,
-    containerId: 'Information',
-    transition: 'Rotate',
+    containerId: 'Info',
   };
   const {
     brandToInfo,
@@ -87,7 +85,7 @@ const AddLiquidity = () => {
       let liquidityStatus = walletOffers[currentOfferId]?.status;
       if (liquidityStatus === 'accept') {
         setLiquidityButtonStatus('added');  
-        toast.update(Id, { render: 'Liquidity pool added successfully', type: toast.TYPE.SUCCESS, autoClose: 3000, ...defaultProperties });
+        toast.update(Id, { render: 'Liquidity pool added successfully', type: toast.TYPE.SUCCESS, ...defaultProperties });
       } else if (liquidityStatus === 'decline') {
         setLiquidityButtonStatus('declined');
         setId(toast.update(Id, {render:'Offer declined by User',type:toast.TYPE.ERROR,...defaultProperties}));
@@ -101,7 +99,6 @@ const AddLiquidity = () => {
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
-          toast.dismiss({containerId:"Information"});
           setShowLoader(false);
           setLiquidityButtonStatus('Add Liquidity');
         }, 3000);
@@ -342,9 +339,7 @@ const AddLiquidity = () => {
     if (error) {
       return;
     }
-    setId(
-      toast('Please approve the offer in your wallet.', {type:toast.TYPE.INFO,hideProgressBar:true,progress:undefined,...defaultProperties}),
-    );
+    setId(toast('Please approve the offer in your wallet.', { ...defaultProperties,type:toast.TYPE.INFO,progress:undefined,hideProgressBar:true,autoClose:false }));
     setCurrentOfferId(walletOffers.length);
     setShowLoader(true);
     const response = await addLiquidityService(

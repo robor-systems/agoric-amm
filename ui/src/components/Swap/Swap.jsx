@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import Loader from 'react-loader-spinner';
+import { toast } from "react-toastify";
+
 import clsx from 'clsx';
 import { useApplicationContext } from 'context/Application';
 import AssetContext from 'context/AssetContext';
@@ -25,7 +27,6 @@ import ExtraInformation from './ExtraInformation/ExtraInformation';
 import OptionsSwap from './OptionsSwap/OptionsSwap';
 import SectionSwap from './SectionSwap/SectionSwap';
 import CustomLoader from 'components/components/CustomLoader';
-import { toast } from 'react-toastify';
 
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
@@ -71,14 +72,12 @@ const Swap = () => {
   const [swapButtonStatus, setSwapButtonStatus] = useState('Swap');
   const defaultProperties = {
     position: 'top-right',
-    autoClose: 5000,
+    autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    progress: undefined,
-    containerId: 'Information',
-    transition: 'Rotate',
+    containerId: 'Info',
   };
   useEffect(() => {
     brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
@@ -88,7 +87,7 @@ const Swap = () => {
       let swapStatus = walletOffers[currentOfferId]?.status;
       if (swapStatus === 'accept') {
         setSwapButtonStatus('Swapped');
-        toast.update(Id, { render: 'Assets successfully swapped', type: toast.TYPE.SUCCESS, autoClose: 3000, ...defaultProperties });
+        toast.update(Id, { render: 'Assets successfully swapped', type: toast.TYPE.SUCCESS, ...defaultProperties });
       } else if (swapStatus === 'decline') {
         setSwapButtonStatus('declined');
         setId(toast.update(Id, {render:'Swap declined by User',type:toast.TYPE.ERROR,...defaultProperties}));
@@ -102,7 +101,6 @@ const Swap = () => {
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
-          toast.dismiss({containerId:"Information"});
           setSwapped(false);
           setSwapButtonStatus('Swap');
         }, 3000);
@@ -224,22 +222,13 @@ const Swap = () => {
     } else if (error) {
       return;
     }
-    setId(
-      toast('Please approve the offer in your wallet.', {type:toast.TYPE.INFO,hideProgressBar:true,progress:undefined,...defaultProperties}),
-    );
+    console.log(Id);
+    console.log({ type: toast.TYPE.INFO, hideProgressBar: true, progress: undefined, ...defaultProperties });
+    setId(toast('Please approve the offer in your wallet.', { ...defaultProperties,type:toast.TYPE.INFO,progress:undefined,hideProgressBar:true,autoClose:false }));
+    console.log(Id);
     setCurrentOfferId(walletOffers.length);
-    setWallet(true);
     console.log('saving current OfferId :', currentOfferId);
-    console.log(
-      walletP,
-      ammAPI,
-      asset.from.purse,
-      swapType === SWAP_IN ? swapFrom.nat : swapFrom.limitNat,
-      asset.to.purse,
-      swapType === SWAP_OUT ? swapTo.nat : swapTo.limitNat,
-      true,
-    );
-
+    setSwapped(true);
     makeSwapOffer(
       walletP,
       ammAPI,
@@ -249,7 +238,8 @@ const Swap = () => {
       swapType === SWAP_OUT ? swapTo.nat : swapTo.limitNat,
       true, // swapIn will always be true
     );
-    setSwapped(true);
+    setWallet(true);
+
   };
 
   const handleInputChange = ({ target }) => {
@@ -493,7 +483,7 @@ const Swap = () => {
           }}
         >
           <motion.div className="relative flex-row w-full justify-center items-center">
-            {swapped && swapButtonStatus === 'Swap' && (
+            {swapped && swapButtonStatus === 'Swap' && (swapButtonStatus==='rejected' ||swapButtonStatus === 'declined') (
               <Loader
                 className="absolute right-0"
                 type="Oval"
@@ -505,7 +495,7 @@ const Swap = () => {
             {swapped && swapButtonStatus === 'Swapped' && (
               <FiCheck className="absolute right-0" size={28} />
             )}
-            {swapped && swapButtonStatus === 'Not Swapped' && (
+            {swapped && swapButtonStatus === 'rejected' ||swapButtonStatus === 'declined'  && (
               <BiErrorCircle className="absolute right-0" size={28} />
             )}
             <div className="text-white">{swapButtonStatus}</div>

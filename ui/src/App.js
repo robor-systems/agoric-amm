@@ -15,38 +15,28 @@ import { motion } from 'framer-motion';
 import ConnectionToast from 'components/Wallet/ConnectionToast';
 import ApprovalToast from 'components/Wallet/ApprovalToast';
 import WalletToast from 'components/Wallet/WalletToast';
+import InformationToast from 'components/components/InformationToast';
 
 const App = () => {
   const [index, setIndex] = useState(0);
   const { state } = useApplicationContext();
-
   useEffect(() => {
     if (state?.error?.name) {
       setToast(state.error.name, 'warning', {
         position: 'top-right',
         autoClose: false,
-        containerId: 'Information',
+        containerId: 'Info',
       });
     }
+   
   }, [state?.error]);
   const swapHook = useState({ from: null, to: null });
 
   return (
     <PoolWrapper>
-      <WalletToast enableMultiContainer containerId={'Wallet'} />
-      <ToastContainer
-        enableMultiContainer
-        containerId="Information"
-        className="right-14 top-[150px] z-10"
-        newestOnTop={true}
-        hideProgressBar={true}
-        autoClose={true}
-        progress={false}
-        closeOnClick
-        pauseOnFocusLoss
-        draggable 
-        pauseOnHover
-      />
+      <InformationToast />
+      <WalletToast />
+    
       <motion.div
         className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative"
         layout

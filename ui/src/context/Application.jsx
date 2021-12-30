@@ -190,7 +190,8 @@ export default function Provider({ children }) {
 
         const zoe = E(walletP).getZoe();
         const board = E(walletP).getBoard();
-        if(board)
+        
+        if (board)
         {
           setApproved(true);
         }

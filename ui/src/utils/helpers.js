@@ -107,32 +107,30 @@ export const setToast = (msg, type, properties) => {
     containerId: 'Information',
   };
   const toastProperties = properties ? properties : defaultProperties;
-  let id;
   switch (type) {
     case 'loading': {
-      id = toast.loading(msg, { ...toastProperties });
+      toast.loading(msg, { ...toastProperties });
       break;
     }
     case 'success': {
-      id = toast.success(msg, {
+      toast.success(msg, {
         ...toastProperties,
       });
       break;
     }
     case 'warning': {
-      id = toast.warning(msg, {
+      toast.warning(msg, {
         ...toastProperties,
       });
       break;
     }
     case 'error': {
-      id = toast.error(msg, {
+      toast.error(msg, {
         ...toastProperties,
       });
       break;
     }
   }
-  return id;
 };
 
 export const manangeOfferStatus = ({swapped,wallet ,walletOffers,currentOfferId,buttonStatusSuccess,buttonStatusAfter,msg1,msg2,msg3}) => { e

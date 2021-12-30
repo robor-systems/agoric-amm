@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
+import Loader from 'react-loader-spinner';
 import AssetContext from 'context/AssetContext';
 import PoolContext from 'context/PoolContext';
 import { useApplicationContext } from 'context/Application';
-
+import { FiCheck } from 'react-icons/fi';
+import { BiErrorCircle } from 'react-icons/bi';
 import { motion } from 'framer-motion';
 import { FiArrowDown } from 'react-icons/fi';
 
@@ -19,14 +21,54 @@ const RemoveLiquidity = props => {
   const [asset, setAsset] = useContext(AssetContext);
   const [amount, setAmount] = useState('');
   const [validated, setValidated] = useState(false);
+  const [removed, setRemoved] = useState(false);
 
   // get state
   const { state, walletP } = useApplicationContext();
+  const [ Id, setId ] = useState('swap');
 
   const {
     autoswap: { ammAPI },
     purses,
+    walletOffers
   } = state;
+    const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
+    const [wallet, setWallet] = useState(false);
+    const [removeButtonStatus, setRemoveButtonStatus] = useState('Confirm Withdrawl');
+    const defaultProperties = {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      containerId: 'Info',
+    };
+  useEffect(() => {
+    if (removed && wallet) {
+      let removeStatus = walletOffers[currentOfferId]?.status;
+      if (removeStatus === 'accept') {
+        setRemoveButtonStatus('removed');
+        toast.update(Id, { render: 'Assets successfully swapped', type: toast.TYPE.SUCCESS, ...defaultProperties });
+      } else if (removeStatus === 'decline') {
+        setRemoveButtonStatus('declined');
+        setId(toast.update(Id, {render:'Swap declined by User',type:toast.TYPE.ERROR,...defaultProperties}));
+      } else if (walletOffers[currentOfferId]?.error) {
+        setRemoveButtonStatus('rejected');
+        setId(toast.update(Id, {render:'Swap offer rejected by Wallet',type:toast.TYPE.WARNING,...defaultProperties}));
+      }
+      if (
+        swapStatus === 'accept' ||
+        swapStatus === 'decline' ||
+        walletOffers[currentOfferId]?.error
+      ) {
+        setTimeout(() => {
+          setSwapped(false);
+          setSwapButtonStatus('Confirm Withdrawl');
+        }, 3000);
+      }
+    }
+  }, [walletOffers[currentOfferId]]);
 
   const handleRemovePool = () => {
     if (!asset.centralRemove && !asset.secondaryRemove) {
@@ -36,7 +78,7 @@ const RemoveLiquidity = props => {
       setError('Please enter the amount first');
       return;
     }
-
+    setRemoved(true);
     const removeLiquidityResp =
       asset.centralRemove &&
       asset.secondaryRemove &&
@@ -54,7 +96,7 @@ const RemoveLiquidity = props => {
     } else {
       console.error(removeLiquidityResp);
     }
-
+    setWallet(true);
     // reset values
     setAsset({ centralRemove: undefined, secondaryRemove: undefined });
     setAmount('');
@@ -112,8 +154,22 @@ const RemoveLiquidity = props => {
         )}
         onClick={handleRemovePool}
       >
-        Confirm Withdrawal
-      </button>
+      {removed && removeButtonStatus === 'Confirm Withdrawl' && (
+        <Loader
+          className="absolute right-0"
+          type="Oval"
+          color="#fff"
+          height={28}
+          width={28}
+        />
+      )}
+      {removed && removeButtonStatus === 'removed' && (
+        <FiCheck className="absolute right-0" size={28} />
+      )}
+      {removed && removeButtonStatus === 'declined' ||removeButtonStatus === 'rejected' && (
+        <BiErrorCircle className="absolute right-0" size={28} />
+      )}
+      <div className="text-white">{removeButtonStatus}</div>      </button>
       {error && <h3 className="text-red-600">{error}</h3>}
     </motion.div>
   );
