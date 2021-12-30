@@ -41,11 +41,13 @@ const App = () => {
         className=" min-h-screen container px-4 mx-auto  py-6 flex flex-col  items-center relative"
         layout
       >
-        <img
-          src={agoricLogo}
-          alt="Agoric Logo"
-          className="absolute top-0 left-0  py-6  px-6 "
-        />
+        <div className='ml-[15%]'>
+          <img
+        src={agoricLogo}
+        alt="Agoric Logo"
+        className="relative pl-10 lg:absolute top-0 left-0  py-6  px-6 "
+      /></div>
+       
         <Tab.Group
           defaultIndex={0}
           onChange={i => {

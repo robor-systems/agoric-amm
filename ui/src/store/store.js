@@ -116,8 +116,9 @@ export const {
       const interArr = [];
       filteredPurses?.forEach(purse => {
         // balances noted in bigInt, stringifying them
+        console.log()
         const balance = stringifyPurseValue(purse);
-
+        console.log("New Balance!!:",balance);
         // if such asset already inserted
         const similarAssetIndex = interArr.findIndex(elem => {
           return elem.code === purse.brandPetname;
@@ -178,7 +179,9 @@ export const {
           ],
         });
       });
-
+      console.log(
+      "asset being updated :",interArr
+      )
       return {
         ...state,
         assets: interArr,

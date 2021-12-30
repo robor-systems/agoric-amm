@@ -191,9 +191,11 @@ export default function Provider({ children }) {
         const zoe = E(walletP).getZoe();
         const board = E(walletP).getBoard();
         
-        if (board)
-        {
+        if (board) {
           setApproved(true);
+        }
+        else{
+          setApproved(false);
         }
         await Promise.all([
           // setupTreasury(dispatch, brandToInfo, zoe, board, INSTANCE_BOARD_ID),
@@ -245,6 +247,7 @@ export default function Provider({ children }) {
       },
       onDisconnect() {
         dispatch(setConnected(false));
+        dispatch(setApproved(false));
         console.log('Running on Disconnect');
         walletAbort && walletAbort();
         dispatch(resetState());
@@ -262,7 +265,10 @@ export default function Provider({ children }) {
             }),
           );
         } else {
-          console.log('obj:');
+          console.log("wallet Disconnect:", obj?.payload?.payload === false);
+          if (obj?.payload?.payload===false) { 
+            setApproved(false);
+          }
           walletDispatch && walletDispatch(obj);
         }
       },

@@ -65,6 +65,7 @@ const Swap = () => {
   const {
     brandToInfo,
     walletOffers,
+    approved,
     autoswap: { ammAPI, centralBrand },
   } = state;
   const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
@@ -80,8 +81,8 @@ const Swap = () => {
     containerId: 'Info',
   };
   useEffect(() => {
-    brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
-  }, [brandToInfo]);
+    brandToInfo.length<= 0  || !approved ? setAssetLoader(true) : setAssetLoader(false);
+  }, [brandToInfo,approved]);
   useEffect(() => {
     if (swapped && wallet) {
       let swapStatus = walletOffers[currentOfferId]?.status;

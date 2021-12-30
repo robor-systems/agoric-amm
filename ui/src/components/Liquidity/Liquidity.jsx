@@ -38,11 +38,12 @@ const Liquidity = () => {
   const { state } = useApplicationContext();
   const {
     brandToInfo,
+    approved,
     autoswap: { ammAPI, centralBrand },
   } = state;
   useEffect(() => {
-    brandToInfo.length <= 0 ? setAssetLoader(true) : setAssetLoader(false);
-  }, [brandToInfo]);
+    brandToInfo.length<= 0  || !approved ? setAssetLoader(true) : setAssetLoader(false);
+  }, [brandToInfo,approved]);
   useEffect(() => {
     const getPool = async () => {
       const poolAllocations = await getPoolAllocationService(

@@ -28,7 +28,7 @@ function ConnectionToast() {
   const properties = {
     position: 'top-right',
     hideProgressBar: true,
-    closeOnClick: true,
+    closeOnClick: false,
     newestOnTop: true,
     draggable: false,
     progress: false,

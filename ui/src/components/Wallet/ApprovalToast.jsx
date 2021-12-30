@@ -7,7 +7,7 @@ import { IoRadioOutline } from 'react-icons/io5';
 function ApprovalToast() {
   const [Id, setId] = useState('Approved');
   const { state } = useApplicationContext();
-  const { approved } = state;
+  const { approved,amm } = state;
   const properties = {
     position: 'top-right',
     hideProgressBar: true,
@@ -43,25 +43,20 @@ function ApprovalToast() {
           setId(Id);
           toast.update(Id, {
             ...properties,
+            autoClose:3000,
             render: () => component2,
           });
         } else {
           console.log('Current toast if else:', state);
-          let custom = state.assets.length > 0 ? { ...properties, autoClose: 3000 } : { ...properties };
-          setId(toast(component2, {...properties}));
-          // setTimeout(() => {
-          //   console.log("removing toast :",Id);
-          //   toast.dismiss(Id);
-          //   toast.dismiss(Id,{containerId: "Wallet"});
-          // },3000) 
+          setId(toast(component2, {...properties,autoClose:3000}));
         }
       } else {
-        
         if (toast.isActive(Id)) {
           console.log('Current toast else if:', Id);
           setId(Id);
           toast.update(Id, {
             ...properties,
+            autoClose:false,
             render: () => component,
           });
         } else {

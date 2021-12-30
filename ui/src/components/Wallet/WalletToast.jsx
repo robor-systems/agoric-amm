@@ -11,13 +11,13 @@ function WalletToast() {
     </div>
   );
   return (
-    <div>
+    <div className='ml-10'>
       <ApprovalToast />
       <ConnectionToast />
       <ToastContainer
         enableMultiContainer
         containerId={'Wallet'}
-        className="min-h-[40px] right-14 top-[24px] z-10"
+        className="top-15 right-30 lg:min-h-[40px] right-14 top-[24px] z-10"
         toastClassName="p-1 pr-3 min-h-[40px] border-[1px] border-[#3BC7BE] flex-auto"
         bodyClassName="p-0 flex items-center flex-auto"
         position={'top-right'}

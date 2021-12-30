@@ -156,6 +156,7 @@ const AddLiquidity = () => {
    */
 
   const getRates = async () => {
+
     if (asset.central && asset.secondary && !exchangeRateLoader) {
       console.log(`Inside if in get getRates : ${exchangeRateLoader}`);
       setExchangeRateLoader(current => !current);
@@ -191,11 +192,14 @@ const AddLiquidity = () => {
     return [asset]
   }, [asset]);
   useEffect(() => {
-    if (asset.central && asset.secondary) {
-      getRates();
-    } else {
-      setAssetExchange({ ...assetExchange, rate: undefined });
+    if (!showLoader) { 
+      if (asset.central && asset.secondary) {
+        getRates();
+      } else {
+        setAssetExchange({ ...assetExchange, rate: undefined });
+      }
     }
+    
   }, dependencies);
 
   const dependencies2 = useMemo(() => {
