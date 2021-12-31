@@ -1,10 +1,11 @@
-import React, { useContext } from 'react';
-import { useApplicationContext } from 'context/Application';
-import AssetContext from 'context/AssetContext';
-import ErrorContext from 'context/ErrorContext';
+import React, { useContext } from "react";
+import { useApplicationContext } from "context/Application";
+import AssetContext from "context/AssetContext";
+import PoolContext from "context/PoolContext";
+import ErrorContext from "context/ErrorContext";
 
-const ALL = 'ALL';
-const YOURS = 'YOURS';
+const ALL = "ALL";
+const YOURS = "YOURS";
 
 const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
   // get state
@@ -13,6 +14,7 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
 
   const { setError } = useContext(ErrorContext);
   const [asset, setAsset] = useContext(AssetContext);
+  const [pool, setPool] = useContext(PoolContext);
 
   const setAddLiquidity = () => {
     const secondarySelected = item.Secondary;
@@ -24,19 +26,20 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
       setError("Can't find the selected asset in your wallet.");
 
       setTimeout(() => {
-        setError('');
+        setError("");
       }, 2500);
       return;
     }
+
     setAsset({
       ...asset,
-      secondary: assetSelected,
+      secondary: assetSelected
     });
   };
 
   const setRemoveLiquidity = () => {
     const secondarySelected = item.Secondary;
-
+    const centralSelected = item.Central;
     let assetSelected = assets.find(elem => {
       return elem.code === secondarySelected.info.petname;
     });
@@ -45,18 +48,21 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
       setError("Can't find the selected asset in your wallet.");
 
       setTimeout(() => {
-        setError('');
+        setError("");
       }, 2500);
       return;
     }
-
+    console.log("printing Item:", item);
     console.log(item);
 
     assetSelected = { ...assetSelected, liquidityInfo: { ...item } };
-
+    setPool({
+      ...pool,
+      selectRemove: { central: item.Central, liquidity: item.Secondary }
+    });
     setAsset({
       ...asset,
-      secondaryRemove: assetSelected,
+      secondaryRemove: assetSelected
     });
   };
 
@@ -71,7 +77,7 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
           <h4>{item?.User?.share}%</h4>
         </div>
       ) : (
-        ''
+        ""
       )}
       <div className="flex justify-between">
         <h4>{Central?.info?.petname}</h4>
@@ -93,7 +99,7 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
             Remove
           </button>
         ) : (
-          ''
+          ""
         )}
       </div>
     </div>

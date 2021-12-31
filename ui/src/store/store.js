@@ -1,12 +1,12 @@
 // The code in this file requires an understanding of Autodux.
 // See: https://github.com/ericelliott/autodux
-import autodux from 'autodux';
-import { v4 as uuidv4 } from 'uuid';
-import agoricLogo from 'assets/crypto-icons/agoric-logo.png';
-import bldLogo from 'assets/crypto-icons/bld-logo.png';
-import kirkLogo from 'assets/crypto-icons/kirk-logo.png';
-import usdcLogo from 'assets/crypto-icons/usdc-logo.png';
-import { stringifyPurseValue } from '@agoric/ui-components';
+import autodux from "autodux";
+import { v4 as uuidv4 } from "uuid";
+import agoricLogo from "assets/crypto-icons/agoric-logo.png";
+import bldLogo from "assets/crypto-icons/bld-logo.png";
+import kirkLogo from "assets/crypto-icons/kirk-logo.png";
+import usdcLogo from "assets/crypto-icons/usdc-logo.png";
+import { stringifyPurseValue } from "@agoric/ui-components";
 
 export const {
   reducer,
@@ -29,10 +29,10 @@ export const {
     resetVault,
     setAutoswap,
     setAssets,
-    setError,
-  },
+    setError
+  }
 } = autodux({
-  slice: 'treasury',
+  slice: "treasury",
   initial: {
     approved: true,
     connected: false,
@@ -50,7 +50,7 @@ export const {
     vaultToManageId: null,
     assets: [],
     walletOffers: [],
-    error: {},
+    error: {}
   },
   actions: {
     createVault: (state, { id, vault }) => {
@@ -58,31 +58,31 @@ export const {
         ...state,
         vaults: {
           ...state.vaults,
-          [id]: vault,
-        },
+          [id]: vault
+        }
       };
     },
     updateOffers: (state, offers) => {
-      console.log('============Update offer reducer=====================');
+      console.log("============Update offer reducer=====================");
       console.log(offers);
-      console.log('============Update offer reducer=====================');
+      console.log("============Update offer reducer=====================");
       return {
         ...state,
-        walletOffers: offers,
+        walletOffers: offers
       };
     },
     updateVault: ({ vaults, ...state }, { id, vault }) => {
       const oldVaultData = vaults[id];
-      const status = vault.liquidated ? 'Liquidated' : vault.status;
+      const status = vault.liquidated ? "Liquidated" : vault.status;
       return {
         ...state,
-        vaults: { ...vaults, [id]: { ...oldVaultData, ...vault, status } },
+        vaults: { ...vaults, [id]: { ...oldVaultData, ...vault, status } }
       };
     },
     resetVault: state => ({
       ...state,
       vaultCollateral: null,
-      vaultConfiguration: null,
+      vaultConfiguration: null
     }),
     resetState: state => ({
       ...state,
@@ -91,34 +91,34 @@ export const {
       inputPurse: null,
       outputPurse: null,
       inputAmount: null,
-      outputAmount: null,
+      outputAmount: null
     }),
     mergeBrandToInfo: (state, newBrandToInfo) => {
       const merged = new Map([...state.brandToInfo, ...newBrandToInfo]);
       const brandToInfo = [...merged.entries()];
       return {
         ...state,
-        brandToInfo,
+        brandToInfo
       };
     },
     setError: (state, error) => {
       return {
         ...state,
-        error,
+        error
       };
     },
     setAssets: (state, purses) => {
-      console.log('THESE ARE THE PURSES PASSED', purses);
+      console.log("THESE ARE THE PURSES PASSED", purses);
       const filteredPurses = purses?.filter(
-        purse => purse.displayInfo.assetKind !== 'set',
+        purse => purse.displayInfo.assetKind !== "set"
       );
       // used for storing intermediate response
       const interArr = [];
       filteredPurses?.forEach(purse => {
         // balances noted in bigInt, stringifying them
-        console.log()
+        console.log();
         const balance = stringifyPurseValue(purse);
-        console.log("New Balance!!:",balance);
+        console.log("New Balance!!:", balance);
         // if such asset already inserted
         const similarAssetIndex = interArr.findIndex(elem => {
           return elem.code === purse.brandPetname;
@@ -133,26 +133,26 @@ export const {
             balance,
             // cmt(danish): balance USD not available right now
             balanceUSD: undefined,
-            ...purse,
+            ...purse
           });
           // skip if already includes but add in purse
-          console.log('skipping: ', purse);
+          console.log("skipping: ", purse);
           return;
         }
 
         // setting default image as agoric logo
         let image = agoricLogo;
         switch (purse.brandPetname) {
-          case 'RUN':
+          case "RUN":
             image = agoricLogo;
             break;
-          case 'BLD':
+          case "BLD":
             image = bldLogo;
             break;
-          case 'LINK':
+          case "LINK":
             image = kirkLogo;
             break;
-          case 'USDC':
+          case "USDC":
             image = usdcLogo;
             break;
           default:
@@ -174,18 +174,16 @@ export const {
               balance,
               // cmt(danish): balance USD not available right now
               balanceUSD: undefined,
-              ...purse,
-            },
-          ],
+              ...purse
+            }
+          ]
         });
       });
-      console.log(
-      "asset being updated :",interArr
-      )
+      console.log("asset being updated :", interArr);
       return {
         ...state,
-        assets: interArr,
+        assets: interArr
       };
-    },
-  },
+    }
+  }
 });

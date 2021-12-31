@@ -32,7 +32,7 @@
     "react-toastify": "^8.0.0",
     "ses": "^0.12.7",
     "uuid": "^8.3.2",
-    "web-vitals": "^1.0.1",
+    "web-vitals": "^1.0.1"
   },
   "scripts": {
     "clean": "rimraf ./build",

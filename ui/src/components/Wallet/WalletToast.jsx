@@ -1,8 +1,8 @@
-import React, { useEffect} from 'react';
-import ApprovalToast from './ApprovalToast';
-import ConnectionToast from './ConnectionToast';
-import { ToastContainer } from 'react-toastify';
-import { IoCloseOutline } from 'react-icons/io5';
+import React, { useEffect } from "react";
+import ApprovalToast from "./ApprovalToast";
+import ConnectionToast from "./ConnectionToast";
+import { ToastContainer } from "react-toastify";
+import { IoCloseOutline } from "react-icons/io5";
 
 function WalletToast() {
   const closeButton = ({ closeToast }) => (
@@ -12,16 +12,16 @@ function WalletToast() {
   );
 
   return (
-    <div >
+    <div>
       <ApprovalToast />
       <ConnectionToast />
       <ToastContainer
         enableMultiContainer
-        containerId={'Wallet'}
-        className="min-h-[40px] z-10 top-[20%] right-[15%] sm:right-[25%] md:right-[30%] mt-0 lg:right-20 top-[24px]"
-        toastClassName="p-1 pr-3 min-h-[40px] border-[1px] border-[#3BC7BE] flex-auto"
-        bodyClassName="p-0 flex items-center flex-auto"
-        position={'top-center'}
+        containerId={"Wallet"}
+        className="invisible lg:visible z-10 absolute right-20 top-[24px] float-right w-[360px]"
+        toastClassName=" p-1 pr-3 min-w-[260px] w-[fit-content] min-h-[40px] border-[1px] border-[#3BC7BE] ml-auto"
+        bodyClassName="p-0 flex items-center flex-auto w-fit"
+        position={"top-center"}
         closeOnClick={false}
         newestOnTop={true}
         hideProgressBar={true}
