@@ -40,16 +40,11 @@ function ApprovalToast() {
       if (approved) {
         if (toast.isActive(Id)) {
           console.log("Current toast if:", Id);
-          setId(
-            toast.update(Id, {
-              ...properties,
-              autoClose: 3000,
-              render: () => component2
-            })
-          );
-          setTimeout(() => {
-            toast.dismiss(Id);
-          }, 3000);
+          toast.update(Id, {
+            ...properties,
+            autoClose: 3000,
+            render: () => component2
+          });
         } else {
           console.log("Current toast if else:", state);
           setId(
@@ -58,20 +53,15 @@ function ApprovalToast() {
               autoClose: 3000
             })
           );
-          setTimeout(() => {
-            toast.dismiss(Id);
-          }, 3000);
         }
       } else {
         if (toast.isActive(Id)) {
           console.log("Current toast else if:", Id);
-          setId(
-            toast.update(Id, {
-              ...properties,
-              autoClose: false,
-              render: () => component
-            })
-          );
+          toast.update(Id, {
+            ...properties,
+            autoClose: false,
+            render: () => component
+          });
         } else {
           console.log("Current toast else else:", Id);
           setId(toast(component, properties));

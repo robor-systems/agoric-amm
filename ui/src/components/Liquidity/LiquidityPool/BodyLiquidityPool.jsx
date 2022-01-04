@@ -28,6 +28,7 @@ const BodyLiquidityPool = props => {
   const [pool] = useContext(PoolContext);
   const [updatedPool, setUpdatedPool] = useState([]);
   const [userPool, setUserPool] = useState([]);
+  const [user, setUser] = useState(false);
 
   // get state
   const { state } = useApplicationContext();
@@ -70,10 +71,11 @@ const BodyLiquidityPool = props => {
     };
     if (pool?.allLiquidityStatus === 200) {
       console.log("All Liquidity Pools Loaded:", pool.allocations);
-      pool?.allocations && updatePools();
+      pool?.allocations && loadAllLiquidityPools && updatePools();
       pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
-      loadUserLiquidityPools &&
-        setLoadUserLiquidityPools(pool.allocations.every(item => item.user));
+      // loadUserLiquidityPools &&
+      setUser(pool.allocations.some(item => item.User));
+      pool.allocations.some(item => item.User) && setUserPool(newUserPairs);
     }
   }, [newPool]);
 
@@ -108,24 +110,30 @@ const BodyLiquidityPool = props => {
     });
   }, [userPairs]);
   useEffect(() => {
-    const updateUserPools = () => {
-      setLoadUserLiquidityPools(true);
-      console.log("inside function : ", newUserPairs.length > 0);
-      newUserPairs.length > 0 && setLoadUserLiquidityPools(false);
-      setUserPool(newUserPairs);
-    };
+    // const updateUserPools = () => {
+    //   setLoadUserLiquidityPools(true);
+    //   console.log("inside function : ", newUserPairs.length > 0);
+    //   setUserPool(newUserPairs);
+    // };
     if (pool.userLiquidityStatus === 200) {
-      console.log("User Liquidity Pools Loaded:", pool.userPairs);
-      pool.userPairs && updateUserPools();
-      console.log("inside if :", pool.userPairs > 0 && loadUserLiquidityPools);
-      pool.userPairs > 0 && setLoadUserLiquidityPools(false);
+      console.log(
+        "User Liquidity Pools Loaded:",
+        // pool.userPairs,
+        pool.userPairs?.length
+      );
+      pool.userPairs?.length > 0 &&
+        userPool?.length > 0 &&
+        setLoadUserLiquidityPools(false);
+      pool?.allocations?.length > 0 &&
+        !user &&
+        setLoadUserLiquidityPools(false);
     }
   }, [newUserPairs]);
   return (
     <>
       <HeaderLiquidityPool type="yours" />
       <motion.div className="flex flex-col p-5 gap-6 ">
-        {userPool.length ? (
+        {userPool?.length ? (
           userPool?.map(item => (
             <ItemLiquidityPool
               key={v4()}

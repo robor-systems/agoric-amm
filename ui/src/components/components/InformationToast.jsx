@@ -7,7 +7,7 @@ function InformationToast() {
       <ToastContainer
         enableMultiContainer
         containerId={"Info"}
-        className="invisible md:visible right-14 top-[150px] z-10"
+        className="overflow-hidden invisible md:visible right-14 top-[150px] z-10"
         position={"top-right"}
         closeOnClick={false}
         newestOnTop={true}
