@@ -30,6 +30,12 @@ const BodyLiquidityPool = props => {
   const [userPool, setUserPool] = useState([]);
   const [user, setUser] = useState(false);
 
+  const userLoaded = useMemo(() => {
+    return loadUserLiquidityPools;
+  }, [loadUserLiquidityPools]);
+  const AllPoolsLoaded = useMemo(() => {
+    return loadAllLiquidityPools;
+  }, [loadAllLiquidityPools]);
   // get state
   const { state } = useApplicationContext();
   const { brandToInfo } = state;
@@ -65,19 +71,6 @@ const BodyLiquidityPool = props => {
       };
     });
   }, [poolAllocations]);
-  useEffect(() => {
-    const updatePools = () => {
-      setUpdatedPool(newPool);
-    };
-    if (pool?.allLiquidityStatus === 200) {
-      console.log("All Liquidity Pools Loaded:", pool.allocations);
-      pool?.allocations && loadAllLiquidityPools && updatePools();
-      pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
-      // loadUserLiquidityPools &&
-      setUser(pool.allocations.some(item => item.User));
-      pool.allocations.some(item => item.User) && setUserPool(newUserPairs);
-    }
-  }, [newPool]);
 
   const newUserPairs = useMemo(() => {
     return pool.userPairs?.map(pair => {
@@ -110,25 +103,33 @@ const BodyLiquidityPool = props => {
     });
   }, [userPairs]);
   useEffect(() => {
-    // const updateUserPools = () => {
-    //   setLoadUserLiquidityPools(true);
-    //   console.log("inside function : ", newUserPairs.length > 0);
-    //   setUserPool(newUserPairs);
-    // };
+    console.log("user status,", pool.userLiquidityStatus);
     if (pool.userLiquidityStatus === 200) {
-      console.log(
-        "User Liquidity Pools Loaded:",
-        // pool.userPairs,
-        pool.userPairs?.length
-      );
+      console.log("User Liquidity Pools Loaded:", pool.userPairs);
       pool.userPairs?.length > 0 &&
         userPool?.length > 0 &&
         setLoadUserLiquidityPools(false);
-      pool?.allocations?.length > 0 &&
-        !user &&
-        setLoadUserLiquidityPools(false);
     }
-  }, [newUserPairs]);
+    if (pool.userLiquidityStatus === 204) {
+      poolAllocations?.length > 0 && !user && setLoadUserLiquidityPools(false);
+    }
+  }, [newUserPairs, user, userLoaded]);
+  useEffect(() => {
+    const updatePools = () => {
+      setUpdatedPool(newPool);
+    };
+    if (pool?.allLiquidityStatus === 200) {
+      console.log("All Liquidity Pools Loaded:", pool.allocations);
+      pool?.allocations && AllPoolsLoaded && updatePools();
+      pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
+      setUser(pool.allocations.some(item => item.User));
+      console.log(
+        "Setting no User Pool: ",
+        pool.allocations.some(item => item.User)
+      );
+      pool.allocations.some(item => item.User) && setUserPool(newUserPairs);
+    }
+  }, [newPool, AllPoolsLoaded]);
   return (
     <>
       <HeaderLiquidityPool type="yours" />
@@ -146,12 +147,12 @@ const BodyLiquidityPool = props => {
         ) : (
           <>
             {" "}
-            {!loadUserLiquidityPools && (
+            {!userLoaded && (
               <h4 className="text-lg">You have no liquidity positions.</h4>
             )}
           </>
         )}
-        {loadUserLiquidityPools ? (
+        {userLoaded ? (
           <div className="flex flex-row justify-left items-center text-gray-400">
             <Loader type="Oval" color="#62d2cb" height={15} width={15} />
             <div className="pl-2 text-lg">Fetching user liquidity pools...</div>
@@ -175,12 +176,12 @@ const BodyLiquidityPool = props => {
         ) : (
           <>
             {" "}
-            {!loadAllLiquidityPools && (
+            {!AllPoolsLoaded && (
               <h4 className="text-lg">Liquidity positions not found.</h4>
             )}
           </>
         )}
-        {loadAllLiquidityPools ? (
+        {AllPoolsLoaded ? (
           <div className="flex flex-row justify-left items-center text-gray-400">
             <Loader type="Oval" color="#62d2cb" height={15} width={15} />
             <div className="pl-2 text-lg">Fetching all liquidity pools...</div>
