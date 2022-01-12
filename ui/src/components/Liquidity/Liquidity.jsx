@@ -15,10 +15,10 @@ import { getInfoForBrand } from 'utils/helpers';
 import { motion } from 'framer-motion';
 import React, { useState, useEffect, useContext } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
+import CustomLoader from 'components/components/CustomLoader';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
 import RemoveLiquidity from './RemoveLiquidity/RemoveLiquidity';
-import CustomLoader from 'components/components/CustomLoader';
 
 const Liquidity = () => {
   const tabClasses = ({ selected }) =>
@@ -42,8 +42,10 @@ const Liquidity = () => {
     autoswap: { ammAPI, centralBrand },
   } = state;
   useEffect(() => {
-    brandToInfo.length<= 0  || !approved ? setAssetLoader(true) : setAssetLoader(false);
-  }, [brandToInfo,approved]);
+    brandToInfo.length <= 0 || !approved
+      ? setAssetLoader(true)
+      : setAssetLoader(false);
+  }, [brandToInfo, approved]);
   useEffect(() => {
     const getPool = async () => {
       const poolAllocations = await getPoolAllocationService(

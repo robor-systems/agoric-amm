@@ -1,88 +1,87 @@
-import React, { useContext, useEffect, useState } from "react";
-import clsx from "clsx";
-import Loader from "react-loader-spinner";
-import { toast } from "react-toastify";
-import AssetContext from "context/AssetContext";
-import PoolContext from "context/PoolContext";
-import { useApplicationContext } from "context/Application";
-import { FiCheck } from "react-icons/fi";
-import { BiErrorCircle } from "react-icons/bi";
-import { motion } from "framer-motion";
-import { FiArrowDown } from "react-icons/fi";
+import React, { useContext, useEffect, useState } from 'react';
+import clsx from 'clsx';
+import Loader from 'react-loader-spinner';
+import { toast } from 'react-toastify';
+import AssetContext from 'context/AssetContext';
+import PoolContext from 'context/PoolContext';
+import { useApplicationContext } from 'context/Application';
+import { FiCheck, FiArrowDown } from 'react-icons/fi';
+import { BiErrorCircle } from 'react-icons/bi';
+import { motion } from 'framer-motion';
 
-import { removeLiquidityService } from "services/liquidity.service";
+import { removeLiquidityService } from 'services/liquidity.service';
 
-import AmountToRemove from "./AmountToRemove";
-import PoolSelector from "./PoolSelector/PoolSelector";
-import PursesRemovePool from "./PursesRemovePool/PursesRemovePool";
+import AmountToRemove from './AmountToRemove';
+import PoolSelector from './PoolSelector/PoolSelector';
+import PursesRemovePool from './PursesRemovePool/PursesRemovePool';
 
 const RemoveLiquidity = props => {
   const [pool] = useContext(PoolContext);
   const [error, setError] = useState(false);
   const [asset, setAsset] = useContext(AssetContext);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState('');
   const [validated, setValidated] = useState(false);
   const [removed, setRemoved] = useState(false);
 
   const { state, walletP } = useApplicationContext();
-  const [Id, setId] = useState("swap");
+  const [Id, setId] = useState('swap');
 
   const {
     autoswap: { ammAPI },
     purses,
-    walletOffers
+    walletOffers,
   } = state;
   const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
   const [wallet, setWallet] = useState(false);
   const [removeButtonStatus, setRemoveButtonStatus] = useState(
-    "Confirm Withdrawl"
+    'Confirm Withdrawl',
   );
   const defaultProperties = {
-    position: "top-right",
+    position: 'top-right',
     autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    containerId: "Info"
+    containerId: 'Info',
   };
   useEffect(() => {
     if (removed && wallet) {
-      let removeStatus = walletOffers[currentOfferId]?.status;
-      if (removeStatus === "accept") {
-        setRemoveButtonStatus("removed");
+      const removeStatus = walletOffers[currentOfferId]?.status;
+      if (removeStatus === 'accept') {
+        setRemoveButtonStatus('removed');
         toast.update(Id, {
-          render: "Assets successfully swapped",
+          render: 'Assets successfully swapped',
           type: toast.TYPE.SUCCESS,
-          ...defaultProperties
+          ...defaultProperties,
         });
-      } else if (removeStatus === "decline") {
-        setRemoveButtonStatus("declined");
+      } else if (removeStatus === 'decline') {
+        setRemoveButtonStatus('declined');
         setId(
           toast.update(Id, {
-            render: "Swap declined by User",
+            render: 'Swap declined by User',
             type: toast.TYPE.ERROR,
-            ...defaultProperties
-          })
+            ...defaultProperties,
+          }),
         );
       } else if (walletOffers[currentOfferId]?.error) {
-        setRemoveButtonStatus("rejected");
+        setRemoveButtonStatus('rejected');
         setId(
           toast.update(Id, {
-            render: "Swap offer rejected by Wallet",
+            render: 'Swap offer rejected by Wallet',
             type: toast.TYPE.WARNING,
-            ...defaultProperties
-          })
+            ...defaultProperties,
+          }),
         );
       }
       if (
-        removeStatus === "accept" ||
-        removeStatus === "decline" ||
+        removeStatus === 'accept' ||
+        removeStatus === 'decline' ||
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
           setSwapped(false);
-          setRemoveButtonStatus("Confirm Withdrawl");
+          setRemoveButtonStatus('Confirm Withdrawl');
         }, 3000);
       }
     }
@@ -90,21 +89,21 @@ const RemoveLiquidity = props => {
 
   const handleRemovePool = () => {
     if (!asset.centralRemove && !asset.secondaryRemove) {
-      setError("Please select purses first");
+      setError('Please select purses first');
       return;
     } else if (!amount) {
-      setError("Please enter the amount first");
+      setError('Please enter the amount first');
       return;
     }
     setRemoved(true);
     setId(
-      toast("Please approve the offer in your wallet.", {
+      toast('Please approve the offer in your wallet.', {
         ...defaultProperties,
         type: toast.TYPE.INFO,
         progress: undefined,
         hideProgressBar: true,
-        autoClose: false
-      })
+        autoClose: false,
+      }),
     );
     setCurrentOfferId(walletOffers.length);
     const removeLiquidityResp =
@@ -116,7 +115,7 @@ const RemoveLiquidity = props => {
         amount,
         purses,
         ammAPI,
-        walletP
+        walletP,
       );
 
     if (removeLiquidityResp.status === 200) {
@@ -131,7 +130,7 @@ const RemoveLiquidity = props => {
   };
 
   useEffect(() => {
-    setAmount("");
+    setAmount('');
     setAsset({ central: null, liquidity: null });
   }, [pool?.selectRemove]);
 
@@ -167,23 +166,23 @@ const RemoveLiquidity = props => {
           // }
           size={30}
           className={
-            "p-1 bg-alternative text-3xl absolute left-6 position-swap-icon-remove border-4 border-white"
+            'p-1 bg-alternative text-3xl absolute left-6 position-swap-icon-remove border-4 border-white'
           }
-          style={{ top: asset.secondaryRemove ? "48.5%" : "" }}
+          style={{ top: asset.secondaryRemove ? '48.5%' : '' }}
         />
         <PursesRemovePool amount={amount} />
       </div>
       <button
         className={clsx(
-          "bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase",
+          'bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
           validated
-            ? "bg-primary hover:bg-primaryDark text-white"
-            : "text-gray-500"
+            ? 'bg-primary hover:bg-primaryDark text-white'
+            : 'text-gray-500',
         )}
         onClick={handleRemovePool}
       >
         <motion.div className="relative flex-row w-full justify-center items-center">
-          {removed && removeButtonStatus === "Confirm Withdrawl" && (
+          {removed && removeButtonStatus === 'Confirm Withdrawl' && (
             <Loader
               className="absolute right-0"
               type="Oval"
@@ -192,11 +191,11 @@ const RemoveLiquidity = props => {
               width={28}
             />
           )}
-          {removed && removeButtonStatus === "removed" && (
+          {removed && removeButtonStatus === 'removed' && (
             <FiCheck className="absolute right-0" size={28} />
           )}
-          {(removed && removeButtonStatus === "declined") ||
-            (removeButtonStatus === "rejected" && (
+          {(removed && removeButtonStatus === 'declined') ||
+            (removeButtonStatus === 'rejected' && (
               <BiErrorCircle className="absolute right-0" size={28} />
             ))}
           <div className="text-white">{removeButtonStatus}</div>

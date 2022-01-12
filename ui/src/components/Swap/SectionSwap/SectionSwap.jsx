@@ -1,4 +1,4 @@
-import React, { useState, useContext ,useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 import placeholderAgoric from 'assets/placeholder-agoric.png';
@@ -12,9 +12,9 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
   console.log('open', open);
-  useEffect(() => { 
-    console.log("show asset", asset);
-  })
+  useEffect(() => {
+    console.log('show asset', asset);
+  });
   return (
     <>
       <DialogSwap handleClose={() => setOpen(false)} open={open} type={type} />

@@ -1,5 +1,5 @@
-import PoolContext from "context/PoolContext";
-import React, { useContext, useEffect } from "react";
+import PoolContext from 'context/PoolContext';
+import React, { useContext, useEffect } from 'react';
 
 const PoolSelector = ({ setOpen }) => {
   const [pool] = useContext(PoolContext);
@@ -8,7 +8,7 @@ const PoolSelector = ({ setOpen }) => {
       <h2 className="text-lg font-medium">
         {pool?.selectRemove
           ? `${pool?.selectRemove?.central?.info.petname} / ${pool?.selectRemove?.liquidity?.info.petname} Pool`
-          : "No Pool Selected"}
+          : 'No Pool Selected'}
       </h2>
 
       <a
@@ -17,7 +17,7 @@ const PoolSelector = ({ setOpen }) => {
           setOpen(true);
         }}
       >
-        {pool?.selectRemove ? `Change Pool` : "Choose"}
+        {pool?.selectRemove ? `Change Pool` : 'Choose'}
       </a>
     </div>
   );

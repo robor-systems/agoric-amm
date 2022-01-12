@@ -40,7 +40,7 @@
     "lint": "yarn lint:eslint",
     "lint:eslint": "eslint '**/*.{js,jsx}'",
     "lint-fix": "eslint --fix '**/*.{js,jsx}'",
-    "configure": "n@ode use-on-chain-config",
+    "configure": "node use-on-chain-config",
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",

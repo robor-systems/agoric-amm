@@ -1,40 +1,40 @@
-import { motion } from "framer-motion";
-import Loader from "react-loader-spinner";
-import { toast } from "react-toastify";
+import { motion } from 'framer-motion';
+import Loader from 'react-loader-spinner';
+import { toast } from 'react-toastify';
 
-import clsx from "clsx";
-import { useApplicationContext } from "context/Application";
-import AssetContext from "context/AssetContext";
+import clsx from 'clsx';
+import { useApplicationContext } from 'context/Application';
+import AssetContext from 'context/AssetContext';
 import {
   makeRatioFromAmounts,
   floorMultiplyBy,
   floorDivideBy,
-  invertRatio
-} from "@agoric/zoe/src/contractSupport";
-import { AmountMath } from "@agoric/ertp";
-import { stringifyAmountValue } from "@agoric/ui-components";
-import { parseAsNat } from "@agoric/ui-components/dist/display/natValue/parseAsNat";
-import { Nat } from "@agoric/nat";
-import { getInfoForBrand, displayPetname } from "utils/helpers";
-import { requestRatio, makeSwapOffer } from "services/swap.service";
-import { stringifyNat } from "@agoric/ui-components/dist/display/natValue/stringifyNat";
-import { divide, multiply } from "lodash";
+  invertRatio,
+} from '@agoric/zoe/src/contractSupport';
+import { AmountMath } from '@agoric/ertp';
+import { stringifyAmountValue } from '@agoric/ui-components';
+import { parseAsNat } from '@agoric/ui-components/dist/display/natValue/parseAsNat';
+import { Nat } from '@agoric/nat';
+import { getInfoForBrand, displayPetname } from 'utils/helpers';
+import { requestRatio, makeSwapOffer } from 'services/swap.service';
+import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
+import { divide, multiply } from 'lodash';
 
-import React, { useContext, useEffect, useState } from "react";
-import { FiChevronDown, FiChevronUp, FiRepeat, FiCheck } from "react-icons/fi";
-import { BiErrorCircle } from "react-icons/bi";
-import ExtraInformation from "./ExtraInformation/ExtraInformation";
-import OptionsSwap from "./OptionsSwap/OptionsSwap";
-import SectionSwap from "./SectionSwap/SectionSwap";
-import CustomLoader from "components/components/CustomLoader";
+import React, { useContext, useEffect, useState } from 'react';
+import { FiChevronDown, FiChevronUp, FiRepeat, FiCheck } from 'react-icons/fi';
+import { BiErrorCircle } from 'react-icons/bi';
+import CustomLoader from 'components/components/CustomLoader';
+import ExtraInformation from './ExtraInformation/ExtraInformation';
+import OptionsSwap from './OptionsSwap/OptionsSwap';
+import SectionSwap from './SectionSwap/SectionSwap';
 
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
 const UNIT_BASIS = 10000;
 const UNIT_BASIS_NAT = 10000n;
 
-const SWAP_IN = "IN";
-const SWAP_OUT = "OUT";
+const SWAP_IN = 'IN';
+const SWAP_OUT = 'OUT';
 
 const Swap = () => {
   const [asset, setAsset] = useContext(AssetContext);
@@ -46,13 +46,13 @@ const Swap = () => {
     decimal: undefined,
     nat: 0n,
     limitDec: 0,
-    limitNat: 0n
+    limitNat: 0n,
   });
   const [swapTo, setSwapTo] = useState({
     decimal: undefined,
     nat: 0n,
     limitDec: 0,
-    limitNat: 0n
+    limitNat: 0n,
   });
   const [slippage, setSlippage] = useState(3);
   const [assetExchange, setAssetExchange] = useState(null);
@@ -60,25 +60,25 @@ const Swap = () => {
   const assetExists = Object.values(asset).filter(item => item).length >= 2;
   const [swapType, setSwapType] = useState(SWAP_IN);
   // get state
-  const [Id, setId] = useState("swap");
+  const [Id, setId] = useState('swap');
   const { state, walletP } = useApplicationContext();
   const {
     brandToInfo,
     walletOffers,
     approved,
-    autoswap: { ammAPI, centralBrand }
+    autoswap: { ammAPI, centralBrand },
   } = state;
   const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
   const [wallet, setWallet] = useState(false);
-  const [swapButtonStatus, setSwapButtonStatus] = useState("Swap");
+  const [swapButtonStatus, setSwapButtonStatus] = useState('Swap');
   const defaultProperties = {
-    position: "top-right",
+    position: 'top-right',
     autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    containerId: "Info"
+    containerId: 'Info',
   };
   useEffect(() => {
     brandToInfo.length <= 0 || !approved
@@ -87,41 +87,41 @@ const Swap = () => {
   }, [brandToInfo, approved]);
   useEffect(() => {
     if (swapped && wallet) {
-      let swapStatus = walletOffers[currentOfferId]?.status;
-      if (swapStatus === "accept") {
-        setSwapButtonStatus("Swapped");
+      const swapStatus = walletOffers[currentOfferId]?.status;
+      if (swapStatus === 'accept') {
+        setSwapButtonStatus('Swapped');
         toast.update(Id, {
-          render: "Assets successfully swapped",
+          render: 'Assets successfully swapped',
           type: toast.TYPE.SUCCESS,
-          ...defaultProperties
+          ...defaultProperties,
         });
-      } else if (swapStatus === "decline") {
-        setSwapButtonStatus("declined");
+      } else if (swapStatus === 'decline') {
+        setSwapButtonStatus('declined');
         setId(
           toast.update(Id, {
-            render: "Swap declined by User",
+            render: 'Swap declined by User',
             type: toast.TYPE.ERROR,
-            ...defaultProperties
-          })
+            ...defaultProperties,
+          }),
         );
       } else if (walletOffers[currentOfferId]?.error) {
-        setSwapButtonStatus("rejected");
+        setSwapButtonStatus('rejected');
         setId(
           toast.update(Id, {
-            render: "Swap offer rejected by Wallet",
+            render: 'Swap offer rejected by Wallet',
             type: toast.TYPE.WARNING,
-            ...defaultProperties
-          })
+            ...defaultProperties,
+          }),
         );
       }
       if (
-        swapStatus === "accept" ||
-        swapStatus === "decline" ||
+        swapStatus === 'accept' ||
+        swapStatus === 'decline' ||
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
           setSwapped(false);
-          setSwapButtonStatus("Swap");
+          setSwapButtonStatus('Swap');
         }, 3000);
       }
     }
@@ -138,13 +138,13 @@ const Swap = () => {
     const oneDisplayUnit = 10n ** Nat(wantInfo.decimalPlaces);
     const wantPrice = floorDivideBy(
       AmountMath.make(outputRate.brand, oneDisplayUnit),
-      marketRate
+      marketRate,
     );
     const exchangeRate = stringifyAmountValue(
       wantPrice,
       giveInfo.assetKind,
       giveInfo.decimalPlaces,
-      placesToShow
+      placesToShow,
     );
     setExchangeRateLoader(current => !current);
 
@@ -152,10 +152,10 @@ const Swap = () => {
       give: { code: displayPetname(giveInfo.petname), giveInfo },
       want: {
         code: displayPetname(wantInfo.petname),
-        wantInfo
+        wantInfo,
       },
       rate: exchangeRate,
-      marketRate
+      marketRate,
     });
   };
 
@@ -186,7 +186,7 @@ const Swap = () => {
         asset.from.brand,
         makeRatioFromAmounts,
         centralBrand,
-        ammAPI
+        ammAPI,
       ));
     let outputRate = null;
     asset.to &&
@@ -194,7 +194,7 @@ const Swap = () => {
         asset.to.brand,
         makeInverseFromAmounts,
         centralBrand,
-        ammAPI
+        ammAPI,
       ));
 
     const marketRate =
@@ -230,13 +230,13 @@ const Swap = () => {
   // change the output by the slippage.
   const handleSwap = () => {
     if (!(swapFrom.decimal || swapTo.decimal)) {
-      setError("Please add input first");
+      setError('Please add input first');
       return;
     } else if (Number(swapFrom.decimal) === 0 || Number(swapTo.decimal) === 0) {
-      setError("Add value greater than zero");
+      setError('Add value greater than zero');
       return;
     } else if (!swapTo.limitNat && !swapFrom.limitNat) {
-      setError("Something went wrong while setting slippage");
+      setError('Something went wrong while setting slippage');
       return;
     } else if (error) {
       return;
@@ -246,20 +246,20 @@ const Swap = () => {
       type: toast.TYPE.INFO,
       hideProgressBar: true,
       progress: undefined,
-      ...defaultProperties
+      ...defaultProperties,
     });
     setId(
-      toast("Please approve the offer in your wallet.", {
+      toast('Please approve the offer in your wallet.', {
         ...defaultProperties,
         type: toast.TYPE.INFO,
         progress: undefined,
         hideProgressBar: true,
-        autoClose: false
-      })
+        autoClose: false,
+      }),
     );
     console.log(Id);
     setCurrentOfferId(walletOffers.length);
-    console.log("saving current OfferId :", currentOfferId);
+    console.log('saving current OfferId :', currentOfferId);
     setSwapped(true);
     makeSwapOffer(
       walletP,
@@ -268,7 +268,7 @@ const Swap = () => {
       swapType === SWAP_IN ? swapFrom.nat : swapFrom.limitNat,
       asset.to.purse,
       swapType === SWAP_OUT ? swapTo.nat : swapTo.limitNat,
-      true // swapIn will always be true
+      true, // swapIn will always be true
     );
     setWallet(true);
   };
@@ -283,11 +283,11 @@ const Swap = () => {
           decimal: undefined,
           nat: 0n,
           limitDec: 0,
-          limitNat: 0n
+          limitNat: 0n,
         };
         setSwapFrom(reset);
         setSwapTo(reset);
-        console.log("Reseting Value");
+        console.log('Reseting Value');
         console.log(swapFrom);
         console.log(swapTo);
         return;
@@ -296,7 +296,7 @@ const Swap = () => {
       // parse as Nat value
       const swapFromNat = parseAsNat(
         newInput,
-        asset.from?.purse?.displayInfo?.decimalPlaces
+        asset.from?.purse?.displayInfo?.decimalPlaces,
       );
 
       setSwapFrom({ decimal: newInput, nat: swapFromNat, limitNat: 0n });
@@ -308,13 +308,13 @@ const Swap = () => {
       // multiply userInput 'from' amount to 'to' amount using provided rate.
       const swapToNat = floorMultiplyBy(
         amountMakeFrom,
-        assetExchange.marketRate
+        assetExchange.marketRate,
       );
       // convert bigInt to int, seems extra but doing it for consistent decimal places
       const ToValString = stringifyNat(
         swapToNat.value,
         asset.to?.purse?.displayInfo?.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
 
       // calculating slippage
@@ -329,11 +329,11 @@ const Swap = () => {
       const lowerLimitDec = stringifyNat(
         lowerLimitNat,
         asset.to?.purse?.displayInfo?.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
 
       if (lowerLimitNat < 0n) {
-        setError("Value too small, no room for slippage.");
+        setError('Value too small, no room for slippage.');
         return;
       } else {
         // console.log('Lower limit nat', lowerLimitNat);
@@ -343,7 +343,7 @@ const Swap = () => {
         decimal: ToValString,
         nat: swapToNat.value,
         limitDec: lowerLimitDec,
-        limitNat: lowerLimitNat
+        limitNat: lowerLimitNat,
       });
     }
   };
@@ -357,7 +357,7 @@ const Swap = () => {
           decimal: undefined,
           nat: 0n,
           limitDec: 0,
-          limitNat: 0n
+          limitNat: 0n,
         };
         setSwapFrom(reset);
         setSwapTo(reset);
@@ -366,7 +366,7 @@ const Swap = () => {
       // parse as Nat value
       const swapToNat = parseAsNat(
         newInput,
-        asset.to?.purse?.displayInfo?.decimalPlaces
+        asset.to?.purse?.displayInfo?.decimalPlaces,
       );
 
       setSwapTo({ decimal: newInput, nat: swapToNat, limitNat: 0n });
@@ -378,13 +378,13 @@ const Swap = () => {
       // multiply userInput 'to' amount to 'from' amount using provided rate.
       const swapFromNat = floorMultiplyBy(
         amountMakeTo,
-        invertRatio(assetExchange.marketRate)
+        invertRatio(assetExchange.marketRate),
       );
       // convert bigInt to int, seems extra but doing it for consistent decimal places
       const FromValString = stringifyNat(
         swapFromNat.value,
         asset.from?.purse?.displayInfo?.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
 
       // calculating slippage
@@ -399,7 +399,7 @@ const Swap = () => {
       const upperLimitDec = stringifyNat(
         upperLimitNat,
         asset.from?.purse?.displayInfo?.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
 
       setError(null);
@@ -407,7 +407,7 @@ const Swap = () => {
         decimal: FromValString,
         nat: swapFromNat.value,
         limitDec: upperLimitDec,
-        limitNat: upperLimitNat
+        limitNat: upperLimitNat,
       });
     }
   };
@@ -416,10 +416,10 @@ const Swap = () => {
     <>
       <motion.div
         layout
-        initial={{ opacity: 0, boxShadow: "none" }}
+        initial={{ opacity: 0, boxShadow: 'none' }}
         animate={{
           opacity: 1,
-          boxShadow: "0px 0px 99px var(--color-secondary)"
+          boxShadow: '0px 0px 99px var(--color-secondary)',
         }}
         transition={{ duration: 0.8 }}
         className="flex flex-col p-4 rounded-sm gap-4 w-screen max-w-lg relative  select-none overflow-hidden"
@@ -457,13 +457,13 @@ const Swap = () => {
                   if (asset.to && asset.from) {
                     setAsset({
                       from: asset.to,
-                      to: asset.from
+                      to: asset.from,
                     });
                     setSwapFrom(swapTo);
                     setSwapTo(swapFrom);
                     setAssetExchange({
                       ...assetExchange,
-                      marketRate: invertRatio(assetExchange.marketRate)
+                      marketRate: invertRatio(assetExchange.marketRate),
                     });
                   }
                 }}
@@ -495,26 +495,26 @@ const Swap = () => {
         <motion.button
           layout
           className={clsx(
-            "flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase",
+            'flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-xl  font-medium p-3  uppercase',
             (assetExists || swapped) && !error
-              ? "bg-primary hover:bg-primaryDark text-white"
-              : "text-gray-500"
+              ? 'bg-primary hover:bg-primaryDark text-white'
+              : 'text-gray-500',
           )}
           disabled={swapped || error}
           onClick={() => {
             if (Object.values(asset).filter(item => item).length < 2)
-              setError("Please select assets first");
+              setError('Please select assets first');
             else if (!(swapFrom && swapTo)) {
-              setError("Please enter the amount first");
+              setError('Please enter the amount first');
             } else if (swapped) {
-              setError("Please wait!");
+              setError('Please wait!');
             } else {
               handleSwap();
             }
           }}
         >
           <motion.div className="relative flex-row w-full justify-center items-center">
-            {swapped && swapButtonStatus === "Swap" && (
+            {swapped && swapButtonStatus === 'Swap' && (
               <Loader
                 className="absolute right-0"
                 type="Oval"
@@ -523,12 +523,12 @@ const Swap = () => {
                 width={28}
               />
             )}
-            {swapped && swapButtonStatus === "Swapped" && (
+            {swapped && swapButtonStatus === 'Swapped' && (
               <FiCheck className="absolute right-0" size={28} />
             )}
             {swapped &&
-              (swapButtonStatus === "rejected" ||
-                swapButtonStatus === "declined") && (
+              (swapButtonStatus === 'rejected' ||
+                swapButtonStatus === 'declined') && (
                 <BiErrorCircle className="absolute right-0" size={28} />
               )}
             <div className="text-white">{swapButtonStatus}</div>

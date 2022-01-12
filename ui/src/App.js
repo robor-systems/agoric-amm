@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { setToast } from "utils/helpers";
-import { useApplicationContext } from "context/Application";
-import "react-toastify/dist/ReactToastify.css";
-import "styles/globals.css";
-import agoricLogo from "assets/agoric-logo.svg";
-import Swap from "components/Swap/Swap";
-import AssetWrapper from "context/AssetWrapper";
-import { Tab } from "@headlessui/react";
-import clsx from "clsx";
-import Liquidity from "components/Liquidity/Liquidity";
-import PoolWrapper from "context/PoolWrapper";
-import { motion } from "framer-motion";
-import WalletToast from "components/Wallet/WalletToast";
-import InformationToast from "components/components/InformationToast";
+import React, { useState, useEffect } from 'react';
+import { setToast } from 'utils/helpers';
+import { useApplicationContext } from 'context/Application';
+import 'react-toastify/dist/ReactToastify.css';
+import 'styles/globals.css';
+import agoricLogo from 'assets/agoric-logo.svg';
+import Swap from 'components/Swap/Swap';
+import AssetWrapper from 'context/AssetWrapper';
+import { Tab } from '@headlessui/react';
+import clsx from 'clsx';
+import Liquidity from 'components/Liquidity/Liquidity';
+import PoolWrapper from 'context/PoolWrapper';
+import { motion } from 'framer-motion';
+import WalletToast from 'components/Wallet/WalletToast';
+import InformationToast from 'components/components/InformationToast';
+
 const App = () => {
   const [index, setIndex] = useState(0);
   const { state } = useApplicationContext();
   useEffect(() => {
     if (state?.error?.name) {
-      setToast(state.error.name, "warning", {
-        position: "top-right",
+      setToast(state.error.name, 'warning', {
+        position: 'top-right',
         autoClose: false,
-        containerId: "Info"
+        containerId: 'Info',
       });
     }
   }, [state?.error]);
@@ -52,8 +53,8 @@ const App = () => {
               <motion.div
                 whileTap={{ scale: 0.9 }}
                 className={clsx(
-                  "tab font-medium",
-                  index === 0 ? "bg-alternative " : "bg-white"
+                  'tab font-medium',
+                  index === 0 ? 'bg-alternative ' : 'bg-white',
                 )}
               >
                 Swap
@@ -63,8 +64,8 @@ const App = () => {
               <motion.div
                 whileTap={{ scale: 0.9 }}
                 className={clsx(
-                  "tab font-medium",
-                  index === 1 ? "bg-alternative " : "bg-white"
+                  'tab font-medium',
+                  index === 1 ? 'bg-alternative ' : 'bg-white',
                 )}
               >
                 Liquidity

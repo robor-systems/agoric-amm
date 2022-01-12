@@ -106,7 +106,7 @@ export const setToast = (msg, type, properties) => {
     progress: false,
     containerId: 'Information',
   };
-  const toastProperties = properties ? properties : defaultProperties;
+  const toastProperties = properties || defaultProperties;
   switch (type) {
     case 'loading': {
       toast.loading(msg, { ...toastProperties });
@@ -133,23 +133,52 @@ export const setToast = (msg, type, properties) => {
   }
 };
 
-export const manangeOfferStatus = ({swapped,wallet ,walletOffers,currentOfferId,buttonStatusSuccess,buttonStatusAfter,msg1,msg2,msg3}) => { e
+export const manangeOfferStatus = ({
+  swapped,
+  wallet,
+  walletOffers,
+  currentOfferId,
+  buttonStatusSuccess,
+  buttonStatusAfter,
+  msg1,
+  msg2,
+  msg3,
+}) => {
+  e;
   if (swapped && wallet) {
-    let swapStatus = walletOffers[currentOfferId]?.status;
+    const swapStatus = walletOffers[currentOfferId]?.status;
     if (swapStatus === 'accept') {
       setSwapButtonStatus(buttonStatusSuccess);
       setTimeout(() => {
-        setId(toast.update(Id, {...defaultProperties,render:msg1,type:toast.TYPE.SUCCESS}));
+        setId(
+          toast.update(Id, {
+            ...defaultProperties,
+            render: msg1,
+            type: toast.TYPE.SUCCESS,
+          }),
+        );
       }, 500);
     } else if (swapStatus === 'decline') {
       setSwapButtonStatus('declined');
       setTimeout(() => {
-        setId(toast.update(Id, {...defaultProperties,render:msg2,type:toast.TYPE.ERROR}));
+        setId(
+          toast.update(Id, {
+            ...defaultProperties,
+            render: msg2,
+            type: toast.TYPE.ERROR,
+          }),
+        );
       }, 500);
     } else if (walletOffers[currentOfferId]?.error) {
       setSwapButtonStatus('rejected');
       setTimeout(() => {
-        setId(toast.update(Id, {...defaultProperties,render:msg3,type:toast.TYPE.WARNING}));
+        setId(
+          toast.update(Id, {
+            ...defaultProperties,
+            render: msg3,
+            type: toast.TYPE.WARNING,
+          }),
+        );
       }, 500);
     }
     if (
@@ -158,12 +187,12 @@ export const manangeOfferStatus = ({swapped,wallet ,walletOffers,currentOfferId,
       walletOffers[currentOfferId]?.error
     ) {
       setTimeout(() => {
-        toast.dismiss(Id,{...defaultProperties});
+        toast.dismiss(Id, { ...defaultProperties });
         setSwapped(false);
         setSwapButtonStatus(buttonStatusAfter);
       }, 3000);
     }
   }
-}
+};
 
 export const displayPetname = pn => (Array.isArray(pn) ? pn.join('.') : pn);

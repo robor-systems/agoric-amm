@@ -1,17 +1,17 @@
-import React, { createContext, useContext, useReducer, useEffect } from "react";
-import "json5";
-import "utils/installSESLockdown";
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import 'json5';
+import 'utils/installSESLockdown';
 
-import { makeCapTP, E, Far } from "@agoric/captp";
-import { makeAsyncIterableFromNotifier as iterateNotifier } from "@agoric/notifier";
+import { makeCapTP, E, Far } from '@agoric/captp';
+import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
 
 import {
   activateWebSocket,
   deactivateWebSocket,
-  getActiveSocket
-} from "../utils/fetchWebSocket";
+  getActiveSocket,
+} from '../utils/fetchWebSocket';
 
-import { dappConfig, refreshConfigFromWallet } from "../utils/config";
+import { dappConfig, refreshConfigFromWallet } from '../utils/config';
 
 import {
   reducer,
@@ -24,13 +24,13 @@ import {
   setAutoswap,
   setApproved,
   updateOffers,
-  setError
-} from "../store/store";
+  setError,
+} from '../store/store';
 
 import {
   updateBrandPetnames,
-  storeAllBrandsFromTerms
-} from "../utils/storeBrandInfo";
+  storeAllBrandsFromTerms,
+} from '../utils/storeBrandInfo';
 
 let walletP;
 export { walletP };
@@ -42,32 +42,32 @@ export function useApplicationContext() {
 }
 
 function watchVault(id, dispatch) {
-  console.log("vaultWatched", id);
+  console.log('vaultWatched', id);
 
   // There is no UINotifier for offers that haven't been accepted, but
   // we still want to show that the offer exists
 
-  const status = "Pending Wallet Acceptance";
+  const status = 'Pending Wallet Acceptance';
   dispatch(
     updateVault({
       id,
-      vault: { status }
-    })
+      vault: { status },
+    }),
   );
 
   async function vaultUpdater() {
     const uiNotifier = E(walletP).getUINotifier(id);
     for await (const value of iterateNotifier(uiNotifier)) {
-      console.log("======== VAULT", id, value);
+      console.log('======== VAULT', id, value);
       dispatch(
-        updateVault({ id, vault: { ...value, status: "Loan Initiated" } })
+        updateVault({ id, vault: { ...value, status: 'Loan Initiated' } }),
       );
     }
   }
 
   vaultUpdater().catch(err => {
-    console.error("Vault watcher exception", id, err);
-    dispatch(updateVault({ id, vault: { status: "Error in offer", err } }));
+    console.error('Vault watcher exception', id, err);
+    dispatch(updateVault({ id, vault: { status: 'Error in offer', err } }));
   });
 }
 
@@ -79,7 +79,7 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID, state) {
       for (const {
         id,
         instanceHandleBoardId,
-        continuingInvitation
+        continuingInvitation,
       } of offers) {
         if (
           instanceHandleBoardId === INSTANCE_BOARD_ID &&
@@ -90,11 +90,11 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID, state) {
           watchVault(id, dispatch);
         }
       }
-      console.log("======== OFFERS", offers);
+      console.log('======== OFFERS', offers);
       dispatch(updateOffers(offers));
     }
   }
-  offersUpdater().catch(err => console.error("Offers watcher exception", err));
+  offersUpdater().catch(err => console.error('Offers watcher exception', err));
 }
 
 // CMT (danish): We do not require treasury in this app
@@ -126,19 +126,19 @@ const setupAMM = async (dispatch, brandToInfo, zoe, board, instanceID) => {
   const instance = await E(board).getValue(instanceID);
   const [ammAPI, terms] = await Promise.all([
     E(zoe).getPublicFacet(instance),
-    E(zoe).getTerms(instance)
+    E(zoe).getTerms(instance),
   ]);
   // TODO this uses getTerms.brands, but that includes utility tokens, etc.
   // We need a query/notifier for what are the pools supported
   const {
-    brands: { Central: centralBrand, ...otherBrands }
+    brands: { Central: centralBrand, ...otherBrands },
   } = terms;
-  console.log("AMM brands retrieved", otherBrands);
+  console.log('AMM brands retrieved', otherBrands);
   dispatch(setAutoswap({ instance, ammAPI, centralBrand, otherBrands }));
   await storeAllBrandsFromTerms({
     dispatch,
     terms,
-    brandToInfo
+    brandToInfo,
   });
 };
 
@@ -149,13 +149,13 @@ export default function Provider({ children }) {
 
   useEffect(() => {
     // Receive callbacks from the wallet connection.
-    const otherSide = Far("needDappApproval", {
+    const otherSide = Far('needDappApproval', {
       needDappApproval(_dappOrigin, _suggestedDappPetname) {
         dispatch(setApproved(false));
       },
       dappApproved(_dappOrigin) {
         dispatch(setApproved(true));
-      }
+      },
     });
 
     let walletAbort;
@@ -169,11 +169,11 @@ export default function Provider({ children }) {
         const {
           abort: ctpAbort,
           dispatch: ctpDispatch,
-          getBootstrap
+          getBootstrap,
         } = makeCapTP(
           CONTRACT_NAME,
           obj => socket.send(JSON.stringify(obj)),
-          otherSide
+          otherSide,
         );
         walletAbort = ctpAbort;
         walletDispatch = ctpDispatch;
@@ -185,7 +185,7 @@ export default function Provider({ children }) {
           INSTANCE_BOARD_ID,
           RUN_ISSUER_BOARD_ID,
           AMM_INSTALLATION_BOARD_ID,
-          AMM_INSTANCE_BOARD_ID
+          AMM_INSTANCE_BOARD_ID,
         } = dappConfig;
 
         const zoe = E(walletP).getZoe();
@@ -199,7 +199,7 @@ export default function Provider({ children }) {
         // }
         await Promise.all([
           // setupTreasury(dispatch, brandToInfo, zoe, board, INSTANCE_BOARD_ID),
-          setupAMM(dispatch, brandToInfo, zoe, board, AMM_INSTANCE_BOARD_ID)
+          setupAMM(dispatch, brandToInfo, zoe, board, AMM_INSTANCE_BOARD_ID),
         ]);
 
         // The moral equivalent of walletGetPurses()
@@ -212,35 +212,35 @@ export default function Provider({ children }) {
           }
         }
         watchPurses().catch(err =>
-          console.error("FIGME: got watchPurses err", err)
+          console.error('FIGME: got watchPurses err', err),
         );
 
         async function watchBrands() {
-          console.log("BRANDS REQUESTED");
+          console.log('BRANDS REQUESTED');
           const issuersN = E(walletP).getIssuersNotifier();
           for await (const issuers of iterateNotifier(issuersN)) {
             updateBrandPetnames({
               dispatch,
               brandToInfo,
-              issuersFromNotifier: issuers
+              issuersFromNotifier: issuers,
             });
           }
         }
         watchBrands().catch(err => {
-          console.error("got watchBrands err", err);
+          console.error('got watchBrands err', err);
         });
         await Promise.all([
-          E(walletP).suggestInstallation("Installation", INSTALLATION_BOARD_ID),
-          E(walletP).suggestInstance("Instance", INSTANCE_BOARD_ID),
+          E(walletP).suggestInstallation('Installation', INSTALLATION_BOARD_ID),
+          E(walletP).suggestInstance('Instance', INSTANCE_BOARD_ID),
           E(walletP).suggestInstallation(
             `${AMM_NAME}Installation`,
-            AMM_INSTALLATION_BOARD_ID
+            AMM_INSTALLATION_BOARD_ID,
           ),
           E(walletP).suggestInstance(
             `${AMM_NAME}Instance`,
-            AMM_INSTANCE_BOARD_ID
+            AMM_INSTANCE_BOARD_ID,
           ),
-          E(walletP).suggestIssuer("RUN", RUN_ISSUER_BOARD_ID)
+          E(walletP).suggestIssuer('RUN', RUN_ISSUER_BOARD_ID),
         ]);
 
         watchOffers(dispatch, INSTANCE_BOARD_ID, state);
@@ -248,30 +248,30 @@ export default function Provider({ children }) {
       onDisconnect() {
         dispatch(setConnected(false));
         dispatch(setApproved(false));
-        console.log("Running on Disconnect");
+        console.log('Running on Disconnect');
         walletAbort && walletAbort();
         dispatch(resetState());
       },
       onMessage(data) {
         const obj = JSON.parse(data);
-        console.log("Printing Object empty: ", obj);
+        console.log('Printing Object empty: ', obj);
         console.log(!obj.exception);
         if (obj.exception) {
           console.log(obj.exception.body);
           dispatch(
             setError({
               name:
-                "Zoe purse balance is 0.First send Runs to zoe purse using your wallet.Then Refresh browser to continue."
-            })
+                'Zoe purse balance is 0.First send Runs to zoe purse using your wallet.Then Refresh browser to continue.',
+            }),
           );
         } else {
-          console.log("wallet Disconnect:", obj?.payload?.payload === false);
+          console.log('wallet Disconnect:', obj?.payload?.payload === false);
           if (obj?.payload?.payload === false) {
             setApproved(false);
           }
           walletDispatch && walletDispatch(obj);
         }
-      }
+      },
     });
     return deactivateWebSocket;
   }, []);

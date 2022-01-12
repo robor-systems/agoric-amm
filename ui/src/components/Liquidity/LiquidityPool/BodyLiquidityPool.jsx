@@ -1,26 +1,26 @@
-import PoolContext from "context/PoolContext";
-import Loader from "react-loader-spinner";
-import { useApplicationContext } from "context/Application";
+import PoolContext from 'context/PoolContext';
+import Loader from 'react-loader-spinner';
+import { useApplicationContext } from 'context/Application';
 import React, {
   useState,
   useEffect,
   useContext,
   useMemo,
-  useCallback
-} from "react";
-import { v4 } from "uuid";
+  useCallback,
+} from 'react';
+import { v4 } from 'uuid';
 
-import { getInfoForBrand } from "utils/helpers";
-import { stringifyNat } from "@agoric/ui-components/dist/display/natValue/stringifyNat";
-import { motion } from "framer-motion";
+import { getInfoForBrand } from 'utils/helpers';
+import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
+import { motion } from 'framer-motion';
 
-import HeaderLiquidityPool from "./HeaderLiquidityPool";
-import ItemLiquidityPool from "./ItemLiquidityPool";
+import HeaderLiquidityPool from './HeaderLiquidityPool';
+import ItemLiquidityPool from './ItemLiquidityPool';
 
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
-const ALL = "ALL";
-const YOURS = "YOURS";
+const ALL = 'ALL';
+const YOURS = 'YOURS';
 
 const BodyLiquidityPool = props => {
   const [loadUserLiquidityPools, setLoadUserLiquidityPools] = useState(true);
@@ -57,17 +57,17 @@ const BodyLiquidityPool = props => {
       const centralValString = stringifyNat(
         central.value,
         centralInfo.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
 
       const secondaryValString = stringifyNat(
         secondary.value,
         secondaryInfo.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
       return {
         Central: { info: centralInfo, value: centralValString },
-        Secondary: { info: secondaryInfo, value: secondaryValString }
+        Secondary: { info: secondaryInfo, value: secondaryValString },
       };
     });
   }, [poolAllocations]);
@@ -83,12 +83,12 @@ const BodyLiquidityPool = props => {
       const centralValString = stringifyNat(
         central.value,
         centralInfo.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
       const secondaryValString = stringifyNat(
         secondary.value,
         secondaryInfo.decimalPlaces,
-        PLACES_TO_SHOW
+        PLACES_TO_SHOW,
       );
       return {
         Central: { info: centralInfo, value: centralValString },
@@ -97,15 +97,15 @@ const BodyLiquidityPool = props => {
           share: pair.percentShare,
           brand: pair.brand,
           userLiquidityNAT: pair.userLiquidityNAT,
-          totaLiquidity: pair.value
-        }
+          totaLiquidity: pair.value,
+        },
       };
     });
   }, [userPairs]);
   useEffect(() => {
-    console.log("user status,", pool.userLiquidityStatus);
+    console.log('user status,', pool.userLiquidityStatus);
     if (pool.userLiquidityStatus === 200) {
-      console.log("User Liquidity Pools Loaded:", pool.userPairs);
+      console.log('User Liquidity Pools Loaded:', pool.userPairs);
       pool.userPairs?.length > 0 &&
         userPool?.length > 0 &&
         setLoadUserLiquidityPools(false);
@@ -119,13 +119,13 @@ const BodyLiquidityPool = props => {
       setUpdatedPool(newPool);
     };
     if (pool?.allLiquidityStatus === 200) {
-      console.log("All Liquidity Pools Loaded:", pool.allocations);
+      console.log('All Liquidity Pools Loaded:', pool.allocations);
       pool?.allocations && AllPoolsLoaded && updatePools();
       pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
       setUser(pool.allocations.some(item => item.User));
       console.log(
-        "Setting no User Pool: ",
-        pool.allocations.some(item => item.User)
+        'Setting no User Pool: ',
+        pool.allocations.some(item => item.User),
       );
       pool.allocations.some(item => item.User) && setUserPool(newUserPairs);
     }
@@ -146,7 +146,7 @@ const BodyLiquidityPool = props => {
           ))
         ) : (
           <>
-            {" "}
+            {' '}
             {!userLoaded && (
               <h4 className="text-lg">You have no liquidity positions.</h4>
             )}
@@ -175,7 +175,7 @@ const BodyLiquidityPool = props => {
           ))
         ) : (
           <>
-            {" "}
+            {' '}
             {!AllPoolsLoaded && (
               <h4 className="text-lg">Liquidity positions not found.</h4>
             )}

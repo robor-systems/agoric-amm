@@ -1,6 +1,6 @@
 import { useApplicationContext } from 'context/Application';
 import { set } from 'lodash';
-import React, { useState, useEffect,useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 function CustomInput({
   value,
@@ -19,23 +19,24 @@ function CustomInput({
   };
   const purseBalance = useMemo(() => {
     let obj = {};
-    let exit=0;
+    let exit = 0;
     assets.forEach(assetobj => {
-      if(exit)return;
+      if (exit) return;
       assetobj.purses.forEach(cpurse => {
         if (exit) return;
-        if (cpurse.name === asset[type]?.purse.name) { 
+        if (cpurse.name === asset[type]?.purse.name) {
           obj = cpurse;
           exit = 1;
         }
-            
-      })
-    })
-    return obj.balance; 
+      });
+    });
+    return obj.balance;
   }, [assets]);
   useEffect(() => {
-    asset[type]?.purse?.balance && !purseBalance?setBalance( asset[type]?.purse?.balance):setBalance(purseBalance)
-  }, [assets,asset[type]]);
+    asset[type]?.purse?.balance && !purseBalance
+      ? setBalance(asset[type]?.purse?.balance)
+      : setBalance(purseBalance);
+  }, [assets, asset[type]]);
   return (
     <div className="relative flex-grow">
       {asset[type]?.purse && (
@@ -44,7 +45,6 @@ function CustomInput({
           <button
             className={
               'bg-transparent hover:bg-gray-100 text-[#3BC7BE] font-semibold py-[3px] px-1 border border-[#3BC7BE] rounded text-xs leading-3'
-    
             }
             disabled={rateAvailable}
             onClick={onMax}

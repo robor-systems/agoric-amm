@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import Loader from 'react-loader-spinner';
 
 import { FiCheck, FiPlus } from 'react-icons/fi';
-import React, { useContext, useEffect, useState,useMemo } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import clsx from 'clsx';
 
 import { addLiquidityService, requestRatio } from 'services/liquidity.service';
@@ -28,11 +28,11 @@ import { stringifyAmountValue } from '@agoric/ui-components';
 import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import { getInfoForBrand, displayPetname } from 'utils/helpers';
 
+import CustomLoader from 'components/components/CustomLoader';
+import { BiErrorCircle } from 'react-icons/bi';
 import CentralAssetLiquidity from './SectionLiquidity/CentralAssetLiquidity';
 import SecondaryAssetLiquidity from './SectionLiquidity/SecondaryAssetLiquidity';
 import RateLiquidity from '../RateLiquidity/RateLiquidity';
-import CustomLoader from 'components/components/CustomLoader';
-import { BiErrorCircle } from 'react-icons/bi';
 
 // used for indicating user's input type
 const SWAP_IN = 'IN';
@@ -58,9 +58,11 @@ const AddLiquidity = () => {
   const [asset, setAsset] = useContext(AssetContext);
   const [inputType, setInputType] = useState(SWAP_IN);
   const [showLoader, setShowLoader] = useState(false);
-  const [liquidityButtonStatus,setLiquidityButtonStatus]=useState("Add Liquidity")
+  const [liquidityButtonStatus, setLiquidityButtonStatus] = useState(
+    'Add Liquidity',
+  );
   // get state
-  const [ Id, setId ] = useState('liquidityf');
+  const [Id, setId] = useState('liquidityf');
 
   const { state, walletP } = useApplicationContext();
 
@@ -82,16 +84,32 @@ const AddLiquidity = () => {
   const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
   useEffect(() => {
     if (showLoader && wallet) {
-      let liquidityStatus = walletOffers[currentOfferId]?.status;
+      const liquidityStatus = walletOffers[currentOfferId]?.status;
       if (liquidityStatus === 'accept') {
-        setLiquidityButtonStatus('added');  
-        toast.update(Id, { render: 'Liquidity pool added successfully', type: toast.TYPE.SUCCESS, ...defaultProperties });
+        setLiquidityButtonStatus('added');
+        toast.update(Id, {
+          render: 'Liquidity pool added successfully',
+          type: toast.TYPE.SUCCESS,
+          ...defaultProperties,
+        });
       } else if (liquidityStatus === 'decline') {
         setLiquidityButtonStatus('declined');
-        setId(toast.update(Id, {render:'Offer declined by User',type:toast.TYPE.ERROR,...defaultProperties}));
+        setId(
+          toast.update(Id, {
+            render: 'Offer declined by User',
+            type: toast.TYPE.ERROR,
+            ...defaultProperties,
+          }),
+        );
       } else if (walletOffers[currentOfferId]?.error) {
         setLiquidityButtonStatus('rejected');
-        setId(toast.update(Id, {render:'Offer rejected by Wallet',type:toast.TYPE.WARNING,...defaultProperties}));
+        setId(
+          toast.update(Id, {
+            render: 'Offer rejected by Wallet',
+            type: toast.TYPE.WARNING,
+            ...defaultProperties,
+          }),
+        );
       }
       if (
         liquidityStatus === 'accept' ||
@@ -156,7 +174,6 @@ const AddLiquidity = () => {
    */
 
   const getRates = async () => {
-
     if (asset.central && asset.secondary && !exchangeRateLoader) {
       console.log(`Inside if in get getRates : ${exchangeRateLoader}`);
       setExchangeRateLoader(current => !current);
@@ -189,21 +206,20 @@ const AddLiquidity = () => {
   };
 
   const dependencies = useMemo(() => {
-    return [asset]
+    return [asset];
   }, [asset]);
   useEffect(() => {
-    if (!showLoader) { 
+    if (!showLoader) {
       if (asset.central && asset.secondary) {
         getRates();
       } else {
         setAssetExchange({ ...assetExchange, rate: undefined });
       }
     }
-    
   }, dependencies);
 
   const dependencies2 = useMemo(() => {
-    return [centralValue, secondaryValue]
+    return [centralValue, secondaryValue];
   }, [centralValue, secondaryValue]);
   useEffect(() => {
     if (centralValue && secondaryValue) setError(null);
@@ -343,7 +359,15 @@ const AddLiquidity = () => {
     if (error) {
       return;
     }
-    setId(toast('Please approve the offer in your wallet.', { ...defaultProperties,type:toast.TYPE.INFO,progress:undefined,hideProgressBar:true,autoClose:false }));
+    setId(
+      toast('Please approve the offer in your wallet.', {
+        ...defaultProperties,
+        type: toast.TYPE.INFO,
+        progress: undefined,
+        hideProgressBar: true,
+        autoClose: false,
+      }),
+    );
     setCurrentOfferId(walletOffers.length);
     setShowLoader(true);
     const response = await addLiquidityService(
@@ -434,24 +458,25 @@ const AddLiquidity = () => {
           }
         }}
       >
-      <motion.div className="relative flex-row w-full justify-center items-center">
-      {showLoader && liquidityButtonStatus === 'Add Liquidity' && (
-        <Loader
-          className="absolute right-0"
-          type="Oval"
-          color="#fff"
-          height={28}
-          width={28}
-        />
-      )}
-      {showLoader && liquidityButtonStatus === 'Added' && (
-        <FiCheck className="absolute right-0" size={28} />
-      )}
-      {showLoader && liquidityButtonStatus === 'rejected' || liquidityButtonStatus === 'declined' && (
-        <BiErrorCircle className="absolute right-0" size={28} />
-      )}
-      <div className="text-white">{liquidityButtonStatus}</div>
-    </motion.div>
+        <motion.div className="relative flex-row w-full justify-center items-center">
+          {showLoader && liquidityButtonStatus === 'Add Liquidity' && (
+            <Loader
+              className="absolute right-0"
+              type="Oval"
+              color="#fff"
+              height={28}
+              width={28}
+            />
+          )}
+          {showLoader && liquidityButtonStatus === 'Added' && (
+            <FiCheck className="absolute right-0" size={28} />
+          )}
+          {(showLoader && liquidityButtonStatus === 'rejected') ||
+            (liquidityButtonStatus === 'declined' && (
+              <BiErrorCircle className="absolute right-0" size={28} />
+            ))}
+          <div className="text-white">{liquidityButtonStatus}</div>
+        </motion.div>
       </button>
 
       {error && (
