@@ -5,7 +5,10 @@ import { E } from '@agoric/eventual-send';
 
 import defaults from '../generated/defaults';
 
+/* eslint-disable */
 let dappConfig;
+/* eslint-enable */
+
 export { dappConfig };
 
 dappConfig = process.env.REACT_APP_DAPP_CONSTANTS_JSON

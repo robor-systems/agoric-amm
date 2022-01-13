@@ -32,7 +32,10 @@ import {
   storeAllBrandsFromTerms,
 } from '../utils/storeBrandInfo';
 
+/* eslint-disable */
 let walletP;
+/* eslint-enable */
+
 export { walletP };
 
 export const ApplicationContext = createContext();

@@ -80,7 +80,7 @@ const RemoveLiquidity = props => {
         walletOffers[currentOfferId]?.error
       ) {
         setTimeout(() => {
-          setSwapped(false);
+          setRemoved(false);
           setRemoveButtonStatus('Confirm Withdrawl');
         }, 3000);
       }
