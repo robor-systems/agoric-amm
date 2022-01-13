@@ -3,7 +3,7 @@ import { setToast } from 'utils/helpers';
 import { useApplicationContext } from 'context/Application';
 import 'react-toastify/dist/ReactToastify.css';
 import 'styles/globals.css';
-import agoricLogo from 'assets/agoric-logo.svg';
+import agoricLogo from 'assets/agoric-logo1.svg';
 import Swap from 'components/Swap/Swap';
 import AssetWrapper from 'context/AssetWrapper';
 import { Tab } from '@headlessui/react';
@@ -39,7 +39,7 @@ const App = () => {
         <img
           src={agoricLogo}
           alt="Agoric Logo"
-          className="pl-20 md:absolute pl-6 top-0 left-0 py-6 px-6"
+          className="md:absolute pl-0 top-0 left-5 m-7"
         />
         <Tab.Group
           defaultIndex={0}
@@ -48,7 +48,7 @@ const App = () => {
             console.log(i);
           }}
         >
-          <Tab.List className="mt-0 bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-20 transition-all duration-300 ease-in-out">
+          <Tab.List className="mt-10 md:mt-0 bg-white p-2 text-md shadow-red-light-sm rounded-sm mb-20 transition-all duration-300 ease-in-out">
             <Tab>
               <motion.div
                 whileTap={{ scale: 0.9 }}

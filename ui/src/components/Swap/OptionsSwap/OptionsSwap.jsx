@@ -1,11 +1,10 @@
 import { FiHelpCircle } from 'react-icons/fi';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 const OptionsSwap = ({ slippage, setSlippage }) => {
   // TODO (ahmed): add validation to give error on slippage < 0 & > 10
-  const buttonRef = useRef();
   const slippageToolTip =
     'With Slippage Tolerance, you can set the maximum % of price movement you can live with. Anything above that and your order will fail to execute.';
   return (

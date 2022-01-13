@@ -3,7 +3,6 @@ import React from 'react';
 import { BiTransfer } from 'react-icons/bi';
 
 const SWAP_IN = 'IN';
-const SWAP_OUT = 'OUT';
 
 const ExtraInformation = ({ want, rate, give, swapFrom, swapTo, swapType }) => {
   return (

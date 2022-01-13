@@ -1,5 +1,4 @@
 import { useApplicationContext } from 'context/Application';
-import { set } from 'lodash';
 import React, { useState, useEffect, useMemo } from 'react';
 
 function CustomInput({

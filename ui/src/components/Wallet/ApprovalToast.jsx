@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiCheckCircle } from 'react-icons/fi';
-import { IoRadioOutline, IoRadioSharp } from 'react-icons/io5';
+import { IoRadioSharp } from 'react-icons/io5';
 import { useApplicationContext } from '../../context/Application';
 
 function ApprovalToast() {
   const [Id, setId] = useState('Approved');
   const { state } = useApplicationContext();
-  const { approved, amm } = state;
+  const { approved } = state;
   const properties = {
     position: 'top-right',
     hideProgressBar: true,

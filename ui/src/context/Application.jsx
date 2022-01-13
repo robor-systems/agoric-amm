@@ -74,7 +74,7 @@ function watchVault(id, dispatch) {
   });
 }
 
-function watchOffers(dispatch, INSTANCE_BOARD_ID, state) {
+function watchOffers(dispatch, INSTANCE_BOARD_ID) {
   const watchedVaults = new Set();
   async function offersUpdater() {
     const offerNotifier = E(walletP).getOffersNotifier();
@@ -246,7 +246,7 @@ export default function Provider({ children }) {
           E(walletP).suggestIssuer('RUN', RUN_ISSUER_BOARD_ID),
         ]);
 
-        watchOffers(dispatch, INSTANCE_BOARD_ID, state);
+        watchOffers(dispatch, INSTANCE_BOARD_ID);
       },
       onDisconnect() {
         dispatch(setConnected(false));

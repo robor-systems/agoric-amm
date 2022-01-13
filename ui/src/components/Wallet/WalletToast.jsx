@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import { IoCloseOutline } from 'react-icons/io5';
 import ApprovalToast from './ApprovalToast';

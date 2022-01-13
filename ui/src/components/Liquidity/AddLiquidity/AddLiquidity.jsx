@@ -28,7 +28,6 @@ import { stringifyAmountValue } from '@agoric/ui-components';
 import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import { getInfoForBrand, displayPetname } from 'utils/helpers';
 
-import CustomLoader from 'components/components/CustomLoader';
 import { BiErrorCircle } from 'react-icons/bi';
 import CentralAssetLiquidity from './SectionLiquidity/CentralAssetLiquidity';
 import SecondaryAssetLiquidity from './SectionLiquidity/SecondaryAssetLiquidity';
@@ -379,6 +378,7 @@ const AddLiquidity = () => {
       walletP,
       purses,
     );
+    console.log(response.status);
     setWallet(true);
     // if passed then reset everything
     // if (response.status === 200) {
