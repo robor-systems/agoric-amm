@@ -97,21 +97,21 @@ const BodyLiquidityPool = props => {
     } else {
       !user && setLoadUserLiquidityPools(false);
     }
-  }, [newUserPairs, user]);
+  }, [pool.userPairs, user]);
   useEffect(() => {
     const updatePools = () => {
       setUpdatedPool(newPool);
     };
-    console.log('useEffect Pool:', newPool);
+    console.log('useEffect Pool:', pool);
     if (pool?.allLiquidityStatus === 200) {
       console.log('All Liquidity Pools Loaded:', pool.allocations);
-      pool.allocations && loadAllLiquidityPools && updatePools();
+      pool.allocations && updatePools();
       if (newPool?.length > 0) {
         setLoadAllLiquidityPools(false);
         setUser(pool.allocations.some(item => item.User));
       }
     }
-  }, [pool, newPool, loadAllLiquidityPools]);
+  }, [pool.allocations]);
   return (
     <>
       <HeaderLiquidityPool type="yours" />

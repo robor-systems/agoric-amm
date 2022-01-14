@@ -57,30 +57,32 @@ const Liquidity = () => {
         console.log('POOL ALLOCATIONS: ', allocations);
         const status = poolAllocations.status;
         setPool({ ...pool, allocations, allLiquidityStatus: status });
+        console.log('poolAllocations userPairs:', poolAllocations.userPairs);
+        const userLiquidity = await getUserLiquidityService(
+          ammAPI,
+          poolAllocations.userPairs,
+        );
+        if (userLiquidity.status === 200) {
+          // TODO use userPairs to show user's liquidity in the screen.
+          // console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
+          const ustatus = userLiquidity.status;
+          setPool({
+            ...pool,
+            allocations,
+            allLiquidityStatus: status,
+            userPairs: userLiquidity.payload,
+            userLiquidityStatus: ustatus,
+          });
+        } else {
+          // TODO: should be printed on screen
+          console.error('Something went wrong');
+        }
       } else {
         // TODO: should be printed on screen
         console.error('Something went wrong');
       }
 
       // further process userPairs to determine liquidity percentages
-      console.log('poolAllocations userPairs:', poolAllocations.userPairs);
-      const userLiquidity = await getUserLiquidityService(
-        ammAPI,
-        poolAllocations.userPairs,
-      );
-      if (userLiquidity.status === 200) {
-        // TODO use userPairs to show user's liquidity in the screen.
-        // console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
-        const status = userLiquidity.status;
-        setPool({
-          ...pool,
-          userPairs: userLiquidity.payload,
-          userLiquidityStatus: status,
-        });
-      } else {
-        // TODO: should be printed on screen
-        console.error('Something went wrong');
-      }
     };
     state && state.assets && getPool();
     setCentralInfo(getInfoForBrand(brandToInfo, centralBrand));
