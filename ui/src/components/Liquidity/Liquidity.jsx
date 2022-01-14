@@ -68,9 +68,9 @@ const Liquidity = () => {
         ammAPI,
         poolAllocations.userPairs,
       );
-      if (userLiquidity.status === 200 || userLiquidity.status === 204) {
+      if (userLiquidity.status === 200) {
         // TODO use userPairs to show user's liquidity in the screen.
-        console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
+        // console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
         const status = userLiquidity.status;
         setPool({
           ...pool,

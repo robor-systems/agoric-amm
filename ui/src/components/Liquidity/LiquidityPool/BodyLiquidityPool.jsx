@@ -28,38 +28,20 @@ const BodyLiquidityPool = props => {
   const [pool] = useContext(PoolContext);
   const [updatedPool, setUpdatedPool] = useState([]);
   const [userPool, setUserPool] = useState([]);
-  const [user, setUser] = useState(false);
-
-  const userLoaded = useMemo(() => {
-    return loadUserLiquidityPools;
-  }, [loadUserLiquidityPools]);
-  const AllPoolsLoaded = useMemo(() => {
-    return loadAllLiquidityPools;
-  }, [loadAllLiquidityPools]);
-  // get state
+  const [user, setUser] = useState(true);
   const { state } = useApplicationContext();
   const { brandToInfo } = state;
-
-  const userPairs = useMemo(() => {
-    return pool.userPairs;
-  }, [pool.userPairs]);
-  const poolAllocations = useMemo(() => {
-    return pool.allocations;
-  }, [pool.allocations]);
   const newPool = useMemo(() => {
     return pool?.allocations?.map(item => {
       const central = item.Central;
       const secondary = item.Secondary;
-
       const centralInfo = getInfoForBrand(brandToInfo, central.brand);
       const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
-
       const centralValString = stringifyNat(
         central.value,
         centralInfo.decimalPlaces,
         PLACES_TO_SHOW,
       );
-
       const secondaryValString = stringifyNat(
         secondary.value,
         secondaryInfo.decimalPlaces,
@@ -70,66 +52,66 @@ const BodyLiquidityPool = props => {
         Secondary: { info: secondaryInfo, value: secondaryValString },
       };
     });
-  }, [poolAllocations]);
-
+  }, [pool.allocations]);
   const newUserPairs = useMemo(() => {
-    return pool.userPairs?.map(pair => {
-      const central = pair.Central;
-      const secondary = pair.Secondary;
+    return pool.userPairs
+      ? pool.userPairs?.map(pair => {
+          const central = pair.Central;
+          const secondary = pair.Secondary;
 
-      const centralInfo = getInfoForBrand(brandToInfo, central.brand);
-      const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
+          const centralInfo = getInfoForBrand(brandToInfo, central.brand);
+          const secondaryInfo = getInfoForBrand(brandToInfo, secondary.brand);
 
-      const centralValString = stringifyNat(
-        central.value,
-        centralInfo.decimalPlaces,
-        PLACES_TO_SHOW,
-      );
-      const secondaryValString = stringifyNat(
-        secondary.value,
-        secondaryInfo.decimalPlaces,
-        PLACES_TO_SHOW,
-      );
-      return {
-        Central: { info: centralInfo, value: centralValString },
-        Secondary: { info: secondaryInfo, value: secondaryValString },
-        User: {
-          share: pair.percentShare,
-          brand: pair.brand,
-          userLiquidityNAT: pair.userLiquidityNAT,
-          totaLiquidity: pair.value,
-        },
-      };
-    });
-  }, [userPairs]);
+          const centralValString = stringifyNat(
+            central.value,
+            centralInfo.decimalPlaces,
+            PLACES_TO_SHOW,
+          );
+          const secondaryValString = stringifyNat(
+            secondary.value,
+            secondaryInfo.decimalPlaces,
+            PLACES_TO_SHOW,
+          );
+          return {
+            Central: { info: centralInfo, value: centralValString },
+            Secondary: { info: secondaryInfo, value: secondaryValString },
+            User: {
+              share: pair.percentShare,
+              brand: pair.brand,
+              userLiquidityNAT: pair.userLiquidityNAT,
+              totaLiquidity: pair.value,
+            },
+          };
+        })
+      : [];
+  }, [pool.userPairs]);
   useEffect(() => {
     console.log('user status,', pool.userLiquidityStatus);
     if (pool.userLiquidityStatus === 200) {
+      console.log('useEffect Users');
       console.log('User Liquidity Pools Loaded:', pool.userPairs);
-      pool.userPairs?.length > 0 &&
+      setUserPool(newUserPairs);
+      newUserPairs?.length > 0 &&
         userPool?.length > 0 &&
         setLoadUserLiquidityPools(false);
+    } else {
+      !user && setLoadUserLiquidityPools(false);
     }
-    if (pool.userLiquidityStatus === 204) {
-      poolAllocations?.length > 0 && !user && setLoadUserLiquidityPools(false);
-    }
-  }, [newUserPairs, user, userLoaded]);
+  }, [newUserPairs, user]);
   useEffect(() => {
     const updatePools = () => {
       setUpdatedPool(newPool);
     };
+    console.log('useEffect Pool:', newPool);
     if (pool?.allLiquidityStatus === 200) {
       console.log('All Liquidity Pools Loaded:', pool.allocations);
-      pool?.allocations && AllPoolsLoaded && updatePools();
-      pool?.allocations?.length > 0 && setLoadAllLiquidityPools(false);
-      setUser(pool.allocations.some(item => item.User));
-      console.log(
-        'Setting no User Pool: ',
-        pool.allocations.some(item => item.User),
-      );
-      pool.allocations.some(item => item.User) && setUserPool(newUserPairs);
+      pool.allocations && loadAllLiquidityPools && updatePools();
+      if (newPool?.length > 0) {
+        setLoadAllLiquidityPools(false);
+        setUser(pool.allocations.some(item => item.User));
+      }
     }
-  }, [newPool, AllPoolsLoaded]);
+  }, [pool, newPool, loadAllLiquidityPools]);
   return (
     <>
       <HeaderLiquidityPool type="yours" />
@@ -147,12 +129,12 @@ const BodyLiquidityPool = props => {
         ) : (
           <>
             {' '}
-            {!userLoaded && (
+            {!loadUserLiquidityPools && (
               <h4 className="text-lg">You have no liquidity positions.</h4>
             )}
           </>
         )}
-        {userLoaded ? (
+        {loadUserLiquidityPools && newUserPairs?.length === 0 ? (
           <div className="flex flex-row justify-left items-center text-gray-400">
             <Loader type="Oval" color="#62d2cb" height={15} width={15} />
             <div className="pl-2 text-lg">Fetching user liquidity pools...</div>
@@ -176,12 +158,12 @@ const BodyLiquidityPool = props => {
         ) : (
           <>
             {' '}
-            {!AllPoolsLoaded && (
+            {!loadAllLiquidityPools && (
               <h4 className="text-lg">Liquidity positions not found.</h4>
             )}
           </>
         )}
-        {AllPoolsLoaded ? (
+        {loadAllLiquidityPools ? (
           <div className="flex flex-row justify-left items-center text-gray-400">
             <Loader type="Oval" color="#62d2cb" height={15} width={15} />
             <div className="pl-2 text-lg">Fetching all liquidity pools...</div>

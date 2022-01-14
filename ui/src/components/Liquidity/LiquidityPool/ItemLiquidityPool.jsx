@@ -12,7 +12,7 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
   const { state } = useApplicationContext();
   const { assets } = state;
 
-  const { setError } = useContext(ErrorContext);
+  const [error, setError] = useContext(ErrorContext);
   const [asset, setAsset] = useContext(AssetContext);
   const [pool, setPool] = useContext(PoolContext);
 
@@ -39,7 +39,6 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
 
   const setRemoveLiquidity = () => {
     const secondarySelected = item.Secondary;
-    const centralSelected = item.Central;
     let assetSelected = assets.find(elem => {
       return elem.code === secondarySelected.info.petname;
     });
@@ -52,9 +51,6 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
       }, 2500);
       return;
     }
-    console.log('printing Item:', item);
-    console.log(item);
-
     assetSelected = { ...assetSelected, liquidityInfo: { ...item } };
     setPool({
       ...pool,
@@ -62,10 +58,10 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
     });
     setAsset({
       ...asset,
+      centralRemove: item.Central,
       secondaryRemove: assetSelected,
     });
   };
-
   return (
     <div className="border w-full p-4 flex flex-col gap-2 text-gray-500">
       <h3 className="font-medium text-lg text-black">
