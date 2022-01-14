@@ -8,7 +8,6 @@ import { useApplicationContext } from '../../context/Application';
 function ApprovalToast() {
   const [Id, setId] = useState('Approved');
   const { state } = useApplicationContext();
-  const { approved } = state;
   const properties = {
     position: 'top-right',
     hideProgressBar: true,
@@ -36,9 +35,9 @@ function ApprovalToast() {
   );
 
   useEffect(() => {
-    console.log('Approve Value:', approved);
+    console.log('Approve Value:', state.approved);
     if (state) {
-      if (approved) {
+      if (state.approved) {
         if (toast.isActive(Id)) {
           console.log('Current toast if:', Id);
           toast.update(Id, {
@@ -67,7 +66,7 @@ function ApprovalToast() {
         setId(toast(component, properties));
       }
     }
-  }, [approved]);
+  }, [state.approved]);
   return <></>;
 }
 
