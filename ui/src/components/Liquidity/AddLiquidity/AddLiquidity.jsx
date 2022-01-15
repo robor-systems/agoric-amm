@@ -468,7 +468,7 @@ const AddLiquidity = () => {
               width={28}
             />
           )}
-          {showLoader && liquidityButtonStatus === 'Added' && (
+          {showLoader && liquidityButtonStatus === 'added' && (
             <FiCheck className="absolute right-0" size={28} />
           )}
           {(showLoader && liquidityButtonStatus === 'rejected') ||

@@ -130,11 +130,6 @@ const RemoveLiquidity = props => {
   };
 
   useEffect(() => {
-    setAmount('');
-    setAsset({ central: null, liquidity: null });
-  }, [pool?.selectRemove]);
-
-  useEffect(() => {
     (amount || (asset?.centralRemove && asset?.secondaryRemove)) &&
       setError(null);
 

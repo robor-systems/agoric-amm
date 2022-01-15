@@ -31,6 +31,12 @@ const BodyLiquidityPool = props => {
   const [user, setUser] = useState(true);
   const { state } = useApplicationContext();
   const { brandToInfo } = state;
+  const userPairs = useMemo(() => {
+    return pool.userPairs;
+  }, [pool.userPairs]);
+  const poolAllocations = useMemo(() => {
+    return pool.allocations;
+  }, [pool.allocations]);
   const newPool = useMemo(() => {
     return pool?.allocations?.map(item => {
       const central = item.Central;
@@ -52,7 +58,7 @@ const BodyLiquidityPool = props => {
         Secondary: { info: secondaryInfo, value: secondaryValString },
       };
     });
-  }, [pool.allocations]);
+  }, [poolAllocations]);
   const newUserPairs = useMemo(() => {
     return pool.userPairs
       ? pool.userPairs?.map(pair => {
@@ -84,7 +90,7 @@ const BodyLiquidityPool = props => {
           };
         })
       : [];
-  }, [pool.userPairs]);
+  }, [userPairs]);
   useEffect(() => {
     console.log('user status,', pool.userLiquidityStatus);
     if (pool.userLiquidityStatus === 200) {
@@ -97,7 +103,7 @@ const BodyLiquidityPool = props => {
     } else {
       !user && setLoadUserLiquidityPools(false);
     }
-  }, [pool.userPairs, user]);
+  }, [newUserPairs, user]);
   useEffect(() => {
     const updatePools = () => {
       setUpdatedPool(newPool);
@@ -111,7 +117,7 @@ const BodyLiquidityPool = props => {
         setUser(pool.allocations.some(item => item.User));
       }
     }
-  }, [pool.allocations]);
+  }, [newPool]);
   return (
     <>
       <HeaderLiquidityPool type="yours" />

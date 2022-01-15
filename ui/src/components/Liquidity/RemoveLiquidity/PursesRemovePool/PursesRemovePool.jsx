@@ -74,7 +74,9 @@ const PursesRemovePool = props => {
       },
     });
   }, [centralAsset]);
-
+  useEffect(() => {
+    console.log('asset.secondaryRemove:', asset);
+  }, [asset.secondaryRemove]);
   return (
     <div className="flex flex-col text-lg gap-2 bg-alternative rounded-sm p-4">
       <h3>You Will Receive</h3>
