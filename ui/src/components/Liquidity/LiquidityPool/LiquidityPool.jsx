@@ -3,7 +3,7 @@ import React from 'react';
 import { FiChevronLeft } from 'react-icons/fi';
 import BodyLiquidityPool from './BodyLiquidityPool';
 
-const LiquidityPool = ({ open, setOpen }) => {
+const LiquidityPool = ({ open, setOpen, selectAdd, selectRemove }) => {
   return (
     <AnimatePresence className="z-20">
       {open && (
@@ -35,7 +35,12 @@ const LiquidityPool = ({ open, setOpen }) => {
               <FiChevronLeft className="text-xl text-primary" />
               Close Liquidity Positions
             </button>
-            <BodyLiquidityPool open={open} handleClose={() => setOpen(false)} />
+            <BodyLiquidityPool
+              open={open}
+              handleClose={() => setOpen(false)}
+              selectAdd={selectAdd}
+              selectRemove={selectRemove}
+            />
           </motion.div>
         </motion.div>
       )}

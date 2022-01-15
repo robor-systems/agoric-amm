@@ -406,7 +406,7 @@ const AddLiquidity = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col gap-4 relative">
+      <div className="flex flex-col gap-4 relative overflow-hidden">
         <CentralAssetLiquidity
           type="central"
           value={centralValue.decimal}
@@ -414,7 +414,6 @@ const AddLiquidity = () => {
           rateAvailable={!assetExchange?.rate}
         />
 
-        {/* <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-liquidity" /> */}
         <FiPlus
           size="30"
           className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 position-swap-icon-liquidity border-4 border-white"

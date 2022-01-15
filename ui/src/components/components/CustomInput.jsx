@@ -23,7 +23,7 @@ function CustomInput({
       if (exit) return;
       assetobj.purses.forEach(cpurse => {
         if (exit) return;
-        if (cpurse.name === asset[type]?.purse.name) {
+        if (cpurse?.name === asset[type]?.purse?.name) {
           obj = cpurse;
           exit = 1;
         }

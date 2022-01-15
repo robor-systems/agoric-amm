@@ -7,7 +7,15 @@ import ErrorContext from 'context/ErrorContext';
 const ALL = 'ALL';
 const YOURS = 'YOURS';
 
-const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
+const ItemLiquidityPool = ({
+  Central,
+  Secondary,
+  type,
+  item,
+  handleClose,
+  selectAdd,
+  selectRemove,
+}) => {
   // get state
   const { state } = useApplicationContext();
   const { assets } = state;
@@ -17,6 +25,8 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
   const [pool, setPool] = useContext(PoolContext);
 
   const setAddLiquidity = () => {
+    selectAdd();
+    handleClose();
     const secondarySelected = item.Secondary;
 
     const assetSelected = assets.find(elem => {
@@ -38,6 +48,8 @@ const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
   };
 
   const setRemoveLiquidity = () => {
+    selectRemove();
+    handleClose();
     const secondarySelected = item.Secondary;
     let assetSelected = assets.find(elem => {
       return elem.code === secondarySelected.info.petname;
