@@ -7,15 +7,7 @@ import ErrorContext from 'context/ErrorContext';
 const ALL = 'ALL';
 const YOURS = 'YOURS';
 
-const ItemLiquidityPool = ({
-  Central,
-  Secondary,
-  type,
-  item,
-  handleClose,
-  selectAdd,
-  selectRemove,
-}) => {
+const ItemLiquidityPool = ({ Central, Secondary, type, item, handleClose }) => {
   // get state
   const { state } = useApplicationContext();
   const { assets } = state;
@@ -25,7 +17,6 @@ const ItemLiquidityPool = ({
   const [pool, setPool] = useContext(PoolContext);
 
   const setAddLiquidity = () => {
-    selectAdd();
     handleClose();
     const secondarySelected = item.Secondary;
 
@@ -48,7 +39,6 @@ const ItemLiquidityPool = ({
   };
 
   const setRemoveLiquidity = () => {
-    selectRemove();
     handleClose();
     const secondarySelected = item.Secondary;
     let assetSelected = assets.find(elem => {
