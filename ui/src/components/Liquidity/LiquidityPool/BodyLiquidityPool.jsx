@@ -92,7 +92,7 @@ const BodyLiquidityPool = props => {
       : [];
   }, [userPairs]);
   useEffect(() => {
-    console.log('user status,', pool.userLiquidityStatus);
+    console.log('user status,', user);
     if (pool.userLiquidityStatus === 200) {
       console.log('useEffect Users');
       console.log('User Liquidity Pools Loaded:', pool.userPairs);
@@ -101,9 +101,18 @@ const BodyLiquidityPool = props => {
         userPool?.length > 0 &&
         setLoadUserLiquidityPools(false);
     } else {
+      console.log('In user else', user);
+      loadUserLiquidityPools &&
+        setUser(
+          pool?.allocations.some(item => {
+            if (item.User) {
+              return item.User?.value !== '0.00';
+            } else return false;
+          }),
+        );
       !loadAllLiquidityPools && !user && setLoadUserLiquidityPools(false);
     }
-  }, [newUserPairs, user]);
+  }, [newUserPairs, user, loadAllLiquidityPools]);
   useEffect(() => {
     const updatePools = () => {
       setUpdatedPool(newPool);
@@ -113,8 +122,15 @@ const BodyLiquidityPool = props => {
       console.log('All Liquidity Pools Loaded:', pool.allocations);
       pool.allocations && updatePools();
       if (newPool?.length > 0) {
+        console.log('updating user:', pool.allocations);
+        setUser(
+          pool.allocations.some(item => {
+            if (item.User) {
+              return item.User?.value !== '0.00';
+            } else return false;
+          }),
+        );
         setLoadAllLiquidityPools(false);
-        setUser(pool.allocations.some(item => item.User));
       }
     }
   }, [newPool]);
