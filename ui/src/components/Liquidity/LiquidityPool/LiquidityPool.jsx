@@ -3,7 +3,7 @@ import React from 'react';
 import { FiChevronLeft } from 'react-icons/fi';
 import BodyLiquidityPool from './BodyLiquidityPool';
 
-const LiquidityPool = ({ open, setOpen, selectAdd, selectRemove }) => {
+const LiquidityPool = ({ open, setOpen, setTabIndex }) => {
   return (
     <AnimatePresence className="z-20">
       {open && (
@@ -38,8 +38,7 @@ const LiquidityPool = ({ open, setOpen, selectAdd, selectRemove }) => {
             <BodyLiquidityPool
               open={open}
               handleClose={() => setOpen(false)}
-              selectAdd={selectAdd}
-              selectRemove={selectRemove}
+              setTabIndex={setTabIndex}
             />
           </motion.div>
         </motion.div>
