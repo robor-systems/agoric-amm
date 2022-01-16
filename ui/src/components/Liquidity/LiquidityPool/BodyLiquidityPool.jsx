@@ -103,8 +103,9 @@ const BodyLiquidityPool = props => {
     } else {
       console.log('In user else', user);
       loadUserLiquidityPools &&
+        pool?.allocations &&
         setUser(
-          pool?.allocations.some(item => {
+          pool?.allocations?.some(item => {
             if (item.User) {
               return item.User?.value !== '0.00';
             } else return false;
