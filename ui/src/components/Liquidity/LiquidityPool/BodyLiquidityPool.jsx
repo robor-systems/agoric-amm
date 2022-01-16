@@ -28,7 +28,7 @@ const BodyLiquidityPool = props => {
   const [pool] = useContext(PoolContext);
   const [updatedPool, setUpdatedPool] = useState([]);
   const [userPool, setUserPool] = useState([]);
-  const [user, setUser] = useState(true);
+  const [user, setUser] = useState(false);
   const { state } = useApplicationContext();
   const { brandToInfo } = state;
   const userPairs = useMemo(() => {
@@ -101,7 +101,7 @@ const BodyLiquidityPool = props => {
         userPool?.length > 0 &&
         setLoadUserLiquidityPools(false);
     } else {
-      !user && setLoadUserLiquidityPools(false);
+      !loadAllLiquidityPools && !user && setLoadUserLiquidityPools(false);
     }
   }, [newUserPairs, user]);
   useEffect(() => {
