@@ -1,9 +1,10 @@
-import PoolContext from 'context/PoolContext';
-import { v4 } from 'uuid';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 
-import { FiPlus } from 'react-icons/fi';
-import React, { useContext, useEffect, useState } from 'react';
+import Loader from 'react-loader-spinner';
+
+import { FiCheck, FiPlus } from 'react-icons/fi';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import clsx from 'clsx';
 
 import { addLiquidityService, requestRatio } from 'services/liquidity.service';
@@ -27,6 +28,7 @@ import { stringifyAmountValue } from '@agoric/ui-components';
 import { stringifyNat } from '@agoric/ui-components/dist/display/natValue/stringifyNat';
 import { getInfoForBrand, displayPetname } from 'utils/helpers';
 
+import { BiErrorCircle } from 'react-icons/bi';
 import CentralAssetLiquidity from './SectionLiquidity/CentralAssetLiquidity';
 import SecondaryAssetLiquidity from './SectionLiquidity/SecondaryAssetLiquidity';
 import RateLiquidity from '../RateLiquidity/RateLiquidity';
@@ -34,11 +36,11 @@ import RateLiquidity from '../RateLiquidity/RateLiquidity';
 // used for indicating user's input type
 const SWAP_IN = 'IN';
 const SWAP_OUT = 'OUT';
-
 // decimal places to show in input
 const PLACES_TO_SHOW = 2;
 
 const AddLiquidity = () => {
+  const [exchangeRateLoader, setExchangeRateLoader] = useState(false);
   const [centralValue, setCentralValue] = useState({
     decimal: '',
     nat: 0n,
@@ -49,21 +51,77 @@ const AddLiquidity = () => {
     nat: 0n,
     amountMake: undefined,
   });
+  const [wallet, setWallet] = useState(false);
   const [assetExchange, setAssetExchange] = useState(undefined);
   const [error, setError] = useContext(ErrorContext);
   const [asset, setAsset] = useContext(AssetContext);
   const [inputType, setInputType] = useState(SWAP_IN);
   const [showLoader, setShowLoader] = useState(false);
-
+  const [liquidityButtonStatus, setLiquidityButtonStatus] = useState(
+    'Add Liquidity',
+  );
   // get state
+  const [Id, setId] = useState('liquidityf');
+
   const { state, walletP } = useApplicationContext();
 
+  const defaultProperties = {
+    position: 'top-right',
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    containerId: 'Info',
+  };
   const {
     brandToInfo,
+    walletOffers,
     autoswap: { ammAPI, centralBrand },
     purses,
   } = state;
-
+  const [currentOfferId, setCurrentOfferId] = useState(walletOffers.length);
+  useEffect(() => {
+    if (showLoader && wallet) {
+      const liquidityStatus = walletOffers[currentOfferId]?.status;
+      if (liquidityStatus === 'accept') {
+        setLiquidityButtonStatus('added');
+        toast.update(Id, {
+          render: 'Liquidity pool added successfully',
+          type: toast.TYPE.SUCCESS,
+          ...defaultProperties,
+        });
+      } else if (liquidityStatus === 'decline') {
+        setLiquidityButtonStatus('declined');
+        setId(
+          toast.update(Id, {
+            render: 'Offer declined by User',
+            type: toast.TYPE.ERROR,
+            ...defaultProperties,
+          }),
+        );
+      } else if (walletOffers[currentOfferId]?.error) {
+        setLiquidityButtonStatus('rejected');
+        setId(
+          toast.update(Id, {
+            render: 'Offer rejected by Wallet',
+            type: toast.TYPE.WARNING,
+            ...defaultProperties,
+          }),
+        );
+      }
+      if (
+        liquidityStatus === 'accept' ||
+        liquidityStatus === 'decline' ||
+        walletOffers[currentOfferId]?.error
+      ) {
+        setTimeout(() => {
+          setShowLoader(false);
+          setLiquidityButtonStatus('Add Liquidity');
+        }, 3000);
+      }
+    }
+  }, [walletOffers[currentOfferId]]);
   const assetExists =
     Object.values(asset).filter(item => item?.purse).length >= 2;
 
@@ -85,7 +143,7 @@ const AddLiquidity = () => {
       giveInfo.decimalPlaces,
       placesToShow,
     );
-
+    setExchangeRateLoader(current => !current);
     setAssetExchange({
       give: { code: displayPetname(giveInfo.petname), giveInfo },
       want: {
@@ -115,6 +173,10 @@ const AddLiquidity = () => {
    */
 
   const getRates = async () => {
+    if (asset.central && asset.secondary && !exchangeRateLoader) {
+      console.log(`Inside if in get getRates : ${exchangeRateLoader}`);
+      setExchangeRateLoader(current => !current);
+    }
     console.log('GETTING RATES', asset);
     let inputRate = null;
     asset.central &&
@@ -142,14 +204,22 @@ const AddLiquidity = () => {
     marketRate && getExchangeRate(4, marketRate, inputRate, outputRate);
   };
 
+  const dependencies = useMemo(() => {
+    return [asset];
+  }, [asset]);
   useEffect(() => {
-    if (asset.central && asset.secondary && ammAPI) {
-      getRates();
-    } else {
-      setAssetExchange({ ...assetExchange, rate: undefined });
+    if (!showLoader) {
+      if (asset.central && asset.secondary) {
+        getRates();
+      } else {
+        setAssetExchange({ ...assetExchange, rate: undefined });
+      }
     }
-  }, [asset, ammAPI, centralBrand]);
+  }, dependencies);
 
+  const dependencies2 = useMemo(() => {
+    return [centralValue, secondaryValue];
+  }, [centralValue, secondaryValue]);
   useEffect(() => {
     if (centralValue && secondaryValue) setError(null);
     if (
@@ -163,7 +233,7 @@ const AddLiquidity = () => {
     ) {
       setError(`Insufficient ${asset.secondary.code} balance`);
     } else setError(null);
-  }, [centralValue, secondaryValue]);
+  }, dependencies2);
 
   useEffect(() => {
     Object.values(asset).filter(item => item?.purse).length >= 2 &&
@@ -174,6 +244,13 @@ const AddLiquidity = () => {
   }, [asset]);
 
   const handleInputChange = ({ target }) => {
+    console.log('asset:', asset);
+
+    if (!asset.central || !asset.secondary) {
+      return;
+    }
+
+    console.log(target.value);
     let newInput = target.value;
     if (newInput < 0) {
       newInput = 0;
@@ -204,6 +281,7 @@ const AddLiquidity = () => {
       amountMake: amountMakeCentral, // used for adding liquidity
     });
     setInputType(SWAP_IN);
+    console.log(inputType);
     // calculate swapTo price
     // multiply userInput 'from' amount to 'to' amount using provided rate.
     const amountMakeSecondary = floorMultiplyBy(
@@ -226,6 +304,7 @@ const AddLiquidity = () => {
   };
 
   const handleOutputChange = ({ target }) => {
+    console.log('asset:', asset);
     let newInput = target.value;
     if (newInput < 0) {
       newInput = 0;
@@ -282,8 +361,17 @@ const AddLiquidity = () => {
     if (error) {
       return;
     }
+    setId(
+      toast('Please approve the offer in your wallet.', {
+        ...defaultProperties,
+        type: toast.TYPE.INFO,
+        progress: undefined,
+        hideProgressBar: true,
+        autoClose: false,
+      }),
+    );
+    setCurrentOfferId(walletOffers.length);
     setShowLoader(true);
-
     const response = await addLiquidityService(
       centralValue.amountMake,
       asset.central?.purse,
@@ -293,24 +381,8 @@ const AddLiquidity = () => {
       walletP,
       purses,
     );
-
-    // if passed then reset everything
-    if (response.status === 200) {
-      const reset = {
-        decimal: '',
-        nat: 0n,
-        amountMake: undefined,
-      };
-      setAsset({
-        ...asset,
-        central: undefined,
-        secondary: undefined,
-      });
-      setCentralValue(reset);
-      setSecondaryValue(reset);
-      setAssetExchange(undefined);
-    }
-    setShowLoader(false);
+    console.log(response.status);
+    setWallet(true);
   };
 
   return (
@@ -321,7 +393,7 @@ const AddLiquidity = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col gap-4 relative">
+      <div className="flex flex-col gap-4 relative overflow-hidden">
         <CentralAssetLiquidity
           type="central"
           value={centralValue.decimal}
@@ -329,8 +401,10 @@ const AddLiquidity = () => {
           rateAvailable={!assetExchange?.rate}
         />
 
-        <FiPlus className="transform-gpu rotate-90 p-2 bg-alternative text-3xl absolute left-6  ring-4 ring-white position-swap-icon-liquidity" />
-
+        <FiPlus
+          size="30"
+          className="transform-gpu rotate-90 p-1 bg-alternative text-3xl absolute left-6 position-swap-icon-liquidity border-4 border-white"
+        />
         <SecondaryAssetLiquidity
           disabled={error === assetState.EMPTY}
           type="secondary"
@@ -339,12 +413,18 @@ const AddLiquidity = () => {
           rateAvailable={!assetExchange?.rate}
         />
       </div>
-      {assetExists && assetExchange && (
+      {!exchangeRateLoader && assetExists && assetExchange && (
         <RateLiquidity
           {...assetExchange}
           central={asset.central}
           secondary={asset.secondary}
         />
+      )}
+      {exchangeRateLoader && (
+        <motion.div className="flex flex-row justify-left items-center text-gray-400">
+          <Loader type="Oval" color="#62d2cb" height={15} width={15} />
+          <div className="pl-2 text-lg">Fetching best price...</div>
+        </motion.div>
       )}
 
       <button
@@ -364,11 +444,25 @@ const AddLiquidity = () => {
           }
         }}
       >
-        {showLoader ? (
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white-900"></div>
-        ) : (
-          'ADD LIQUIDITY'
-        )}
+        <motion.div className="relative flex-row w-full justify-center items-center">
+          {showLoader && liquidityButtonStatus === 'Add Liquidity' && (
+            <Loader
+              className="absolute right-0"
+              type="Oval"
+              color="#fff"
+              height={28}
+              width={28}
+            />
+          )}
+          {showLoader && liquidityButtonStatus === 'added' && (
+            <FiCheck className="absolute right-0" size={28} />
+          )}
+          {(showLoader && liquidityButtonStatus === 'rejected') ||
+            (liquidityButtonStatus === 'declined' && (
+              <BiErrorCircle className="absolute right-0" size={28} />
+            ))}
+          <div className="text-white">{liquidityButtonStatus}</div>
+        </motion.div>
       </button>
 
       {error && (

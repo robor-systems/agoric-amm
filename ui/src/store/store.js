@@ -25,9 +25,11 @@ export const {
     createVault,
     setVaultToManageId,
     updateVault,
+    updateOffers,
     resetVault,
     setAutoswap,
     setAssets,
+    setError,
   },
 } = autodux({
   slice: 'treasury',
@@ -47,6 +49,8 @@ export const {
     collaterals: null,
     vaultToManageId: null,
     assets: [],
+    walletOffers: [],
+    error: {},
   },
   actions: {
     createVault: (state, { id, vault }) => {
@@ -56,6 +60,15 @@ export const {
           ...state.vaults,
           [id]: vault,
         },
+      };
+    },
+    updateOffers: (state, offers) => {
+      console.log('============Update offer reducer=====================');
+      console.log(offers);
+      console.log('============Update offer reducer=====================');
+      return {
+        ...state,
+        walletOffers: offers,
       };
     },
     updateVault: ({ vaults, ...state }, { id, vault }) => {
@@ -82,11 +95,16 @@ export const {
     }),
     mergeBrandToInfo: (state, newBrandToInfo) => {
       const merged = new Map([...state.brandToInfo, ...newBrandToInfo]);
-
       const brandToInfo = [...merged.entries()];
       return {
         ...state,
         brandToInfo,
+      };
+    },
+    setError: (state, error) => {
+      return {
+        ...state,
+        error,
       };
     },
     setAssets: (state, purses) => {
@@ -98,8 +116,9 @@ export const {
       const interArr = [];
       filteredPurses?.forEach(purse => {
         // balances noted in bigInt, stringifying them
+        console.log();
         const balance = stringifyPurseValue(purse);
-
+        console.log('New Balance!!:', balance);
         // if such asset already inserted
         const similarAssetIndex = interArr.findIndex(elem => {
           return elem.code === purse.brandPetname;
@@ -160,7 +179,7 @@ export const {
           ],
         });
       });
-
+      console.log('asset being updated :', interArr);
       return {
         ...state,
         assets: interArr,

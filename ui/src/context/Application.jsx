@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import 'json5';
 import 'utils/installSESLockdown';
-/* eslint-disable import/no-mutable-exports */
 
 import { makeCapTP, E, Far } from '@agoric/captp';
 import { makeAsyncIterableFromNotifier as iterateNotifier } from '@agoric/notifier';
@@ -24,6 +23,8 @@ import {
   updateVault,
   setAutoswap,
   setApproved,
+  updateOffers,
+  setError,
 } from '../store/store';
 
 import {
@@ -31,7 +32,10 @@ import {
   storeAllBrandsFromTerms,
 } from '../utils/storeBrandInfo';
 
+/* eslint-disable */
 let walletP;
+/* eslint-enable */
+
 export { walletP };
 
 export const ApplicationContext = createContext();
@@ -90,6 +94,7 @@ function watchOffers(dispatch, INSTANCE_BOARD_ID) {
         }
       }
       console.log('======== OFFERS', offers);
+      dispatch(updateOffers(offers));
     }
   }
   offersUpdater().catch(err => console.error('Offers watcher exception', err));
@@ -189,6 +194,12 @@ export default function Provider({ children }) {
         const zoe = E(walletP).getZoe();
         const board = E(walletP).getBoard();
 
+        if (board) {
+          setApproved(true);
+        }
+        // else{
+        //   setApproved(false);
+        // }
         await Promise.all([
           // setupTreasury(dispatch, brandToInfo, zoe, board, INSTANCE_BOARD_ID),
           setupAMM(dispatch, brandToInfo, zoe, board, AMM_INSTANCE_BOARD_ID),
@@ -239,12 +250,30 @@ export default function Provider({ children }) {
       },
       onDisconnect() {
         dispatch(setConnected(false));
+        dispatch(setApproved(false));
+        console.log('Running on Disconnect');
         walletAbort && walletAbort();
         dispatch(resetState());
       },
       onMessage(data) {
         const obj = JSON.parse(data);
-        walletDispatch && walletDispatch(obj);
+        console.log('Printing Object empty: ', obj);
+        console.log(!obj.exception);
+        if (obj.exception) {
+          console.log(obj.exception.body);
+          dispatch(
+            setError({
+              name:
+                'Zoe purse balance is 0.First send Runs to zoe purse using your wallet.Then Refresh browser to continue.',
+            }),
+          );
+        } else {
+          console.log('wallet Disconnect:', obj?.payload?.payload === false);
+          if (obj?.payload?.payload === false) {
+            setApproved(false);
+          }
+          walletDispatch && walletDispatch(obj);
+        }
       },
     });
     return deactivateWebSocket;

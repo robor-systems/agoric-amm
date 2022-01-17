@@ -1,19 +1,20 @@
-import React, { useState, useContext } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState, useContext, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 import placeholderAgoric from 'assets/placeholder-agoric.png';
 import AssetContext from 'context/AssetContext';
 import { FiChevronDown } from 'react-icons/fi';
+import CustomInput from 'components/components/CustomInput';
 import DialogSwap from '../DialogSwap/DialogSwap';
 
 const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
   const [open, setOpen] = useState(false);
-
   const [asset] = useContext(AssetContext);
   const selected = asset[type];
-
   console.log('open', open);
-
+  useEffect(() => {
+    console.log('show asset', asset);
+  });
   return (
     <>
       <DialogSwap handleClose={() => setOpen(false)} open={open} type={type} />
@@ -54,24 +55,14 @@ const SectionSwap = ({ type, value, handleChange, rateAvailable }) => {
               Select asset
             </button>
           )}
-          <div className="relative flex-grow">
-            <input
-              type="number"
-              placeholder="0.0"
-              value={value}
-              onChange={handleChange}
-              className="input-primary w-full"
-              disabled={rateAvailable}
-              min="0"
-              max="10000000"
-            />
-            {asset[type]?.purse && (
-              <div className="absolute right-3 top-1.5 text-gray-400 flex flex-col text-right text-sm bg-white">
-                <div>Balance: {asset[type].purse.balance}</div>
-                <div>~ ${asset[type].purse.balanceUSD}</div>
-              </div>
-            )}
-          </div>
+          <CustomInput
+            value={value}
+            handleChange={handleChange}
+            asset={asset}
+            type={type}
+            rateAvailable={rateAvailable}
+            useCase="swap"
+          />
         </div>
       </motion.div>
     </>

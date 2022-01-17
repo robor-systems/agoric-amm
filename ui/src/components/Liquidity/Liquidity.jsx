@@ -1,4 +1,5 @@
 import { Tab } from '@headlessui/react';
+
 import clsx from 'clsx';
 import {
   getPoolAllocationService,
@@ -13,19 +14,19 @@ import { getInfoForBrand } from 'utils/helpers';
 
 import { motion } from 'framer-motion';
 import React, { useState, useEffect, useContext } from 'react';
-import { FiChevronRight, FiLoader } from 'react-icons/fi';
+import { FiChevronRight } from 'react-icons/fi';
+import CustomLoader from 'components/components/CustomLoader';
 import AddLiquidity from './AddLiquidity/AddLiquidity';
 import LiquidityPool from './LiquidityPool/LiquidityPool';
 import RemoveLiquidity from './RemoveLiquidity/RemoveLiquidity';
 
 const Liquidity = () => {
-  const tabClasses = ({ selected }) =>
-    clsx(
-      'tab font-medium uppercase flex-grow',
-      selected
-        ? 'border-b-4 border-alternativeBright text-alternativeBright '
-        : 'bg-white text-gray-400',
-    );
+  const [tabIndex, setTabIndex] = useState(0);
+  const tabClass = index =>
+    tabIndex === index
+      ? 'border-b-4 border-alternativeBright rounded-b-sm text-alternativeBright w-[50%] text-center font-medium uppercase p-1'
+      : 'bg-white text-gray-400 text-center w-[50%] font-medium uppercase p-1 pt-[6px] pb-[2px]';
+  const [assetloader, setAssetLoader] = useState(false);
   const [open, setOpen] = useState(false);
   const liquidityHook = useState({ central: null, liquidity: null });
   const errorHook = useState(undefined);
@@ -35,9 +36,14 @@ const Liquidity = () => {
   const { state } = useApplicationContext();
   const {
     brandToInfo,
+    approved,
     autoswap: { ammAPI, centralBrand },
   } = state;
-
+  useEffect(() => {
+    brandToInfo.length <= 0 || !approved
+      ? setAssetLoader(true)
+      : setAssetLoader(false);
+  }, [brandToInfo, approved]);
   useEffect(() => {
     const getPool = async () => {
       const poolAllocations = await getPoolAllocationService(
@@ -47,36 +53,48 @@ const Liquidity = () => {
       if (poolAllocations.status === 200) {
         const { allocations } = poolAllocations;
         console.log('POOL ALLOCATIONS: ', allocations);
-        setPool({ ...pool, allocations });
+        const status = poolAllocations.status;
+        setPool({ ...pool, allocations, allLiquidityStatus: status });
+        console.log('poolAllocations userPairs:', poolAllocations.userPairs);
+        const userLiquidity = await getUserLiquidityService(
+          ammAPI,
+          poolAllocations.userPairs,
+        );
+        if (userLiquidity.status === 200) {
+          // TODO use userPairs to show user's liquidity in the screen.
+          // console.log('User POOL ALLOCATIONS: ', userLiquidity.payload);
+          const ustatus = userLiquidity.status;
+          setPool({
+            ...pool,
+            allocations,
+            allLiquidityStatus: status,
+            userPairs: userLiquidity.payload,
+            userLiquidityStatus: ustatus,
+          });
+        } else {
+          // TODO: should be printed on screen
+          console.error('Something went wrong');
+        }
       } else {
         // TODO: should be printed on screen
         console.error('Something went wrong');
       }
 
       // further process userPairs to determine liquidity percentages
-      const userLiquidity = await getUserLiquidityService(
-        ammAPI,
-        poolAllocations.userPairs,
-      );
-
-      if (userLiquidity.status === 200) {
-        // TODO use userPairs to show user's liquidity in the screen.
-        setPool({ ...pool, userPairs: userLiquidity.payload });
-      } else {
-        // TODO: should be printed on screen
-        console.error('Something went wrong');
-      }
     };
-
     state && state.assets && getPool();
-
     setCentralInfo(getInfoForBrand(brandToInfo, centralBrand));
-  }, [state.purses]);
+  }, [state.assets]);
 
   return (
     <AssetWrapper assetHook={liquidityHook}>
       <ErrorWrapper errorHook={errorHook}>
-        <LiquidityPool open={open} setOpen={setOpen} />
+        <LiquidityPool
+          className="z-2"
+          open={open}
+          setOpen={setOpen}
+          setTabIndex={setTabIndex}
+        />
         <motion.div
           className="flex flex-col gap-2"
           layout
@@ -93,7 +111,7 @@ const Liquidity = () => {
             View Liquidity Positions <FiChevronRight className="text-lg" />
           </button>
           <motion.div
-            className="flex flex-col p-4  rounded-sm gap-4 max-w-lg relative  select-none w-screen"
+            className="flex flex-col p-4  rounded-sm gap-4 max-w-lg relative  select-none w-screen overflow-hidden"
             initial={{ opacity: 0, boxShadow: 'none' }}
             animate={{
               opacity: 1,
@@ -108,20 +126,44 @@ const Liquidity = () => {
                 All liquidity pairs currently use {centralInfo?.petname}
               </h2>
             </div>
-            <Tab.Group>
-              <Tab.List className="bg-white  text-md  rounded-sm  flex ">
-                <Tab className={tabClasses}>Add</Tab>
-                <Tab className={tabClasses}>Remove</Tab>
-              </Tab.List>
-              <Tab.Panels>
-                <Tab.Panel>
-                  <AddLiquidity />
-                </Tab.Panel>
-                <Tab.Panel>
-                  <RemoveLiquidity setOpen={setOpen} />
-                </Tab.Panel>
-              </Tab.Panels>
-            </Tab.Group>
+            <div>
+              <div className="bg-white text-md rounded-sm flex mb-4">
+                <div
+                  className={tabClass(0)}
+                  onClick={() => {
+                    setTabIndex(0);
+                  }}
+                >
+                  Add
+                </div>
+                <div
+                  className={tabClass(1)}
+                  onClick={() => {
+                    setTabIndex(1);
+                  }}
+                >
+                  Remove
+                </div>
+              </div>
+              {tabIndex === 0 && (
+                <motion.div>
+                  {assetloader ? (
+                    <CustomLoader text="Loading Assets..." size={25} />
+                  ) : (
+                    <AddLiquidity />
+                  )}
+                </motion.div>
+              )}
+              {tabIndex === 1 && (
+                <motion.div>
+                  {assetloader ? (
+                    <CustomLoader text="Loading Assets..." size={25} />
+                  ) : (
+                    <RemoveLiquidity setOpen={setOpen} />
+                  )}
+                </motion.div>
+              )}
+            </div>
           </motion.div>
         </motion.div>
       </ErrorWrapper>

@@ -1,4 +1,5 @@
 module.exports = {
+  mode: 'jit', // update this line
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: false,
   theme: {
@@ -10,6 +11,7 @@ module.exports = {
         alternativeBright: 'var(--color-alternative-bright)',
         secondary: 'var(--color-secondary)',
         primaryDark: 'var(--color-primary-dark)',
+        currentColor: 'var(--currentColor)',
       },
       fontFamily: {
         sans: [

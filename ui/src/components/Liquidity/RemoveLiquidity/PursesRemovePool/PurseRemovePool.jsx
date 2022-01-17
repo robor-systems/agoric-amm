@@ -75,7 +75,6 @@ const PurseRemovePool = ({ pool, type, amount }) => {
         setIncrement(secondaryTokenWantDec);
       }
     };
-
     asset.centralRemove && asset.secondaryRemove && amount && calcIncrement();
   }, [amount]);
 

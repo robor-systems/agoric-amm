@@ -1,12 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { FiChevronLeft } from 'react-icons/fi';
-import { v4 } from 'uuid';
 import BodyLiquidityPool from './BodyLiquidityPool';
 
-const LiquidityPool = ({ open, setOpen }) => {
+const LiquidityPool = ({ open, setOpen, setTabIndex }) => {
   return (
-    <AnimatePresence>
+    <AnimatePresence className="z-20">
       {open && (
         <motion.div
           key={'liquidity-pool'}
@@ -36,7 +35,11 @@ const LiquidityPool = ({ open, setOpen }) => {
               <FiChevronLeft className="text-xl text-primary" />
               Close Liquidity Positions
             </button>
-            <BodyLiquidityPool handleClose={() => setOpen(false)} />
+            <BodyLiquidityPool
+              open={open}
+              handleClose={() => setOpen(false)}
+              setTabIndex={setTabIndex}
+            />
           </motion.div>
         </motion.div>
       )}

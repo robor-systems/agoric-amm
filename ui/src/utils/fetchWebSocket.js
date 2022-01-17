@@ -181,7 +181,6 @@ export function deactivateWebSocket(endpoint = '/private/wallet-bridge') {
 }
 
 // === FETCH
-
 export async function doFetch(req, endpoint = '/private/wallet-bridge') {
   // Use the socket directly.
   const socket = getActiveSocket(endpoint);

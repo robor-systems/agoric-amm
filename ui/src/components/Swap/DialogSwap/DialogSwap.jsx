@@ -10,7 +10,6 @@ const DialogSwap = ({ open, handleClose, type, asset, purseOnly }) => {
   useEffect(() => {
     if (asset) setSelectedAsset({ ...selectedAsset, [type]: asset });
   }, [asset]);
-
   return (
     <AnimatePresence>
       {open && (

@@ -1,17 +1,41 @@
 import { FiHelpCircle } from 'react-icons/fi';
+
 import React from 'react';
 import { motion } from 'framer-motion';
 
 const OptionsSwap = ({ slippage, setSlippage }) => {
   // TODO (ahmed): add validation to give error on slippage < 0 & > 10
+  const slippageToolTip =
+    'With Slippage Tolerance, you can set the maximum % of price movement you can live with. Anything above that and your order will fail to execute.';
   return (
     <motion.div
       layout
       className="w-full py-1  flex justify-between items-center"
     >
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center align-items">
         <h2>Slippage Tolerance</h2>
-        <FiHelpCircle className="p-1 text-2xl hover:bg-gray-100 rounded-full cursor-pointer" />
+        <FiHelpCircle
+          id="btn"
+          aria-describedby="tooltip"
+          data-tooltip-text={slippageToolTip}
+          onMouseLeave={() => {
+            const tooltip = document.querySelector('#tooltip');
+            tooltip.classList.add('hidden');
+          }}
+          onMouseEnter={() => {
+            const btn = document.querySelector('#btn');
+            const tooltip = document.querySelector('#tooltip');
+            tooltip.innerHTML = btn.dataset.tooltipText;
+            tooltip.classList.remove('hidden');
+          }}
+          size={20}
+          className="p-1 te xt-2xl hover:bg-gray-100 rounded-full cursor-pointer"
+        />
+        <div
+          className="z-20 w-[50%] text-xs mb-[100px] ml-[70px] bg-black text-white p-1 absolute rounded bg-opacity-60 shadow-xl hidden"
+          id="tooltip"
+          role="tooltip"
+        ></div>
       </div>
 
       <div className="flex gap-3">

@@ -24,18 +24,23 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
   } = state;
 
   const refinedLiquidityBrands = async items => {
-    const refinedItems = [];
+    let refinedItems = [];
     for await (const item of items) {
       // if component unmounted before completion
       if (mounted.current === false) {
         return;
       }
       const brandName = await E(item.brand).getAllegedName();
-      console.log(brandName);
+      // const type=await E(item.brand).get
+      console.log('brandName', brandName);
+      console.log('items:', refinedItems);
       if (!brandName.includes('Liquidity')) {
         refinedItems.push(item);
       }
     }
+    refinedItems = refinedItems.filter(item => {
+      return item.brand !== centralBrand;
+    });
     setParsedAssets(refinedItems);
   };
 
@@ -45,6 +50,7 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
     let refinedAssets;
     // if type secondary then we don't want to show centralBrand
     if (type === 'secondary') {
+      console.log('Printing all the assets:', assets);
       refinedAssets = assets.filter(item => {
         return item.brand !== centralBrand;
       });
@@ -57,6 +63,7 @@ const AssetDialog = ({ type, setSelectedAsset }) => {
       });
       setParsedAssets(refinedAssets);
     } else {
+      console.log('Not secondary');
       refinedAssets = assets.filter(item => {
         if (Array.isArray(item.name)) {
           const name = item.name.join('.');

@@ -1,17 +1,18 @@
 import { motion } from 'framer-motion';
 import React from 'react';
+import { BiTransfer } from 'react-icons/bi';
 
 const SWAP_IN = 'IN';
-const SWAP_OUT = 'OUT';
 
 const ExtraInformation = ({ want, rate, give, swapFrom, swapTo, swapType }) => {
   return (
     <motion.div className="flex flex-col" layout>
-      <div className="flex gap-4 text-gray-400 justify-between">
+      <div className="flex  text-gray-400 justify-between items-center">
         Exchange Rate
-        <div>
+        <div className="flex flex-1 justify-end pr-2">
           1 {want.code} = {rate} {give.code}
         </div>
+        <BiTransfer size={20} />
       </div>
       {swapType === SWAP_IN ? (
         <div className="flex gap-4 text-gray-400 justify-between">
