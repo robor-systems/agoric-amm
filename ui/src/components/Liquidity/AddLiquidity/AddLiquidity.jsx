@@ -380,22 +380,6 @@ const AddLiquidity = () => {
     );
     console.log(response.status);
     setWallet(true);
-    // if passed then reset everything
-    // if (response.status === 200) {
-    //   const reset = {
-    //     decimal: '',
-    //     nat: 0n,
-    //     amountMake: undefined,
-    //   };
-    //   setAsset({
-    //     ...asset,
-    //     central: undefined,
-    //     secondary: undefined,
-    //   });
-    //   setCentralValue(reset);
-    //   setSecondaryValue(reset);
-    //   setAssetExchange(undefined);
-    // }
   };
 
   return (
