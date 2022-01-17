@@ -245,59 +245,62 @@ const AddLiquidity = () => {
 
   const handleInputChange = ({ target }) => {
     console.log('asset:', asset);
-    if (asset.central && asset.secondary) {
-      console.log(target.value);
-      let newInput = target.value;
-      if (newInput < 0) {
-        newInput = 0;
-      } else if (!newInput) {
-        const reset = {
-          decimal: '',
-          nat: 0n,
-        };
-        setCentralValue(reset);
-        setSecondaryValue(reset);
-        return;
-      }
-      // parse as Nat value
-      const centralValueNat = parseAsNat(
-        newInput,
-        asset.central?.purse.displayInfo?.decimalPlaces,
-      );
 
-      // agoric stuff
-      const amountMakeCentral = AmountMath.make(
-        asset.central.brand,
-        centralValueNat,
-      );
-
-      setCentralValue({
-        decimal: newInput,
-        nat: centralValueNat,
-        amountMake: amountMakeCentral, // used for adding liquidity
-      });
-      setInputType(SWAP_IN);
-      console.log(inputType);
-      // calculate swapTo price
-      // multiply userInput 'from' amount to 'to' amount using provided rate.
-      const amountMakeSecondary = floorMultiplyBy(
-        amountMakeCentral,
-        assetExchange.marketRate,
-      );
-
-      // convert bigInt to int, seems extra but doing it for consistent decimal places
-      const secondaryValString = stringifyNat(
-        amountMakeSecondary.value,
-        asset.secondary?.purse?.displayInfo?.decimalPlaces,
-        PLACES_TO_SHOW,
-      );
-
-      setSecondaryValue({
-        decimal: secondaryValString,
-        nat: amountMakeSecondary.value,
-        amountMake: amountMakeSecondary, // used for adding liquidity
-      });
+    if (!asset.central || !asset.secondary) {
+      return;
     }
+
+    console.log(target.value);
+    let newInput = target.value;
+    if (newInput < 0) {
+      newInput = 0;
+    } else if (!newInput) {
+      const reset = {
+        decimal: '',
+        nat: 0n,
+      };
+      setCentralValue(reset);
+      setSecondaryValue(reset);
+      return;
+    }
+    // parse as Nat value
+    const centralValueNat = parseAsNat(
+      newInput,
+      asset.central?.purse.displayInfo?.decimalPlaces,
+    );
+
+    // agoric stuff
+    const amountMakeCentral = AmountMath.make(
+      asset.central.brand,
+      centralValueNat,
+    );
+
+    setCentralValue({
+      decimal: newInput,
+      nat: centralValueNat,
+      amountMake: amountMakeCentral, // used for adding liquidity
+    });
+    setInputType(SWAP_IN);
+    console.log(inputType);
+    // calculate swapTo price
+    // multiply userInput 'from' amount to 'to' amount using provided rate.
+    const amountMakeSecondary = floorMultiplyBy(
+      amountMakeCentral,
+      assetExchange.marketRate,
+    );
+
+    // convert bigInt to int, seems extra but doing it for consistent decimal places
+    const secondaryValString = stringifyNat(
+      amountMakeSecondary.value,
+      asset.secondary?.purse?.displayInfo?.decimalPlaces,
+      PLACES_TO_SHOW,
+    );
+
+    setSecondaryValue({
+      decimal: secondaryValString,
+      nat: amountMakeSecondary.value,
+      amountMake: amountMakeSecondary, // used for adding liquidity
+    });
   };
 
   const handleOutputChange = ({ target }) => {
