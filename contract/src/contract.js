@@ -10,10 +10,10 @@ import {
   floorDivideBy,
 } from '@agoric/zoe/src/contractSupport/index.js';
 
-const start = async zcf => {
+const start = async (zcf) => {
   const A = 85;
-	const BASIS_POINTS = 10000n;
-	
+  const BASIS_POINTS = 10000n;
+
   const within10 = (a, b) => {
     if (a > b) {
       return a - b <= 10;
@@ -53,7 +53,7 @@ const start = async zcf => {
    * @returns {bigint} d - the current price, in value form
    *
    */
-  const getD = poolValues => {
+  const getD = (poolValues) => {
     let N_COINS = poolValues.length;
     let sum_x = 0n;
 
@@ -200,7 +200,6 @@ const start = async zcf => {
     poolAmounts,
     feeBasisPoints = 30n,
   ) => {
-    let centralReserve = poolAmounts[centralTokenIndex];
     let inputReserve = poolAmounts[tokenIndexFrom];
     let outputReserve = poolAmounts[tokenIndexTo];
     assert(
@@ -229,53 +228,77 @@ const start = async zcf => {
       brand: inputAmountAfterFeeCut.brand,
       value: inputAmountAfterFeeCut.value * BASIS_POINTS,
     };
-    let val = inputAmount.value;
     const basisRatio = makeRatio(BASIS_POINTS * 100n, inputAmount.brand);
     let inputAmountWithoutFeeCut = floorMultiplyBy(inputAmount, basisRatio);
     // Normalizing the poolValue according to Basis_Points
-    let poolAmountsInBasisPoints = poolAmounts.map(amount => {
+    let poolAmountsInBasisPoints = poolAmounts.map((amount) => {
       return floorMultiplyBy(
         amount,
         makeRatio(BASIS_POINTS * 100n, amount.brand),
       );
     });
-    let poolValues = poolAmountsInBasisPoints.map(amount => amount.value);
-    let firstSwapResult = calculateSwap(
-      inputAmountAfterFeeCut.value,
-      tokenIndexFrom,
-      centralTokenIndex,
-      poolValues,
-    );
-    poolValues = updatePoolValues(
-      poolValues,
-      tokenIndexFrom,
-      inputAmountWithoutFeeCut.value,
-      centralTokenIndex,
-      firstSwapResult.outputValue,
-    );
+    let poolValues = poolAmountsInBasisPoints.map((amount) => amount.value);
 
-    let secondSwapResult = calculateSwap(
-      firstSwapResult.outputValue,
-      centralTokenIndex,
-      tokenIndexTo,
-      poolValues,
-    );
-    let outputAmount = AmountMath.make(
-      poolAmounts[tokenIndexTo].brand,
-      secondSwapResult.outputValue,
-    );
-    let priceRatio = makeRatioFromAmounts(
-      outputAmount,
-      inputAmountWithoutFeeCut,
-    );
-    inputAmountWithoutFeeCut = {
-      ...inputAmountWithoutFeeCut,
-      value: inputAmountWithoutFeeCut.value / BASIS_POINTS,
-    };
-    outputAmount = {
-      ...outputAmount,
-      value: secondSwapResult.outputValue / BASIS_POINTS,
-    };
+    let priceRatio;
+    let outputAmount;
+    if (
+      tokenIndexFrom === centralTokenIndex ||
+      tokenIndexTo === centralTokenIndex
+    ) {
+      let swapResult = calculateSwap(
+        inputAmountAfterFeeCut.value,
+        tokenIndexFrom,
+        tokenIndexTo,
+        poolValues,
+      );
+      outputAmount = AmountMath.make(
+        poolAmounts[tokenIndexTo].brand,
+        swapResult.outputValue,
+      );
+      priceRatio = makeRatioFromAmounts(outputAmount, inputAmountWithoutFeeCut);
+      inputAmountWithoutFeeCut = {
+        ...inputAmountWithoutFeeCut,
+        value: inputAmountWithoutFeeCut.value / BASIS_POINTS,
+      };
+      outputAmount = {
+        ...outputAmount,
+        value: swapResult.outputValue / BASIS_POINTS,
+      };
+    } else {
+      let firstSwapResult = calculateSwap(
+        inputAmountAfterFeeCut.value,
+        tokenIndexFrom,
+        centralTokenIndex,
+        poolValues,
+      );
+
+      poolValues = updatePoolValues(
+        poolValues,
+        tokenIndexFrom,
+        inputAmountWithoutFeeCut.value,
+        centralTokenIndex,
+        firstSwapResult.outputValue,
+      );
+      let secondSwapResult = calculateSwap(
+        firstSwapResult.outputValue,
+        centralTokenIndex,
+        tokenIndexTo,
+        poolValues,
+      );
+      outputAmount = AmountMath.make(
+        poolAmounts[tokenIndexTo].brand,
+        secondSwapResult.outputValue,
+      );
+      priceRatio = makeRatioFromAmounts(outputAmount, inputAmountWithoutFeeCut);
+      inputAmountWithoutFeeCut = {
+        ...inputAmountWithoutFeeCut,
+        value: inputAmountWithoutFeeCut.value / BASIS_POINTS,
+      };
+      outputAmount = {
+        ...outputAmount,
+        value: secondSwapResult.outputValue / BASIS_POINTS,
+      };
+    }
     return {
       priceRatio: priceRatio,
       inputAmount: inputAmountWithoutFeeCut,
@@ -315,6 +338,7 @@ const start = async zcf => {
     poolAmounts,
     feeBasisPoints = 30n,
   ) => {
+    let initialpool = poolAmounts;
     let t = tokenIndexTo;
     tokenIndexTo = tokenIndexFrom;
     tokenIndexFrom = t;
@@ -335,43 +359,55 @@ const start = async zcf => {
     const basisRatio = makeRatio(BASIS_POINTS * 100n, outputAmount.brand);
     let outputAmountBasis = floorMultiplyBy(outputAmount, basisRatio);
     // Normalizing the poolAmounts according to Basis_Points
-    let poolAmountsInBasisPoints = poolAmounts.map(amount => {
+    let poolAmountsInBasisPoints = poolAmounts.map((amount) => {
       return floorMultiplyBy(
         amount,
         makeRatio(BASIS_POINTS * 100n, amount.brand),
       );
     });
-    let poolValues = poolAmountsInBasisPoints.map(amount => amount.value);
-    console.log(
-      outputAmountBasis.value,
-      tokenIndexFrom,
-      centralTokenIndex,
-      poolValues,
-    );
-    let firstSwapResult = calculateSwap(
-      outputAmountBasis.value,
-      tokenIndexFrom,
-      centralTokenIndex,
-      poolValues,
-    );
-    console.log('firstSwapResult', firstSwapResult);
-    poolValues = updatePoolValues(
-      poolValues,
-      tokenIndexTo,
-      outputAmountBasis.value,
-      centralTokenIndex,
-      firstSwapResult.outputValue,
-    );
-    let secondSwapResult = calculateSwap(
-      firstSwapResult.outputValue,
-      centralTokenIndex,
-      tokenIndexTo,
-      poolValues,
-    );
-    let inputAmount = AmountMath.make(
-      poolAmounts[tokenIndexTo].brand,
-      secondSwapResult.outputValue,
-    );
+    let poolValues = poolAmountsInBasisPoints.map((amount) => amount.value);
+    let priceRatio;
+    let inputAmountAfterFeeCut;
+    let inputAmount;
+    if (
+      tokenIndexFrom === centralTokenIndex ||
+      tokenIndexTo === centralTokenIndex
+    ) {
+      let swapResult = calculateSwap(
+        outputAmountBasis.value,
+        tokenIndexFrom,
+        tokenIndexTo,
+        poolValues,
+      );
+      inputAmount = AmountMath.make(
+        poolAmounts[tokenIndexTo].brand,
+        swapResult.outputValue,
+      );
+    } else {
+      let firstSwapResult = calculateSwap(
+        outputAmountBasis.value,
+        tokenIndexFrom,
+        centralTokenIndex,
+        poolValues,
+      );
+      poolValues = updatePoolValues(
+        poolValues,
+        tokenIndexTo,
+        outputAmountBasis.value,
+        centralTokenIndex,
+        firstSwapResult.outputValue,
+      );
+      let secondSwapResult = calculateSwap(
+        firstSwapResult.outputValue,
+        centralTokenIndex,
+        tokenIndexTo,
+        poolValues,
+      );
+      inputAmount = AmountMath.make(
+        poolAmounts[tokenIndexTo].brand,
+        secondSwapResult.outputValue,
+      );
+    }
     const feeCutRatio = makeRatio(
       BASIS_POINTS - feeBasisPoints,
       inputAmount.brand,
@@ -379,14 +415,39 @@ const start = async zcf => {
       inputAmount.brand,
     );
     // Fee ratio multiplied by inputAmount to get inputAmount After fee cut
-    let inputAmountAfterFeeCut = floorDivideBy(inputAmount, feeCutRatio);
-    let priceRatio = makeRatioFromAmounts(
+    inputAmountAfterFeeCut = floorDivideBy(inputAmount, feeCutRatio);
+    priceRatio = makeRatioFromAmounts(
       outputAmountBasis,
       inputAmountAfterFeeCut,
     );
     inputAmountAfterFeeCut = AmountMath.make(
       inputAmountAfterFeeCut.brand,
       inputAmountAfterFeeCut.value / BASIS_POINTS,
+    );
+    let result = getStableInputPrice(
+      inputAmountAfterFeeCut,
+      tokenIndexTo,
+      tokenIndexFrom,
+      centralTokenIndex,
+      initialpool,
+    );
+    while (result.outputAmount.value < outputAmount.value) {
+      let incrementAmount = AmountMath.make(inputAmountAfterFeeCut.brand, 1n);
+      inputAmountAfterFeeCut = AmountMath.add(
+        inputAmountAfterFeeCut,
+        incrementAmount,
+      );
+      result = getStableInputPrice(
+        inputAmountAfterFeeCut,
+        tokenIndexTo,
+        tokenIndexFrom,
+        centralTokenIndex,
+        initialpool,
+      );
+    }
+    priceRatio = makeRatioFromAmounts(
+      result.priceRatio.numerator,
+      result.priceRatio.denominator,
     );
     return {
       priceRatio: priceRatio,
